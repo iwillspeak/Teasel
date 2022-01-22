@@ -24,11 +24,16 @@ e.g.:
 </html>
 ```
 
-Would produce the tokens:
+Tokens:
 
-```
-<TBD>
-```
+ * `<` -> START
+ * `>` -> END
+ * `</` -> CLOSE
+ * `/>` -> SELF_CLOSE
+ * `html` -> IDENT
+ * `=` -> EQ
+ * `"spiky-tree.jpg"` -> ATTR_VALUE
+ * ` ` -> SPACE
 
 ## Parse
 
