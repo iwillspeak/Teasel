@@ -1,2 +1,1 @@
-export class Parser {
-}
+export class Parser {}
