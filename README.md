@@ -11,6 +11,20 @@ Parser will be split into three parts:
 We will transform the input text into a series of tokens. All parts of the input
 should be covered by a token, including trivia.
 
+## Parse
+
+A hand written top down parser with one token lookahead. This uses a green tree
+builder to produce a syntax tree.
+
+## Tree
+
+Red-green syntax tree and typed tree. The typed wrapper will have classes
+specific to each node type. THe tree should be capable of representing any kind
+of incomplete or malformed syntax. The tree should be faithful to the source
+text. Semanitc transformation into a DOM is _not_ the intent of this library.
+
+## Worked Example
+
 e.g.:
 
 ```html
@@ -28,13 +42,15 @@ e.g.:
 Example Tokens:
 
  * `  <` -> START
-   * `>` -> END
-   * `</` -> CLOSE
+ * `>` -> END
+ * `</` -> CLOSE
  * `/>` -> SELF_CLOSE
  * `html` -> IDENT
  * `=` -> EQ
+ * `I'm a paragraph, with an image` -> TEXT
  * `"spiky-tree.jpg"` -> ATTR_VALUE
- * ` ` -> 
+ * ` ` -> SPACE
+ * `<!-- COMMENT TEXT ..>` -> COMMENT
 
 And would be parsed to something similar to:
 
@@ -58,15 +74,3 @@ DOCUMENT
       IDENT("html")
       END(">")
 ```
-
-## Parse
-
-A hand written top down parser with one token lookahead. This uses a green tree
-builder to produce a syntax tree.
-
-## Tree
-
-Red-green syntax tree and typed tree. The typed wrapper will have classes
-specific to each node type. THe tree should be capable of representing any kind
-of incomplete or malformed syntax. The tree should be faithful to the source
-text. Semanitc transformation into a DOM is _not_ the intent of this library.
