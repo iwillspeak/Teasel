@@ -25,16 +25,39 @@ e.g.:
 </html>
 ```
 
-Tokens:
+Example Tokens:
 
- * `<` -> START
- * `>` -> END
- * `</` -> CLOSE
+ * `  <` -> START
+   * `>` -> END
+   * `</` -> CLOSE
  * `/>` -> SELF_CLOSE
  * `html` -> IDENT
  * `=` -> EQ
  * `"spiky-tree.jpg"` -> ATTR_VALUE
- * ` ` -> SPACE
+ * ` ` -> 
+
+And would be parsed to something similar to:
+
+```
+DOCUMENT
+  DOC_START("<!")
+  IDENT("DOCTYPE)
+  SPACE(" ")
+  IDENT("html)
+  END(">")
+  NODE
+    TAG
+      START("<")
+      IDENT("html")
+      END(">")
+    NODE
+      TAG
+        // .. snip .. 
+    END_TAG
+      START("<")
+      IDENT("html")
+      END(">")
+```
 
 ## Parse
 
