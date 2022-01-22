@@ -20,6 +20,7 @@ e.g.:
 <h1>A N Example</h2>
 <p>I'm a paragraph, with an image.
 <img src="spiky-tree.jpg" width="500" height="600" />
+<!-- comment example -->
 </body>
 </html>
 ```
