@@ -24,7 +24,8 @@ export enum TokenKind {
  */
 enum LexState {
   Start,
-  Text,
+  TagStartSeen,
+  TagEnd,
   Error
 }
 
@@ -104,7 +105,7 @@ export class Tokenizer {
   /**
    * Check if the tokeniser is at the end of the input buffer.
    */
-  public isAtEnd(): boolean {
+  public get isAtEnd(): boolean {
     if (this.tokenStart < this.buffer.length) {
       // we anre't at the end of the buffer yet.
       return false;
@@ -137,8 +138,8 @@ export class Tokenizer {
         finished = true;
       } else {
         state = nextState;
-        tokenEnd = currentCharIdx;
         currentCharIdx++;
+        tokenEnd = currentCharIdx;
       }
     }
 
@@ -157,8 +158,12 @@ export class Tokenizer {
    */
   private tokenKindFromFinalState(state: LexState) {
     switch (state) {
-      case LexState.Text:
-        return TokenKind.Text;
+      case LexState.Start:
+        return TokenKind.EndOfFile;
+      case LexState.TagEnd:
+        return TokenKind.TagEnd;
+      case LexState.TagStartSeen:
+        return TokenKind.TagStart;
       default:
         return TokenKind.Error;
     }
@@ -174,7 +179,18 @@ export class Tokenizer {
     state: LexState,
     currentChar: string
   ): LexState | null {
-    // FIXME: actually walk the state machine here..
-    return null;
+    switch (state) {
+      case LexState.Start:
+        switch (currentChar) {
+          case '<':
+            return LexState.TagStartSeen;
+          case '>':
+            return LexState.TagEnd;
+          default:
+            return LexState.Error;
+        }
+      default:
+        return null;
+    }
   }
 }
