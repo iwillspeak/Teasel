@@ -1,6 +1,7 @@
 {
   "name": "parser",
   "version": "0.0.1",
+  "type": "module",
   "description": "A parser of some sort.",
   "main": "lib/main.js",
   "files": [
@@ -27,9 +28,14 @@
   },
   "homepage": "https://github.com/iwillspeak/a-n-parser#readme",
   "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.1.0",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "c8": "^7.11.0",
+    "chai": "^4.3.4",
     "eslint": "^8.7.0",
     "eslint-config-google": "^0.14.0",
+    "mocha": "^9.1.4",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.5.5"
