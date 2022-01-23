@@ -1,33 +1,13 @@
-import {RedNode} from './RedTree';
+// import {RedNode} from './RedTree';
 
-// kind for a node in the syntax tree.
+/**
+ * Syntax Kind
+ *
+ * Syntax kinds are opaque markers used to indiciate the type of a node or token
+ * in the concrete syntax tree of red and green nodes. It is up to the higher
+ * level 'typed' AST to give these kinds meanings.
+ */
 export type SyntaxKind = number;
-
-interface Node {
-  type: 'node';
-}
-
-interface Token {
-  type: 'token';
-}
-
-type NodeOrToken = Node | Token;
-
-function asNode(element: NodeOrToken): Node | null {
-  if (element.type === 'node') {
-    return element;
-  }
-
-  return null;
-}
-
-function asToken(element: NodeOrToken): Token | null {
-  if (element.type === 'token') {
-    return element;
-  }
-
-  return null;
-}
 
 // const ELEMENT: number = 1
 // const COMMENT: number = 1
