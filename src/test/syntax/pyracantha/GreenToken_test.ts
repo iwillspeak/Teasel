@@ -7,5 +7,6 @@ suite('GreenToken', () => {
 
     assert.equal(token.kind, 303);
     assert.equal(token.text, 'woop');
+    assert.equal(token.textLength, 4);
   });
 });
