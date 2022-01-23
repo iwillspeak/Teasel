@@ -1,10 +1,6 @@
 import {SyntaxKind} from './Syntax';
 
-export interface ITextLength {
-  textLength: number;
-}
-
-export class GreenNode implements ITextLength {
+export class GreenNode {
   public kind: number;
   public children: GreenElement[];
   public width: number;
@@ -23,7 +19,7 @@ export class GreenNode implements ITextLength {
   }
 }
 
-export class GreenToken implements ITextLength {
+export class GreenToken {
   public kind: number;
   public text: string;
 
