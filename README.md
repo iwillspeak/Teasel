@@ -41,7 +41,7 @@ e.g.:
 
 Example Tokens:
 
- * `  <` -> START
+ * `<` -> START
  * `>` -> END
  * `</` -> CLOSE
  * `/>` -> SELF_CLOSE
@@ -68,7 +68,7 @@ DOCUMENT
       END(">")
     NODE
       TAG
-        // .. snip .. 
+        // .. snip ..
     END_TAG
       START("<")
       IDENT("html")
