@@ -1,5 +1,5 @@
 import {RedNode} from './RedNode';
-import {SyntaxKind, Range} from './Common';
+import {SyntaxKind, Range} from './Pyracantha';
 import {GreenToken} from './GreenToken';
 
 /**

@@ -1,6 +1,6 @@
 import {GreenNode} from './GreenNode';
 import {GreenToken} from './GreenToken';
-import {SyntaxKind} from './Common';
+import {SyntaxKind} from './Pyracantha';
 import {RedNode} from './RedNode';
 import {RedToken} from './RedToken';
 

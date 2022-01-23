@@ -1,4 +1,4 @@
-import {SyntaxKind} from './Common';
+import {SyntaxKind} from './Pyracantha';
 import {GreenToken} from './GreenToken';
 
 /**
