@@ -24,8 +24,9 @@ export enum TokenKind {
  */
 enum LexState {
   Start,
-  TagStartSeen,
-  TagEnd,
+  LeftAngle,
+  Close,
+  RightAngle,
   Error
 }
 
@@ -160,10 +161,12 @@ export class Tokenizer {
     switch (state) {
       case LexState.Start:
         return TokenKind.EndOfFile;
-      case LexState.TagEnd:
+      case LexState.RightAngle:
         return TokenKind.TagEnd;
-      case LexState.TagStartSeen:
+      case LexState.LeftAngle:
         return TokenKind.TagStart;
+      case LexState.Close:
+        return TokenKind.TagCloseStart;
       default:
         return TokenKind.Error;
     }
@@ -183,11 +186,18 @@ export class Tokenizer {
       case LexState.Start:
         switch (currentChar) {
           case '<':
-            return LexState.TagStartSeen;
+            return LexState.LeftAngle;
           case '>':
-            return LexState.TagEnd;
+            return LexState.RightAngle;
           default:
             return LexState.Error;
+        }
+      case LexState.LeftAngle:
+        switch (currentChar) {
+          case '/':
+            return LexState.Close;
+          default:
+            return null;
         }
       default:
         return null;
