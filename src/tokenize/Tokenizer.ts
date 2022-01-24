@@ -1,22 +1,5 @@
-/**
- * Token Kinds
- *
- * Each token kind represents a unique lexeme that the tokeniser can recognise.
- */
-export enum TokenKind {
-  TagStart,
-  TagEnd,
-  TagCloseStart,
-  TagSelfClose,
-  Ident,
-  Eq,
-  Text,
-  AttributeValue,
-  Space,
-  Comment,
-  Error,
-  EndOfFile
-}
+import {Token} from './Token.js';
+import {TokenKind} from './TokenKind.js';
 
 /**
  * Lexer's state. Each state is a point the lexer can be in between characters
@@ -33,20 +16,16 @@ enum LexState {
 }
 
 /**
- * A single token in the source text.
+ * Facts about characters. This is a holder for some static character sets and
+ * other important information.
  */
-export interface Token {
-  /**
-   * The kind of token.
-   */
-  kind: TokenKind;
-
-  /**
-   * The lexical value that backs this token. This could be the empty string for
-   * tokens such as EOF and error tokens.
-   */
-  lexeme: string;
-}
+const charFacts = {
+  SPACES: ' \n\t\r',
+  A_LOWER: 'a'.charCodeAt(0),
+  Z_LOWER: 'z'.charCodeAt(0),
+  A_UPPER: 'A'.charCodeAt(0),
+  Z_UPPER: 'Z'.charCodeAt(0)
+};
 
 /**
  * # HTML Tokeniser
@@ -232,21 +211,28 @@ export class Tokenizer {
     }
   }
 
-  private static SPACES = ' \n\t\r';
+  /**
+   * Is Space Character
+   *
+   * @param currentChar The input character
+   * @returns true if the charactre represents a space.
+   */
   private static isSpaceChar(currentChar: string): boolean {
-    return Tokenizer.SPACES.indexOf(currentChar) > -1;
+    return charFacts.SPACES.indexOf(currentChar) > -1;
   }
 
-  private static A_LOWER = 'a'.charCodeAt(0);
-  private static Z_LOWER = 'z'.charCodeAt(0);
-  private static A_UPPER = 'A'.charCodeAt(0);
-  private static Z_UPPER = 'Z'.charCodeAt(0);
+  /**
+   * Is Identifier Character
+   *
+   * @param currentChar The input character.
+   * @returns True if the character is an identifier character.
+   */
   private static isIdentChar(currentChar: string): boolean {
     const charCode = currentChar.charCodeAt(0);
 
     return (
-      (charCode >= Tokenizer.A_LOWER && charCode <= Tokenizer.Z_LOWER) ||
-      (charCode >= Tokenizer.A_UPPER && charCode <= Tokenizer.Z_UPPER)
+      (charCode >= charFacts.A_LOWER && charCode <= charFacts.Z_LOWER) ||
+      (charCode >= charFacts.A_UPPER && charCode <= charFacts.Z_UPPER)
     );
   }
 }

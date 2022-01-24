@@ -1,5 +1,6 @@
 import {assert} from 'chai';
-import {Tokenizer, TokenKind} from '../../tokenize/Tokenizer.js';
+import {Tokenizer} from '../../tokenize/Tokenizer.js';
+import {TokenKind} from '../../tokenize/TokenKind.js';
 
 suite('Tokeniser', () => {
   test('tokenise empty string returns end of file', () => {
