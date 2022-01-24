@@ -26,6 +26,7 @@
         "kind": "test",
         "isDefault": true
       },
+      "dependsOn": "npm: build",
       "problemMatcher": [],
       "label": "npm: test",
       "detail": "c8 --reporter=text-summary mocha \"lib/test/**/*_test.js\""
