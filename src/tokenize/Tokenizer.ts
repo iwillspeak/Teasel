@@ -27,6 +27,8 @@ enum LexState {
   LeftAngle,
   Close,
   RightAngle,
+  Ident,
+  Space,
   Error
 }
 
@@ -167,6 +169,10 @@ export class Tokenizer {
         return TokenKind.TagStart;
       case LexState.Close:
         return TokenKind.TagCloseStart;
+      case LexState.Ident:
+        return TokenKind.Ident;
+      case LexState.Space:
+        return TokenKind.Space;
       default:
         return TokenKind.Error;
     }
@@ -189,7 +195,15 @@ export class Tokenizer {
             return LexState.LeftAngle;
           case '>':
             return LexState.RightAngle;
+          case '\t':
+          case ' ':
+            return LexState.Space;
           default:
+            if (Tokenizer.isIdentChar(currentChar)) {
+              return LexState.Ident;
+            } else if (Tokenizer.isSpaceChar(currentChar)) {
+              return LexState.Space;
+            }
             return LexState.Error;
         }
       case LexState.LeftAngle:
@@ -199,8 +213,40 @@ export class Tokenizer {
           default:
             return null;
         }
+      case LexState.Space: {
+        if (Tokenizer.isSpaceChar(currentChar)) {
+          return LexState.Space;
+        }
+
+        return null;
+      }
+      case LexState.Ident: {
+        if (Tokenizer.isIdentChar(currentChar)) {
+          return LexState.Ident;
+        }
+
+        return null;
+      }
       default:
         return null;
     }
+  }
+
+  private static SPACES = ' \n\t\r';
+  private static isSpaceChar(currentChar: string): boolean {
+    return Tokenizer.SPACES.indexOf(currentChar) > -1;
+  }
+
+  private static A_LOWER = 'a'.charCodeAt(0);
+  private static Z_LOWER = 'z'.charCodeAt(0);
+  private static A_UPPER = 'A'.charCodeAt(0);
+  private static Z_UPPER = 'Z'.charCodeAt(0);
+  private static isIdentChar(currentChar: string): boolean {
+    const charCode = currentChar.charCodeAt(0);
+
+    return (
+      (charCode >= Tokenizer.A_LOWER && charCode <= Tokenizer.Z_LOWER) ||
+      (charCode >= Tokenizer.A_UPPER && charCode <= Tokenizer.Z_UPPER)
+    );
   }
 }

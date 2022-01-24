@@ -28,7 +28,13 @@ suite('Tokeniser', () => {
   const tokens: [string, TokenKind][] = [
     ['<', TokenKind.TagStart],
     ['>', TokenKind.TagEnd],
-    ['</', TokenKind.TagCloseStart]
+    ['</', TokenKind.TagCloseStart],
+    ['p', TokenKind.Ident],
+    ['script', TokenKind.Ident],
+    ['href', TokenKind.Ident],
+    [' ', TokenKind.Space],
+    ['\t', TokenKind.Space],
+    ['\t\n\r\n ', TokenKind.Space]
   ];
 
   tokens.forEach(([source, expectedKind]) => {
