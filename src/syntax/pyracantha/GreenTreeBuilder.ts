@@ -12,8 +12,12 @@ export class GreenTreeBuilder {
   private children: GreenElement[] = [];
   private nodeCache: unknown;
 
+  // TODO (jg): accept a cache and set it as this.nodeCache
+  public constructor() {
+  }
+
   public startNode(kind: SyntaxKind): void {
-    this.nodes.push([kind, [new GreenNode(kind, [])]]);
+    this.nodes.push([kind, [new GreenNode(kind, this.children)]]);
     this.children = [];
   }
 
@@ -26,7 +30,8 @@ export class GreenTreeBuilder {
 
     const [kind, oldChildren] = pair;
 
-    const node = new GreenNode(kind, []);
+    // TODO (jg): check passing this.children is the right thing to do
+    const node = new GreenNode(kind, this.children);
 
     this.children = [node, ...oldChildren];
   }
@@ -45,9 +50,12 @@ export class GreenTreeBuilder {
       throw new Error('Mark has expired. State has unwound past mark.');
     }
 
+    // TODO (jg): ensure these slices are actually right for what was
+    // intended
     const ourChildren = this.children.slice(0, ourLen - markLen);
     const bufferedChildren = this.children.slice(ourLen - markLen);
 
+    // TODO (jg): check this equality check is enough
     if (!bufferedChildren.every((child, idx) => mark.children[idx] === child)) {
       throw new Error('Mark has expired. Child state does not match.');
     }
