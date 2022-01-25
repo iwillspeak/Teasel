@@ -28,6 +28,7 @@ suite('Tokeniser', () => {
 
   const tokens: [string, TokenKind][] = [
     ['<', TokenKind.TagStart],
+    ['<!', TokenKind.DoctypeStart],
     ['>', TokenKind.TagEnd],
     ['</', TokenKind.TagCloseStart],
     ['p', TokenKind.Ident],

@@ -8,6 +8,7 @@ import {TokenKind} from './TokenKind.js';
 enum LexState {
   Start,
   LeftAngle,
+  LeftAngleBang,
   Close,
   RightAngle,
   Ident,
@@ -146,6 +147,8 @@ export class Tokenizer {
         return TokenKind.TagEnd;
       case LexState.LeftAngle:
         return TokenKind.TagStart;
+      case LexState.LeftAngleBang:
+        return TokenKind.DoctypeStart;
       case LexState.Close:
         return TokenKind.TagCloseStart;
       case LexState.Ident:
@@ -189,6 +192,8 @@ export class Tokenizer {
         switch (currentChar) {
           case '/':
             return LexState.Close;
+          case '!':
+            return LexState.LeftAngleBang;
           default:
             return null;
         }

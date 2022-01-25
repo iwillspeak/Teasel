@@ -1,43 +1,28 @@
 import {GreenNode} from '../syntax/pyracantha/GreenNode.js';
+import {GreenToken} from '../syntax/pyracantha/GreenToken.js';
+import {SyntaxKind} from '../syntax/pyracantha/Pyracantha.js';
 import {RedNode} from '../syntax/pyracantha/RedNode.js';
 import {Tokenizer} from '../tokenize/Tokenizer.js';
-
-/**
- * Diagnostic information from the parse.
- */
-interface Diagnostic {
-  /**
-   * The diagnostic message. This describes the reason for emitting.
-   */
-  message: string;
-
-  /**
-   * The source text range that the diagnostic relates to.
-   */
-  position: Range;
-}
-
-/**
- * The result of a single parse.
- */
-interface ParseResult {
-  /**
-   * The root of the syntax tree.
-   */
-  root: RedNode;
-
-  /**
-   * The diagnostics produced during the parse.
-   */
-  diagnostics: Diagnostic[];
-}
+import {TokenKind} from '../tokenize/TokenKind.js';
+import {ParseResult} from './ParseResult.js';
 
 /**
  * The different syntax node kinds in the Pyracantha tree produced by this
  * parser.
  */
-const syntaxKinds = {
-  ERROR: -1
+export const syntaxKinds = {
+  ERROR: -1,
+
+  // NODES
+  DOCUMENT: 1,
+  DOCTYPE: 2,
+
+  // TOKENS
+  DOCTYPE_START: 100,
+  TAG_END: 101,
+  IDENT: 102,
+  SPACE: 103,
+  END_OF_FILE: 104
 };
 
 /**
@@ -73,10 +58,64 @@ export class Parser {
    * @returns A structured parse result for the syntax tree.
    */
   public parse(): ParseResult {
+    const root = new GreenNode(syntaxKinds.DOCUMENT, [
+      this.parseDocType(),
+      this.expect(TokenKind.EndOfFile, syntaxKinds.END_OF_FILE)
+    ]);
+
     return {
-      root: RedNode.createRoot(new GreenNode(syntaxKinds.ERROR, [])),
+      root: RedNode.createRoot(root),
       diagnostics: []
     };
+  }
+
+  /**
+   * Check if the current token is of the given kind.
+   *
+   * @param kind The kind to check for.
+   */
+  private lookingAt(kind: TokenKind): boolean {
+    return this.tokens.current.kind === kind;
+  }
+
+  /**
+   * Consume the current token and emit a green token of the given kind.
+   *
+   * @param kind Kind of syntax to emit.
+   */
+  private bump(kind: SyntaxKind): GreenToken {
+    const token = this.tokens.current;
+    this.tokens.bump();
+    return new GreenToken(kind, token.lexeme);
+  }
+
+  /**
+   * Checks if the current token is of the expected kind and emits a syntax
+   * token into the green tree. If the token is not of the expected kind then
+   * an error is buffered instead.
+   *
+   * @param tokenKind The kind of token to expect.
+   * @param syntaxKind The kind of syntax token to emit.
+   */
+  private expect(tokenKind: TokenKind, syntaxKind: SyntaxKind): GreenToken {
+    if (this.lookingAt(tokenKind)) {
+      return this.bump(syntaxKind);
+    } else {
+      return new GreenToken(syntaxKinds.ERROR, '');
+    }
+  }
+
+  /**
+   * Parse the `<!DOCTYPE html>` node.
+   */
+  private parseDocType(): GreenNode {
+    return new GreenNode(syntaxKinds.DOCTYPE, [
+      this.expect(TokenKind.DoctypeStart, syntaxKinds.DOCTYPE_START),
+      this.expect(TokenKind.Ident, syntaxKinds.IDENT),
+      this.expect(TokenKind.Space, syntaxKinds.SPACE),
+      this.expect(TokenKind.Ident, syntaxKinds.IDENT),
+      this.expect(TokenKind.TagEnd, syntaxKinds.TAG_END)
+    ]);
   }
 
   /**
