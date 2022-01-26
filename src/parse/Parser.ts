@@ -1,5 +1,6 @@
 import {GreenNode} from '../syntax/pyracantha/GreenNode.js';
 import {GreenToken} from '../syntax/pyracantha/GreenToken.js';
+import {GreenTreeBuilder} from '../syntax/pyracantha/GreenTreeBuilder.js';
 import {SyntaxKind} from '../syntax/pyracantha/Pyracantha.js';
 import {RedNode} from '../syntax/pyracantha/RedNode.js';
 import {Tokenizer} from '../tokenize/Tokenizer.js';
@@ -33,6 +34,7 @@ export const syntaxKinds = {
  */
 export class Parser {
   private tokens: Tokenizer;
+  private builder: GreenTreeBuilder;
 
   /**
    * Create a new parser instance for the given tokens.
@@ -44,6 +46,9 @@ export class Parser {
    */
   public constructor(tokens: Tokenizer) {
     this.tokens = tokens;
+    // FIXME: Once this takes a token cache we should add a constructor so a
+    //        shared cache can be provided.
+    this.builder = new GreenTreeBuilder();
   }
 
   /**
@@ -58,13 +63,11 @@ export class Parser {
    * @returns A structured parse result for the syntax tree.
    */
   public parse(): ParseResult {
-    const root = new GreenNode(syntaxKinds.DOCUMENT, [
-      this.parseDocType(),
-      this.expect(TokenKind.EndOfFile, syntaxKinds.END_OF_FILE)
-    ]);
+    this.parseDocType();
+    this.expect(TokenKind.EndOfFile, syntaxKinds.END_OF_FILE);
 
     return {
-      root: RedNode.createRoot(root),
+      root: RedNode.createRoot(this.builder.buildRoot(syntaxKinds.DOCUMENT)),
       diagnostics: []
     };
   }
@@ -83,10 +86,10 @@ export class Parser {
    *
    * @param kind Kind of syntax to emit.
    */
-  private bump(kind: SyntaxKind): GreenToken {
+  private bump(kind: SyntaxKind) {
     const token = this.tokens.current;
     this.tokens.bump();
-    return new GreenToken(kind, token.lexeme);
+    this.builder.token(kind, token.lexeme);
   }
 
   /**
@@ -97,25 +100,25 @@ export class Parser {
    * @param tokenKind The kind of token to expect.
    * @param syntaxKind The kind of syntax token to emit.
    */
-  private expect(tokenKind: TokenKind, syntaxKind: SyntaxKind): GreenToken {
+  private expect(tokenKind: TokenKind, syntaxKind: SyntaxKind) {
     if (this.lookingAt(tokenKind)) {
-      return this.bump(syntaxKind);
+      this.bump(syntaxKind);
     } else {
-      return new GreenToken(syntaxKinds.ERROR, '');
+      this.builder.token(syntaxKinds.ERROR, '');
     }
   }
 
   /**
    * Parse the `<!DOCTYPE html>` node.
    */
-  private parseDocType(): GreenNode {
-    return new GreenNode(syntaxKinds.DOCTYPE, [
-      this.expect(TokenKind.DoctypeStart, syntaxKinds.DOCTYPE_START),
-      this.expect(TokenKind.Ident, syntaxKinds.IDENT),
-      this.expect(TokenKind.Space, syntaxKinds.SPACE),
-      this.expect(TokenKind.Ident, syntaxKinds.IDENT),
-      this.expect(TokenKind.TagEnd, syntaxKinds.TAG_END)
-    ]);
+  private parseDocType() {
+    this.builder.startNode(syntaxKinds.DOCTYPE);
+    this.expect(TokenKind.DoctypeStart, syntaxKinds.DOCTYPE_START);
+    this.expect(TokenKind.Ident, syntaxKinds.IDENT);
+    this.expect(TokenKind.Space, syntaxKinds.SPACE);
+    this.expect(TokenKind.Ident, syntaxKinds.IDENT);
+    this.expect(TokenKind.TagEnd, syntaxKinds.TAG_END);
+    this.builder.finishNode();
   }
 
   /**
