@@ -1,26 +1,58 @@
-import {GreenElement} from './GreenTree';
-import {GreenNode} from './GreenNode';
-import {GreenToken} from './GreenToken';
-import {SyntaxKind} from './Pyracantha';
+import {GreenElement} from './GreenTree.js';
+import {GreenNode} from './GreenNode.js';
+import {GreenToken} from './GreenToken.js';
+import {SyntaxKind} from './Pyracantha.js';
 
 interface Mark {
   children: GreenElement[];
 }
 
+/**
+ * Green Tree Builder
+ *
+ * Used to build up a piece of syntax piece by piece. Tokens are added with the
+ * {@link GreenTreeBuilder.token} method. Nodes can be built in two ways:
+ *
+ *  * The standard API of calling {@link GreenTreeBuilder.startNode} and
+ *    {@link GreenTreeBuilder.finishNode} when the node is entered and left.
+ *
+ *  * The 'mark' API by calling {@link GreenTreeBuilder.mark} to store a mark
+ *    and then _optionally_ calling {@link GreenTreeBuilder.applyMark} later to
+ *    retroactively build the node.
+ */
 export class GreenTreeBuilder {
+  /**
+   * The stack of current nodes being built. Each element is a pair of the node
+   * kind for the node at that level, and the cached children from the parent
+   * node to be applied when the node is popped.
+   */
   private nodes: Array<[SyntaxKind, GreenElement[]]> = [];
+
+  /**
+   * Children for the current node being built.
+   */
   private children: GreenElement[] = [];
+
   private nodeCache: unknown;
 
   // TODO (jg): accept a cache and set it as this.nodeCache
-  public constructor() {
-  }
+  public constructor() {}
 
+  /**
+   * Start building a new child node of the given {@link kind}.
+   *
+   * @param kind The kind of node to start.
+   */
   public startNode(kind: SyntaxKind): void {
-    this.nodes.push([kind, [new GreenNode(kind, this.children)]]);
+    this.nodes.push([kind, this.children]);
     this.children = [];
   }
 
+  /**
+   * Finish building the current node. This takes the current cached children,
+   * wraps them in a new node, and restores the cildren from the previous
+   * outer node.
+   */
   public finishNode(): void {
     const pair = this.nodes.shift();
 
@@ -28,19 +60,30 @@ export class GreenTreeBuilder {
       throw new Error('Unbalanced call to finishNode');
     }
 
-    const [kind, oldChildren] = pair;
+    const [kind, outerChildren] = pair;
 
-    // TODO (jg): check passing this.children is the right thing to do
-    const node = new GreenNode(kind, this.children);
+    outerChildren.push(new GreenNode(kind, this.children));
 
-    this.children = [node, ...oldChildren];
+    this.children = outerChildren;
   }
 
+  /**
+   * Store a mark to later optionally turn into a node.
+   *
+   * @returns A new mark to the current bulder position.
+   */
   public mark(): Mark {
     return {
       children: this.children
     };
   }
+
+  /**
+   * Convert a cached mark into a new node.
+   *
+   * @param mark The mark to apply.
+   * @param kind The node kind to create.
+   */
 
   public applyMark(mark: Mark, kind: SyntaxKind): void {
     const markLen = mark.children.length;
@@ -65,10 +108,21 @@ export class GreenTreeBuilder {
     this.children = [node, ...bufferedChildren];
   }
 
+  /**
+   * Emit a token in the tree of the given kind.
+   *
+   * @param kind The token kind to emit.
+   * @param text The text / lexeme of the token.
+   */
   public token(kind: SyntaxKind, text: string): void {
-    this.children.unshift(new GreenToken(kind, text));
+    this.children.push(new GreenToken(kind, text));
   }
 
+  /**
+   * Finish building the tree by creating a root node of the given kind.
+   * @param kind The root node kind
+   * @returns A new syntax tree root node.
+   */
   public buildRoot(kind: SyntaxKind): GreenNode {
     if (this.nodes.length !== 0) {
       throw new Error(`Expected empty stack. Found ${this.nodes}`);
