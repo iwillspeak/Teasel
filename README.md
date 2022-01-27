@@ -56,11 +56,12 @@ And would be parsed to something similar to:
 
 ```
 DOCUMENT
-  DOC_START("<!")
-  IDENT("DOCTYPE)
-  SPACE(" ")
-  IDENT("html)
-  END(">")
+  DOCTYPE
+    DOC_START("<!")
+    IDENT("DOCTYPE")
+    SPACE(" ")
+    IDENT("html)
+    END(">")
   NODE
     TAG
       START("<")
@@ -70,7 +71,7 @@ DOCUMENT
       TAG
         // .. snip ..
     END_TAG
-      START("<")
+      START("</")
       IDENT("html")
       END(">")
 ```

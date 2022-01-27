@@ -1,48 +1,62 @@
-// import {RedNode} from './pyracantha/RedTree';
+import {RedNode} from './pyracantha/RedNode.js';
+import {syntaxKinds} from '../parse/Parser.js';
+import {RedToken} from './pyracantha/RedToken.js';
+import {map, filter, firstOr, drop} from 'iter-tools';
 
-// const ELEMENT: number = 1
-// const COMMENT: number = 1
+export class DocumentSyntax {
+  private syntax: RedNode;
 
-// export class Element {
+  public constructor(syntax: RedNode) {
+    this.syntax = syntax;
+  }
 
-//   private syntax: RedNode;
+  public get doctype(): DoctypeSyntax | null {
+    return firstOr(
+      null,
+      filter((x) => x !== null, map(DoctypeSyntax.cast, this.syntax.children()))
+    );
+  }
 
-//   public constructor(syntax: RedNode) {
-//     this.syntax = syntax;
-//   }
+  public static cast(node: RedNode): DocumentSyntax | null {
+    if (node.kind == syntaxKinds.DOCUMENT) {
+      return new DocumentSyntax(node);
+    }
 
-//   public static cast(node: RedNode): Element | null {
-//     if (node.kind === ELEMENT) {
-//       return new Element(node);
-//     }
+    return null;
+  }
+}
 
-//     return null;
-//   }
+export class DoctypeSyntax {
+  private syntax: RedNode;
 
-//   public openTag(): Tag | null {
-//     for (const child of this.syntax.children) {
-//       const tag = Tag.cast(child);
-//       if (tag !== null) {
-//         return tag;
-//       }
-//     }
+  public constructor(syntax: RedNode) {
+    this.syntax = syntax;
+  }
 
-//     return null;
-//   }
+  public get documentKind(): string | null {
+    return firstOr(
+      null,
+      drop(
+        1,
+        filter(
+          (x) => x !== null,
+          map((e) => {
+            if (e instanceof RedToken && e.kind == syntaxKinds.IDENT) {
+              return e.text;
+            } else {
+              return null;
+            }
+          }, this.syntax.childrenWithTokens())
+        )
+      )
+    );
+  }
 
-// }
+  public static cast(node: RedNode): DoctypeSyntax | null {
+    if (node.kind === syntaxKinds.DOCTYPE) {
+      return new DoctypeSyntax(node);
+    }
 
-// export class Comment {
-// }
-
-// export class DocumentType {
-// }
-
-// export class Document {
-// }
-
-// export class Attribute {
-// }
-
-// export class DocumentFragment {
-// }
+    return null;
+  }
+}

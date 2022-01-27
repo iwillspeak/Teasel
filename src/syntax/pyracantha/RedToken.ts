@@ -34,6 +34,13 @@ export class RedToken {
   }
 
   /**
+   * Get the text of the underlying token.
+   */
+  public get text(): string {
+    return this.green.text;
+  }
+
+  /**
    * Get the range of this element. This is the range covered by the text of the
    * underlying token.
    */
