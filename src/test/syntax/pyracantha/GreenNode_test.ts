@@ -22,4 +22,19 @@ suite('GreenNode', () => {
     assert.equal(node.kind, 101);
     assert.equal(14, node.textLength);
   });
+
+  test('node to string', () => {
+    const node = new GreenNode(101, [
+      new GreenToken(102, 'hello'),
+      new GreenToken(102, ' '),
+      new GreenNode(101, [
+        new GreenToken(102, ''),
+        new GreenToken(102, 'world'),
+        new GreenNode(104, [])
+      ]),
+      new GreenToken(102, '!')
+    ]);
+
+    assert.equal(node.toString(), 'hello world!');
+  });
 });
