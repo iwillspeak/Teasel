@@ -5,6 +5,7 @@ import {SyntaxKind} from '../syntax/pyracantha/Pyracantha.js';
 import {RedNode} from '../syntax/pyracantha/RedNode.js';
 import {Tokenizer} from '../tokenize/Tokenizer.js';
 import {TokenKind} from '../tokenize/TokenKind.js';
+import {Diagnostic} from './Diagnostic.js';
 import {ParseResult} from './ParseResult.js';
 
 /**
@@ -17,13 +18,42 @@ export const syntaxKinds = {
   // NODES
   DOCUMENT: 1,
   DOCTYPE: 2,
+  NODE: 3,
+  OPENING_TAG: 4,
+  CLOSING_TAG: 5,
 
   // TOKENS
-  DOCTYPE_START: 100,
+  TAG_START: 100,
   TAG_END: 101,
   IDENT: 102,
   SPACE: 103,
-  END_OF_FILE: 104
+  END_OF_FILE: 104,
+  TEXT: 105,
+  COMMENT: 106,
+  DOCTYPE_START: 107
+};
+
+/**
+ * Token set information. Used by the parser for advanced look-aheads.
+ */
+const tokenSets = {
+  /**
+   * The follow set of text nodes. This is used to prevent the parser eating
+   * into a strucutred element when parsing a text node.
+   */
+  TEXT_FOLLOW: [
+    TokenKind.TagEnd,
+    TokenKind.TagStart,
+    TokenKind.TagCloseStart,
+    TokenKind.TagSelfClose,
+    TokenKind.Comment
+  ],
+
+  /**
+   * The follow set for an inner element. This is used to prevent the parser
+   * eating into closing tags, or trying to eat past the end of the stream.
+   */
+  INNER_ELEMENT_FOLLOW: [TokenKind.TagCloseStart, TokenKind.EndOfFile]
 };
 
 /**
@@ -35,6 +65,7 @@ export const syntaxKinds = {
 export class Parser {
   private tokens: Tokenizer;
   private builder: GreenTreeBuilder;
+  private errors: Diagnostic[];
 
   /**
    * Create a new parser instance for the given tokens.
@@ -49,6 +80,7 @@ export class Parser {
     // FIXME: Once this takes a token cache we should add a constructor so a
     //        shared cache can be provided.
     this.builder = new GreenTreeBuilder();
+    this.errors = [];
   }
 
   /**
@@ -64,6 +96,9 @@ export class Parser {
    */
   public parse(): ParseResult {
     this.parseDocType();
+    while (!this.lookingAt(TokenKind.EndOfFile)) {
+      this.parseRootElement();
+    }
     this.expect(TokenKind.EndOfFile, syntaxKinds.END_OF_FILE);
 
     return {
@@ -79,6 +114,17 @@ export class Parser {
    */
   private lookingAt(kind: TokenKind): boolean {
     return this.tokens.current.kind === kind;
+  }
+
+  /**
+   * Check if the current token is one of the given kinds.
+   *
+   * @param kinds The token kinds to check for.
+   * @returns True if the current token is one of the given kinds.
+   */
+  private lookingAtAny(kinds: TokenKind[]): boolean {
+    const currentKind = this.tokens.current.kind;
+    return kinds.includes(currentKind);
   }
 
   /**
@@ -109,6 +155,19 @@ export class Parser {
   }
 
   /**
+   * Raise a parser error at the current position.
+   *
+   * This buffers up a diagnostic message
+   * @param message The error message to raise.
+   */
+  private raiseError(message: string) {
+    this.errors.push({
+      message: message,
+      position: this.tokens.current.range
+    });
+  }
+
+  /**
    * Parse the `<!DOCTYPE html>` node.
    */
   private parseDocType() {
@@ -119,6 +178,98 @@ export class Parser {
     this.expect(TokenKind.Ident, syntaxKinds.IDENT);
     this.expect(TokenKind.TagEnd, syntaxKinds.TAG_END);
     this.builder.finishNode();
+  }
+
+  /**
+   * Parse a single element in the document. This can be either a node, a text
+   * elemenet, or a comment or other trivia.
+   */
+  private parseRootElement() {
+    if (this.lookingAt(TokenKind.TagCloseStart)) {
+      this.raiseError('Unexpected end tag at document root');
+      this.parseEndTag();
+    } else {
+      this.parseInnerElement();
+    }
+  }
+
+  /**
+   * Parse an inner element.
+   */
+  private parseInnerElement() {
+    if (this.lookingAt(TokenKind.TagStart)) {
+      this.parseNode();
+    } else if (this.lookingAt(TokenKind.Comment)) {
+      this.bump(syntaxKinds.COMMENT);
+    } else {
+      this.parseText();
+    }
+  }
+
+  /**
+   * Parse a single node, be it a standard or self-closing one.
+   */
+  private parseNode() {
+    this.builder.startNode(syntaxKinds.NODE);
+    let selfClosing = this.parseStartTag();
+    if (!selfClosing) {
+      while (!this.lookingAtAny(tokenSets.INNER_ELEMENT_FOLLOW)) {
+        this.parseInnerElement();
+      }
+
+      this.parseEndTag();
+    }
+    this.builder.finishNode();
+  }
+
+  /**
+   * Parse the start tag of a node.
+   *
+   * This parses the identifier, attributes, and close of the start tag. If the
+   * tag is explicitly self-closing e.g. `<br/>` then the return value indicates
+   * this.
+   *
+   * No handling yet for implicitly self-closing tags.
+   *
+   * @returns True if the tag is a self-closing tag, false otherwise.
+   */
+  private parseStartTag(): boolean {
+    let isSelfClose = false;
+
+    this.builder.startNode(syntaxKinds.OPENING_TAG);
+    this.expect(TokenKind.TagStart, syntaxKinds.TAG_START);
+    this.expect(TokenKind.Ident, syntaxKinds.IDENT);
+
+    // TODO: Attributes
+    if (this.lookingAt(TokenKind.TagSelfClose)) {
+      isSelfClose = true;
+      this.bump(syntaxKinds.TAG_END);
+    } else {
+      this.expect(TokenKind.TagEnd, syntaxKinds.TAG_END);
+    }
+
+    this.builder.finishNode();
+    return isSelfClose;
+  }
+
+  /**
+   * Parse the end tag of a node. e.g. `</p>`.
+   */
+  private parseEndTag() {
+    this.builder.startNode(syntaxKinds.CLOSING_TAG);
+    this.expect(TokenKind.TagCloseStart, syntaxKinds.TAG_START);
+    this.expect(TokenKind.Ident, syntaxKinds.IDENT);
+    this.expect(TokenKind.TagEnd, syntaxKinds.TAG_END);
+    this.builder.finishNode();
+  }
+
+  /**
+   * Parse a text element.
+   */
+  private parseText() {
+    while (!this.lookingAtAny(tokenSets.TEXT_FOLLOW)) {
+      this.bump(syntaxKinds.TEXT);
+    }
   }
 
   /**

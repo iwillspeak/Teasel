@@ -126,11 +126,15 @@ export class Tokenizer {
       }
     }
 
-    const tokenKind = this.tokenKindFromFinalState(state);
-    const tokenValue = this.buffer.slice(this.tokenStart, tokenEnd);
+    const token = {
+      kind: this.tokenKindFromFinalState(state),
+      lexeme: this.buffer.slice(this.tokenStart, tokenEnd),
+      range: {start: this.tokenStart, end: tokenEnd}
+    };
+
     this.tokenStart = currentCharIdx;
 
-    return {kind: tokenKind, lexeme: tokenValue};
+    return token;
   }
 
   /**

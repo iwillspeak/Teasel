@@ -1,3 +1,5 @@
+import {Range} from '../syntax/pyracantha/Pyracantha.js';
+
 /**
  * Diagnostic information from the parse.
  */
