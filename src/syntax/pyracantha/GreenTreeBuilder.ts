@@ -54,7 +54,7 @@ export class GreenTreeBuilder {
    * outer node.
    */
   public finishNode(): void {
-    const pair = this.nodes.shift();
+    const pair = this.nodes.pop();
 
     if (pair === undefined) {
       throw new Error('Unbalanced call to finishNode');
