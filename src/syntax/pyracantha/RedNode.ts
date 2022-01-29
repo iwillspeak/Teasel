@@ -85,4 +85,13 @@ export class RedNode {
       }
     }
   }
+
+  /**
+   * Convert to Display String.
+   *
+   * @returns The source text represented by the underlying green node.
+   */
+  public toString(): string {
+    return this.green.toString();
+  }
 }

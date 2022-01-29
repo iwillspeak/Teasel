@@ -32,4 +32,13 @@ export class GreenToken {
   public get textLength(): number {
     return this.text.length;
   }
+
+  /**
+   * Convert to Display String.
+   *
+   * @returns The source text represented by this token.
+   */
+  public toString(): string {
+    return this.text;
+  }
 }

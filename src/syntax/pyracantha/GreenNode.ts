@@ -54,4 +54,18 @@ export class GreenNode {
   public get textLength(): number {
     return this.width;
   }
+
+  /**
+   * Convert to Display String.
+   *
+   * @returns The source text represented by this node.
+   */
+  public toString(): string {
+    let result = '';
+    for (const child of this.children) {
+      result += child.toString();
+    }
+
+    return result;
+  }
 }

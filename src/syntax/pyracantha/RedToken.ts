@@ -47,4 +47,13 @@ export class RedToken {
   public get range(): Range {
     return {start: this.offset, end: this.green.textLength + this.offset};
   }
+
+  /**
+   * Convert to Display String.
+   *
+   * @returns The source text represented by the underlying green node.
+   */
+  public toString(): string {
+    return this.green.toString();
+  }
 }
