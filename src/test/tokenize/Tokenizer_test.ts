@@ -38,7 +38,9 @@ suite('Tokeniser', () => {
     ['\t', TokenKind.Space],
     ['\t\n\r\n ', TokenKind.Space],
     ['<!---->', TokenKind.Comment],
-    ['<!-- a-n --- comment --->', TokenKind.Comment]
+    ['<!-- a-n --- comment --->', TokenKind.Comment],
+    ['h2', TokenKind.Ident],
+    ['H4', TokenKind.Ident]
   ];
 
   tokens.forEach(([source, expectedKind]) => {

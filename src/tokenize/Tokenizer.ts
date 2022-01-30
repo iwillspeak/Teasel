@@ -31,7 +31,9 @@ const charFacts = {
   A_LOWER: 'a'.charCodeAt(0),
   Z_LOWER: 'z'.charCodeAt(0),
   A_UPPER: 'A'.charCodeAt(0),
-  Z_UPPER: 'Z'.charCodeAt(0)
+  Z_UPPER: 'Z'.charCodeAt(0),
+  ZERO: '0'.charCodeAt(0),
+  NINE: '9'.charCodeAt(0)
 };
 
 /**
@@ -288,7 +290,8 @@ export class Tokenizer {
 
     return (
       (charCode >= charFacts.A_LOWER && charCode <= charFacts.Z_LOWER) ||
-      (charCode >= charFacts.A_UPPER && charCode <= charFacts.Z_UPPER)
+      (charCode >= charFacts.A_UPPER && charCode <= charFacts.Z_UPPER) ||
+      (charCode >= charFacts.ZERO && charCode <= charFacts.NINE)
     );
   }
 }
