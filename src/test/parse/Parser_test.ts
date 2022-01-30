@@ -1,4 +1,6 @@
 import {assert} from 'chai';
+import {readdirSync} from 'fs';
+import {readFile} from 'fs/promises';
 import {Parser, SyntaxKinds} from '../../parse/Parser.js';
 import {debugDump} from '../../syntax/pyracantha/Debug.js';
 import {DocumentSyntax} from '../../syntax/Syntax.js';
@@ -124,4 +126,20 @@ DOCUMENT: {0..217}
   END_OF_FILE: {217..217} ""`
     );
   });
+
+  const base = new URL('../../../test/fixture/checkparse/', import.meta.url);
+  const checkparseTests = readdirSync(base);
+  for (const entryPath of checkparseTests) {
+    if (entryPath.endsWith('.html')) {
+      const astPath = entryPath.replace(/.html$/, '.ast');
+      test(`Parse ${entryPath}`, async () => {
+        const text = await readFile(new URL(entryPath, base), {
+          encoding: 'utf8'
+        });
+        const ast = await readFile(new URL(astPath, base), {encoding: 'utf8'});
+
+        checkParse(text, ast);
+      });
+    }
+  }
 });
