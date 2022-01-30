@@ -34,7 +34,7 @@ suite('Debug', () => {
         return Kind[kind as Kind];
       },
       (s) => {
-        formatted += s;
+        formatted += s + '\n';
       }
     );
 
