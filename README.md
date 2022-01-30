@@ -4,10 +4,11 @@
 
 ![Logo](assets/logo.png)
 
-Parser will be split into three parts:
+Parser is be split into three parts:
 
  * Tokeniser which produces tokens for each character in the input.
- * Tree. A red-green tree implemenation and builder.
+ * Untyped tree. A red-green tree implemenation and builder.
+ * Typed tree. A structured wrapper around the untyped tree for ergonomics.
  * Parser a parser which builds a syntax tree from the tokens.
 
 ## Tokenisation
@@ -27,55 +28,16 @@ specific to each node type. THe tree should be capable of representing any kind
 of incomplete or malformed syntax. The tree should be faithful to the source
 text. Semanitc transformation into a DOM is _not_ the intent of this library.
 
-## Worked Example
+## 🐲 TODO 🐲:
 
-e.g.:
-
-```html
-<!DOCTYPE html>
-<html>
-<body>
-<h1>A N Example</h2>
-<p>I'm a paragraph, with an image.
-<img src="spiky-tree.jpg" width="500" height="600" />
-<!-- comment example -->
-</body>
-</html>
-```
-
-Example Tokens:
-
- * `<` -> START
- * `>` -> END
- * `</` -> CLOSE
- * `/>` -> SELF_CLOSE
- * `html` -> IDENT
- * `=` -> EQ
- * `I'm a paragraph, with an image` -> TEXT
- * `"spiky-tree.jpg"` -> ATTR_VALUE
- * ` ` -> SPACE
- * `<!-- COMMENT TEXT ..>` -> COMMENT
-
-And would be parsed to something similar to:
-
-```
-DOCUMENT
-  DOCTYPE
-    DOC_START("<!")
-    IDENT("DOCTYPE")
-    SPACE(" ")
-    IDENT("html)
-    END(">")
-  NODE
-    TAG
-      START("<")
-      IDENT("html")
-      END(">")
-    NODE
-      TAG
-        // .. snip ..
-    END_TAG
-      START("</")
-      IDENT("html")
-      END(">")
-```
+ * [ ] Handle attributes on opening tags
+ * [ ] Better error recorvery when `expect` fails.
+   * [ ] Tolerate and warn on some malformed whitespace. e.g.: `< p>`.
+   * [ ] Malformed attribute lists syncrhonise on `>`.
+ * [ ] Handle Closing of outer tags correctly. e.g.: `<p><i>hello</p>`.
+ * [ ] Node cache should cache nodes in the green tree builder.
+  * [ ] Node cache interface and implementaiton.
+  * [ ] Parser should accept optional cache.
+ * [ ] Support for `CDATA` values / tokens.
+ * [ ] Handling for implicit self closing of 'void' elements `<hr>` etc.
+ * [ ] Handling of raw text elements. e.g. `script`, and `style`.
