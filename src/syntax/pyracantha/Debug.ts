@@ -35,7 +35,7 @@ export class DebugWalker implements TreeWalker {
     this.printLine(
       `${this.kindFormatter(kind)}: {${position.start}..${
         position.end
-      }} "${lexeme}"`
+      }} ${JSON.stringify(lexeme)}`
     );
   }
 
