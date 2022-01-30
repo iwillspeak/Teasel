@@ -9,11 +9,11 @@ import {Tokenizer} from '../../tokenize/Tokenizer.js';
 function checkParse(input: string, expected: string) {
   const result = Parser.parseText(input);
   let actual = '';
-  const debugTree = debugDump(
+  debugDump(
     result.root,
     (k) => SyntaxKinds[k],
     (s) => {
-      actual += s;
+      actual += s + '\n';
     }
   );
   assert.equal(actual.trim(), expected.trim());
