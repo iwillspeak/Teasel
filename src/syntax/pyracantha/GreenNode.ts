@@ -11,16 +11,6 @@ import {GreenToken} from './GreenToken';
  */
 export class GreenNode {
   /**
-   * The node's kind.
-   */
-  public kind: number;
-
-  /**
-   * The children of this node.
-   */
-  public children: Array<GreenNode | GreenToken>;
-
-  /**
    * The width of this node. This is cached based on the width of the node's
    * children
    */
@@ -36,11 +26,9 @@ export class GreenNode {
    * @param children The children of this node
    */
   public constructor(
-    kind: SyntaxKind,
-    children: Array<GreenNode | GreenToken>
+    public kind: SyntaxKind,
+    public children: Array<GreenNode | GreenToken>
   ) {
-    this.kind = kind;
-    this.children = children;
     this.width = children.reduce(
       (prev, current) => prev + current.textLength,
       0
