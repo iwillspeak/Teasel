@@ -3,13 +3,13 @@ import {GreenNode} from '../../../syntax/pyracantha/GreenNode.js';
 import {GreenToken} from '../../../syntax/pyracantha/GreenToken.js';
 import {RedNode} from '../../../syntax/pyracantha/RedNode.js';
 import {SyntaxKind, Range} from '../../../syntax/pyracantha/Pyracantha.js';
-import { walk } from '../../../syntax/pyracantha/Walk.js';
+import {walk} from '../../../syntax/pyracantha/Walk.js';
 
 interface WalkInfo {
-  kind: SyntaxKind,
-  range: Range,
-  text: string,
-};
+  kind: SyntaxKind;
+  range: Range;
+  text: string;
+}
 
 suite('Walk', () => {
   test('walk simple tree', () => {
@@ -28,13 +28,13 @@ suite('Walk', () => {
     const events: WalkInfo[] = [];
     walk(tree, {
       onToken: (kind, position, lexeme) => {
-        events.push({ kind: kind, range: position, text: lexeme });
+        events.push({kind: kind, range: position, text: lexeme});
       },
       enterNode: (kind, position) => {
-        events.push({ kind: kind, range: position, text: '' });
+        events.push({kind: kind, range: position, text: ''});
       },
       leaveNode: (kind, position) => {
-        events.push({ kind: kind, range: position, text: '' });
+        events.push({kind: kind, range: position, text: ''});
       }
     });
 
