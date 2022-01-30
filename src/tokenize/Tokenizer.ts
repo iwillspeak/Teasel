@@ -9,6 +9,12 @@ enum LexState {
   Start,
   LeftAngle,
   LeftAngleBang,
+  CommentStartOneDash,
+  CommentStartDoubleDash,
+  InComment,
+  CommentSeenDash,
+  CommentSeenDoubleDash,
+  CommentDone,
   Close,
   RightAngle,
   Ident,
@@ -159,6 +165,8 @@ export class Tokenizer {
         return TokenKind.Ident;
       case LexState.Space:
         return TokenKind.Space;
+      case LexState.CommentDone:
+        return TokenKind.Comment;
       default:
         return TokenKind.Error;
     }
@@ -214,6 +222,45 @@ export class Tokenizer {
         }
 
         return null;
+      }
+      case LexState.LeftAngleBang: {
+        if (currentChar === '-') {
+          return LexState.CommentStartOneDash;
+        } else {
+          return null;
+        }
+      }
+      case LexState.CommentStartOneDash: {
+        if (currentChar === '-') {
+          return LexState.CommentStartDoubleDash;
+        } else {
+          return null;
+        }
+      }
+      case LexState.InComment:
+      case LexState.CommentStartDoubleDash: {
+        if (currentChar === '-') {
+          return LexState.CommentSeenDash;
+        } else {
+          return LexState.InComment;
+        }
+      }
+      case LexState.CommentSeenDash: {
+        if (currentChar === '-') {
+          return LexState.CommentSeenDoubleDash;
+        } else {
+          return LexState.InComment;
+        }
+      }
+      case LexState.CommentSeenDoubleDash: {
+        switch (currentChar) {
+          case '>':
+            return LexState.CommentDone;
+          case '-':
+            return LexState.CommentSeenDoubleDash;
+          default:
+            return LexState.InComment;
+        }
       }
       default:
         return null;

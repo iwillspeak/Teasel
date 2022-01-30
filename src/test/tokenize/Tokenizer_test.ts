@@ -36,7 +36,9 @@ suite('Tokeniser', () => {
     ['href', TokenKind.Ident],
     [' ', TokenKind.Space],
     ['\t', TokenKind.Space],
-    ['\t\n\r\n ', TokenKind.Space]
+    ['\t\n\r\n ', TokenKind.Space],
+    ['<!---->', TokenKind.Comment],
+    ['<!-- a-n --- comment --->', TokenKind.Comment]
   ];
 
   tokens.forEach(([source, expectedKind]) => {
