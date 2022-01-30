@@ -44,9 +44,7 @@ export class DebugWalker implements TreeWalker {
   }
 
   private printLine(line: string): void {
-    this.outputSink('  '.repeat(this.indent));
-    this.outputSink(line);
-    this.outputSink('\n');
+    this.outputSink('  '.repeat(this.indent) + line);
   }
 }
 

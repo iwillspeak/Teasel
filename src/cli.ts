@@ -3,6 +3,7 @@ import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {Parser} from './parse/Parser.js';
 import {readFile} from 'fs/promises';
+import {debugDump} from './syntax/pyracantha/Debug.js';
 
 yargs(hideBin(process.argv))
   .command<{path: string}>(
@@ -16,7 +17,7 @@ yargs(hideBin(process.argv))
     async (argv) => {
       const contents = await readFile(argv.path, {encoding: 'utf8'});
       const result = Parser.parseText(contents);
-      console.log(result);
+      debugDump(result.root);
     }
   )
   .parse();
