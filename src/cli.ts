@@ -7,7 +7,7 @@ import {debugDump} from './syntax/pyracantha/Debug.js';
 
 yargs(hideBin(process.argv))
   .command<{path: string}>(
-    ['parse <path>', '$0 <path>'],
+    ['parse <path>', '$0'],
     'parse a HTML file and output the AST',
     (args) => {
       return args.positional('path', {
