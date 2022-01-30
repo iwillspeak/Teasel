@@ -11,7 +11,8 @@ yargs(hideBin(process.argv))
     'parse a HTML file and output the AST',
     (args) => {
       return args.positional('path', {
-        describe: 'path to the file'
+        describe: 'path to the file',
+        type: 'string'
       });
     },
     async (argv) => {
