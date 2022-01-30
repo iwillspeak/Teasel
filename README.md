@@ -1,4 +1,8 @@
-# One Single HTML Parser
+# Teasel
+
+> Teasing HTML elements from palin text
+
+![Logo](assets/logo.png)
 
 Parser will be split into three parts:
 
