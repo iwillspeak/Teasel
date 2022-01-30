@@ -1,5 +1,5 @@
 import {RedNode} from './pyracantha/RedNode.js';
-import {syntaxKinds} from '../parse/Parser.js';
+import {SyntaxKinds} from '../parse/Parser.js';
 import {RedToken} from './pyracantha/RedToken.js';
 import {map, filter, firstOr, drop} from 'iter-tools';
 
@@ -18,7 +18,7 @@ export class DocumentSyntax {
   }
 
   public static cast(node: RedNode): DocumentSyntax | null {
-    if (node.kind == syntaxKinds.DOCUMENT) {
+    if (node.kind == SyntaxKinds.DOCUMENT) {
       return new DocumentSyntax(node);
     }
 
@@ -41,7 +41,7 @@ export class DoctypeSyntax {
         filter(
           (x) => x !== null,
           map((e) => {
-            if (e instanceof RedToken && e.kind == syntaxKinds.IDENT) {
+            if (e instanceof RedToken && e.kind == SyntaxKinds.IDENT) {
               return e.text;
             } else {
               return null;
@@ -53,7 +53,7 @@ export class DoctypeSyntax {
   }
 
   public static cast(node: RedNode): DoctypeSyntax | null {
-    if (node.kind === syntaxKinds.DOCTYPE) {
+    if (node.kind === SyntaxKinds.DOCTYPE) {
       return new DoctypeSyntax(node);
     }
 

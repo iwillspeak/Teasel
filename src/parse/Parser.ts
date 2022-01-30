@@ -12,26 +12,26 @@ import {ParseResult} from './ParseResult.js';
  * The different syntax node kinds in the Pyracantha tree produced by this
  * parser.
  */
-export const syntaxKinds = {
-  ERROR: -1,
+export enum SyntaxKinds {
+  ERROR = -1,
 
   // NODES
-  DOCUMENT: 1,
-  DOCTYPE: 2,
-  NODE: 3,
-  OPENING_TAG: 4,
-  CLOSING_TAG: 5,
+  DOCUMENT = 1,
+  DOCTYPE = 2,
+  NODE = 3,
+  OPENING_TAG = 4,
+  CLOSING_TAG = 5,
 
   // TOKENS
-  TAG_START: 100,
-  TAG_END: 101,
-  IDENT: 102,
-  SPACE: 103,
-  END_OF_FILE: 104,
-  TEXT: 105,
-  COMMENT: 106,
-  DOCTYPE_START: 107
-};
+  TAG_START = 100,
+  TAG_END = 101,
+  IDENT = 102,
+  SPACE = 103,
+  END_OF_FILE = 104,
+  TEXT = 105,
+  COMMENT = 106,
+  DOCTYPE_START = 107
+}
 
 /**
  * Token set information. Used by the parser for advanced look-aheads.
@@ -42,11 +42,10 @@ const tokenSets = {
    * into a strucutred element when parsing a text node.
    */
   TEXT_FOLLOW: [
-    TokenKind.TagEnd,
     TokenKind.TagStart,
     TokenKind.TagCloseStart,
-    TokenKind.TagSelfClose,
-    TokenKind.Comment
+    TokenKind.Comment,
+    TokenKind.EndOfFile
   ],
 
   /**
@@ -99,10 +98,10 @@ export class Parser {
     while (!this.lookingAt(TokenKind.EndOfFile)) {
       this.parseRootElement();
     }
-    this.expect(TokenKind.EndOfFile, syntaxKinds.END_OF_FILE);
+    this.expect(TokenKind.EndOfFile, SyntaxKinds.END_OF_FILE);
 
     return {
-      root: RedNode.createRoot(this.builder.buildRoot(syntaxKinds.DOCUMENT)),
+      root: RedNode.createRoot(this.builder.buildRoot(SyntaxKinds.DOCUMENT)),
       diagnostics: []
     };
   }
@@ -150,7 +149,11 @@ export class Parser {
     if (this.lookingAt(tokenKind)) {
       this.bump(syntaxKind);
     } else {
-      this.builder.token(syntaxKinds.ERROR, '');
+      this.raiseError(
+        `Expecting ${TokenKind[tokenKind]} but found ${
+          TokenKind[this.tokens.current.kind]
+        }`
+      );
     }
   }
 
@@ -171,12 +174,12 @@ export class Parser {
    * Parse the `<!DOCTYPE html>` node.
    */
   private parseDocType() {
-    this.builder.startNode(syntaxKinds.DOCTYPE);
-    this.expect(TokenKind.DoctypeStart, syntaxKinds.DOCTYPE_START);
-    this.expect(TokenKind.Ident, syntaxKinds.IDENT);
-    this.expect(TokenKind.Space, syntaxKinds.SPACE);
-    this.expect(TokenKind.Ident, syntaxKinds.IDENT);
-    this.expect(TokenKind.TagEnd, syntaxKinds.TAG_END);
+    this.builder.startNode(SyntaxKinds.DOCTYPE);
+    this.expect(TokenKind.DoctypeStart, SyntaxKinds.DOCTYPE_START);
+    this.expect(TokenKind.Ident, SyntaxKinds.IDENT);
+    this.expect(TokenKind.Space, SyntaxKinds.SPACE);
+    this.expect(TokenKind.Ident, SyntaxKinds.IDENT);
+    this.expect(TokenKind.TagEnd, SyntaxKinds.TAG_END);
     this.builder.finishNode();
   }
 
@@ -200,7 +203,7 @@ export class Parser {
     if (this.lookingAt(TokenKind.TagStart)) {
       this.parseNode();
     } else if (this.lookingAt(TokenKind.Comment)) {
-      this.bump(syntaxKinds.COMMENT);
+      this.bump(SyntaxKinds.COMMENT);
     } else {
       this.parseText();
     }
@@ -210,7 +213,7 @@ export class Parser {
    * Parse a single node, be it a standard or self-closing one.
    */
   private parseNode() {
-    this.builder.startNode(syntaxKinds.NODE);
+    this.builder.startNode(SyntaxKinds.NODE);
     let selfClosing = this.parseStartTag();
     if (!selfClosing) {
       while (!this.lookingAtAny(tokenSets.INNER_ELEMENT_FOLLOW)) {
@@ -236,16 +239,16 @@ export class Parser {
   private parseStartTag(): boolean {
     let isSelfClose = false;
 
-    this.builder.startNode(syntaxKinds.OPENING_TAG);
-    this.expect(TokenKind.TagStart, syntaxKinds.TAG_START);
-    this.expect(TokenKind.Ident, syntaxKinds.IDENT);
+    this.builder.startNode(SyntaxKinds.OPENING_TAG);
+    this.expect(TokenKind.TagStart, SyntaxKinds.TAG_START);
+    this.expect(TokenKind.Ident, SyntaxKinds.IDENT);
 
     // TODO: Attributes
     if (this.lookingAt(TokenKind.TagSelfClose)) {
       isSelfClose = true;
-      this.bump(syntaxKinds.TAG_END);
+      this.bump(SyntaxKinds.TAG_END);
     } else {
-      this.expect(TokenKind.TagEnd, syntaxKinds.TAG_END);
+      this.expect(TokenKind.TagEnd, SyntaxKinds.TAG_END);
     }
 
     this.builder.finishNode();
@@ -256,10 +259,10 @@ export class Parser {
    * Parse the end tag of a node. e.g. `</p>`.
    */
   private parseEndTag() {
-    this.builder.startNode(syntaxKinds.CLOSING_TAG);
-    this.expect(TokenKind.TagCloseStart, syntaxKinds.TAG_START);
-    this.expect(TokenKind.Ident, syntaxKinds.IDENT);
-    this.expect(TokenKind.TagEnd, syntaxKinds.TAG_END);
+    this.builder.startNode(SyntaxKinds.CLOSING_TAG);
+    this.expect(TokenKind.TagCloseStart, SyntaxKinds.TAG_START);
+    this.expect(TokenKind.Ident, SyntaxKinds.IDENT);
+    this.expect(TokenKind.TagEnd, SyntaxKinds.TAG_END);
     this.builder.finishNode();
   }
 
@@ -267,9 +270,12 @@ export class Parser {
    * Parse a text element.
    */
   private parseText() {
+    let accum = '';
     while (!this.lookingAtAny(tokenSets.TEXT_FOLLOW)) {
-      this.bump(syntaxKinds.TEXT);
+      accum += this.tokens.current.lexeme;
+      this.tokens.bump();
     }
+    this.builder.token(SyntaxKinds.TEXT, accum);
   }
 
   /**
