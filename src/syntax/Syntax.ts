@@ -18,7 +18,7 @@ export class DocumentSyntax {
   }
 
   public static cast(node: RedNode): DocumentSyntax | null {
-    if (node.kind == SyntaxKinds.DOCUMENT) {
+    if (node.kind == SyntaxKinds.Document) {
       return new DocumentSyntax(node);
     }
 
@@ -41,7 +41,7 @@ export class DoctypeSyntax {
         filter(
           (x) => x !== null,
           map((e) => {
-            if (e instanceof RedToken && e.kind == SyntaxKinds.IDENT) {
+            if (e instanceof RedToken && e.kind == SyntaxKinds.Ident) {
               return e.text;
             } else {
               return null;
@@ -53,7 +53,7 @@ export class DoctypeSyntax {
   }
 
   public static cast(node: RedNode): DoctypeSyntax | null {
-    if (node.kind === SyntaxKinds.DOCTYPE) {
+    if (node.kind === SyntaxKinds.Doctype) {
       return new DoctypeSyntax(node);
     }
 

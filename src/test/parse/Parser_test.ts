@@ -40,7 +40,7 @@ suite('Parser', () => {
   test('parse doctype no root', () => {
     const result = Parser.parseText('<!DOCTYPE html>');
 
-    assert.equal(result.root.kind, SyntaxKinds.DOCUMENT);
+    assert.equal(result.root.kind, SyntaxKinds.Document);
     assert.equal(result.root.range.start, 0);
     assert.equal(result.root.range.end, 15);
   });
