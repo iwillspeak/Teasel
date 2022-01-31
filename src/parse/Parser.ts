@@ -1,5 +1,3 @@
-import {GreenNode} from '../syntax/pyracantha/GreenNode.js';
-import {GreenToken} from '../syntax/pyracantha/GreenToken.js';
 import {GreenTreeBuilder} from '../syntax/pyracantha/GreenTreeBuilder.js';
 import {SyntaxKind} from '../syntax/pyracantha/Pyracantha.js';
 import {RedNode} from '../syntax/pyracantha/RedNode.js';
@@ -21,6 +19,8 @@ export enum SyntaxKinds {
   Node = 3,
   OpeningTag = 4,
   ClosingTag = 5,
+  Attribute = 6,
+  AttributeValue = 7,
 
   // TOKENS
   TagStart = 100,
@@ -30,7 +30,8 @@ export enum SyntaxKinds {
   EndOfFile = 104,
   Text = 105,
   Comment = 106,
-  DoctypeStart = 107
+  DoctypeStart = 107,
+  Trivia = 108
 }
 
 /**
@@ -52,7 +53,58 @@ const tokenSets = {
    * The follow set for an inner element. This is used to prevent the parser
    * eating into closing tags, or trying to eat past the end of the stream.
    */
-  INNER_ELEMENT_FOLLOW: [TokenKind.TagCloseStart, TokenKind.EndOfFile]
+  INNER_ELEMENT_FOLLOW: [TokenKind.TagCloseStart, TokenKind.EndOfFile],
+
+  /**
+   * Tokens that occur on the boundary of a tag.
+   */
+  TAG_BOUNDARY: [
+    TokenKind.TagStart,
+    TokenKind.TagEnd,
+    TokenKind.TagCloseStart,
+    TokenKind.TagSelfClose
+  ],
+
+  /**
+   * Tokens that can end an unquoted attribute.
+   */
+  UNQUOTED_ATTR_FOLLOW: [
+    TokenKind.TagSelfClose,
+    TokenKind.TagEnd,
+    TokenKind.Space,
+    TokenKind.EndOfFile
+  ],
+
+  /**
+   * Tokens that can end an unquoted attribute.
+   */
+  SINGLE_QUOTE_ATTR_FOLLOW: [
+    TokenKind.TagSelfClose,
+    TokenKind.TagEnd,
+    TokenKind.SingleQuote,
+    TokenKind.EndOfFile
+  ],
+
+  /**
+   * Tokens that can end an unquoted attribute.
+   */
+  DOUBLE_QUOTE_ATTR_FOLLOW: [
+    TokenKind.TagSelfClose,
+    TokenKind.TagEnd,
+    TokenKind.DoubleQuote,
+    TokenKind.EndOfFile
+  ],
+
+  /**
+   * The syncrhonisation tokens for attribute parsing. Used to skip past junk in
+   * opening tags.
+   */
+  ATTR_SYNCHRONISE: [
+    TokenKind.Ident,
+    TokenKind.TagEnd,
+    TokenKind.TagSelfClose,
+    TokenKind.EndOfFile
+  ]
 };
 
 /**
@@ -158,12 +210,25 @@ export class Parser {
   }
 
   /**
+   * Raise an error and skip past junk tokens.
+   *
+   * @param message The message to use in the error description.
+   * @param syncSet The syncrhonisation set for this error position.
+   */
+  private error(message: string, syncSet: TokenKind[]): void {
+    this.raiseError(message);
+    while (!this.lookingAtAny(syncSet)) {
+      this.bump(SyntaxKinds.Error);
+    }
+  }
+
+  /**
    * Raise a parser error at the current position.
    *
    * This buffers up a diagnostic message
    * @param message The error message to raise.
    */
-  private raiseError(message: string) {
+  private raiseError(message: string): void {
     this.errors.push({
       message: message,
       position: this.tokens.current.range
@@ -173,7 +238,7 @@ export class Parser {
   /**
    * Parse the `<!DOCTYPE html>` node.
    */
-  private parseDocType() {
+  private parseDocType(): void {
     this.builder.startNode(SyntaxKinds.Doctype);
     this.expect(TokenKind.DoctypeStart, SyntaxKinds.DoctypeStart);
     this.expect(TokenKind.Ident, SyntaxKinds.Ident);
@@ -187,7 +252,7 @@ export class Parser {
    * Parse a single element in the document. This can be either a node, a text
    * elemenet, or a comment or other trivia.
    */
-  private parseRootElement() {
+  private parseRootElement(): void {
     if (this.lookingAt(TokenKind.TagCloseStart)) {
       this.raiseError('Unexpected end tag at document root');
       this.parseEndTag();
@@ -199,7 +264,7 @@ export class Parser {
   /**
    * Parse an inner element.
    */
-  private parseInnerElement() {
+  private parseInnerElement(): void {
     if (this.lookingAt(TokenKind.TagStart)) {
       this.parseNode();
     } else if (this.lookingAt(TokenKind.Comment)) {
@@ -212,7 +277,7 @@ export class Parser {
   /**
    * Parse a single node, be it a standard or self-closing one.
    */
-  private parseNode() {
+  private parseNode(): void {
     this.builder.startNode(SyntaxKinds.Node);
     let selfClosing = this.parseStartTag();
     if (!selfClosing) {
@@ -242,8 +307,20 @@ export class Parser {
     this.builder.startNode(SyntaxKinds.OpeningTag);
     this.expect(TokenKind.TagStart, SyntaxKinds.TagStart);
     this.expect(TokenKind.Ident, SyntaxKinds.Ident);
+    this.skipWhitespace();
 
-    // TODO: Attributes
+    while (!this.lookingAtAny(tokenSets.TAG_BOUNDARY)) {
+      if (this.lookingAt(TokenKind.Ident)) {
+        this.parseAttribute();
+        this.skipWhitespace();
+      } else {
+        this.error(
+          'Unexpected or malformed attribute',
+          tokenSets.ATTR_SYNCHRONISE
+        );
+      }
+    }
+
     if (this.lookingAt(TokenKind.TagSelfClose)) {
       isSelfClose = true;
       this.bump(SyntaxKinds.TagEnd);
@@ -258,24 +335,103 @@ export class Parser {
   /**
    * Parse the end tag of a node. e.g. `</p>`.
    */
-  private parseEndTag() {
+  private parseEndTag(): void {
     this.builder.startNode(SyntaxKinds.ClosingTag);
     this.expect(TokenKind.TagCloseStart, SyntaxKinds.TagStart);
     this.expect(TokenKind.Ident, SyntaxKinds.Ident);
+    this.skipWhitespace();
     this.expect(TokenKind.TagEnd, SyntaxKinds.TagEnd);
+    this.builder.finishNode();
+  }
+
+  /**
+   * # Parse an Attribute
+   *
+   * Parses a single attribute vlaue in one of the four valid attribute forms.
+   * If an attribute has a value associated that vluae is stored in a nested
+   * node.
+   */
+  private parseAttribute(): void {
+    this.builder.startNode(SyntaxKinds.Attribute);
+    this.expect(TokenKind.Ident, SyntaxKinds.Ident);
+    this.skipWhitespace();
+    if (this.lookingAt(TokenKind.Eq)) {
+      this.bump(SyntaxKinds.Trivia);
+      this.skipWhitespace();
+      if (this.lookingAt(TokenKind.DoubleQuote)) {
+        this.parseQuotedAttributeValue(
+          TokenKind.DoubleQuote,
+          tokenSets.DOUBLE_QUOTE_ATTR_FOLLOW
+        );
+      } else if (this.lookingAt(TokenKind.SingleQuote)) {
+        this.parseQuotedAttributeValue(
+          TokenKind.SingleQuote,
+          tokenSets.SINGLE_QUOTE_ATTR_FOLLOW
+        );
+      } else {
+        this.parseAttributeValue();
+      }
+
+      this.skipWhitespace();
+    }
+
     this.builder.finishNode();
   }
 
   /**
    * Parse a text element.
    */
-  private parseText() {
+  private parseText(): void {
+    this.parseTextData(tokenSets.TEXT_FOLLOW);
+  }
+
+  /**
+   * Parse tokens as text data until one of the given follow tokens.
+   *
+   * @param follow The tokens to end the text node at.
+   */
+  private parseTextData(follow: TokenKind[]): void {
     let accum = '';
-    while (!this.lookingAtAny(tokenSets.TEXT_FOLLOW)) {
+    while (!this.lookingAtAny(follow)) {
       accum += this.tokens.current.lexeme;
       this.tokens.bump();
     }
     this.builder.token(SyntaxKinds.Text, accum);
+  }
+
+  /**
+   * Parse the value of an attribute.
+   *
+   * @param quote The quote to expect around the attribute value.
+   * @param follow The folow set for the atttribute value.
+   */
+  private parseQuotedAttributeValue(
+    quote: TokenKind,
+    follow: TokenKind[]
+  ): void {
+    this.builder.startNode(SyntaxKinds.AttributeValue);
+    this.expect(quote, SyntaxKinds.Trivia);
+    this.parseTextData(follow);
+    this.expect(quote, SyntaxKinds.Trivia);
+    this.builder.finishNode();
+  }
+
+  /**
+   * Parse the value of an attribute that isn't delimited by quotes.
+   */
+  private parseAttributeValue(): void {
+    this.builder.startNode(SyntaxKinds.AttributeValue);
+    this.parseTextData(tokenSets.UNQUOTED_ATTR_FOLLOW);
+    this.builder.finishNode();
+  }
+
+  /**
+   * Skip any whitespace at the current position.
+   */
+  private skipWhitespace(): void {
+    while (this.lookingAt(TokenKind.Space)) {
+      this.bump(SyntaxKinds.Space);
+    }
   }
 
   /**

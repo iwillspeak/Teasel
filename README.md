@@ -30,10 +30,10 @@ text. Semanitc transformation into a DOM is _not_ the intent of this library.
 
 ## 🐲 TODO 🐲:
 
- * [ ] Handle attributes on opening tags
+ * [x] Handle attributes on opening tags
  * [ ] Better error recorvery when `expect` fails.
    * [ ] Tolerate and warn on some malformed whitespace. e.g.: `< p>`.
-   * [ ] Malformed attribute lists syncrhonise on `>`.
+   * [x] Malformed attribute lists syncrhonise on `>`.
  * [ ] Handle Closing of outer tags correctly. e.g.: `<p><i>hello</p>`.
  * [ ] Node cache should cache nodes in the green tree builder.
   * [ ] Node cache interface and implementaiton.

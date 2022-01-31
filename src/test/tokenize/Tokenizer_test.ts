@@ -40,7 +40,10 @@ suite('Tokeniser', () => {
     ['<!---->', TokenKind.Comment],
     ['<!-- a-n --- comment --->', TokenKind.Comment],
     ['h2', TokenKind.Ident],
-    ['H4', TokenKind.Ident]
+    ['H4', TokenKind.Ident],
+    ['"', TokenKind.DoubleQuote],
+    ["'", TokenKind.SingleQuote],
+    ['=', TokenKind.Eq]
   ];
 
   tokens.forEach(([source, expectedKind]) => {

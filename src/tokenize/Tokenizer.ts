@@ -19,6 +19,9 @@ enum LexState {
   RightAngle,
   Ident,
   Space,
+  SingleQuote,
+  DoubleQuote,
+  Eq,
   Error
 }
 
@@ -169,6 +172,12 @@ export class Tokenizer {
         return TokenKind.Space;
       case LexState.CommentDone:
         return TokenKind.Comment;
+      case LexState.SingleQuote:
+        return TokenKind.SingleQuote;
+      case LexState.DoubleQuote:
+        return TokenKind.DoubleQuote;
+      case LexState.Eq:
+        return TokenKind.Eq;
       default:
         return TokenKind.Error;
     }
@@ -191,6 +200,12 @@ export class Tokenizer {
             return LexState.LeftAngle;
           case '>':
             return LexState.RightAngle;
+          case '"':
+            return LexState.DoubleQuote;
+          case "'":
+            return LexState.SingleQuote;
+          case '=':
+            return LexState.Eq;
           case '\t':
           case ' ':
             return LexState.Space;

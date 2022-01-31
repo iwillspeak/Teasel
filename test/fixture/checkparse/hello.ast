@@ -1,64 +1,64 @@
-DOCUMENT: {0..161}
-  DOCTYPE: {0..15}
-    DOCTYPE_START: {0..2} "<!"
-    IDENT: {2..9} "DOCTYPE"
-    SPACE: {9..10} " "
-    IDENT: {10..14} "html"
-    TAG_END: {14..15} ">"
-  TEXT: {15..16} "\n"
-  NODE: {16..160}
-    OPENING_TAG: {16..22}
-      TAG_START: {16..17} "<"
-      IDENT: {17..21} "html"
-      TAG_END: {21..22} ">"
-    TEXT: {22..27} "\n    "
-    NODE: {27..45}
-      OPENING_TAG: {27..33}
-        TAG_START: {27..28} "<"
-        IDENT: {28..32} "head"
-        TAG_END: {32..33} ">"
-      TEXT: {33..38} "\n    "
-      CLOSING_TAG: {38..45}
-        TAG_START: {38..40} "</"
-        IDENT: {40..44} "head"
-        TAG_END: {44..45} ">"
-    TEXT: {45..50} "\n    "
-    NODE: {50..152}
-      OPENING_TAG: {50..56}
-        TAG_START: {50..51} "<"
-        IDENT: {51..55} "body"
-        TAG_END: {55..56} ">"
-      TEXT: {56..65} "\n        "
-      NODE: {65..86}
-        OPENING_TAG: {65..69}
-          TAG_START: {65..66} "<"
-          IDENT: {66..68} "h1"
-          TAG_END: {68..69} ">"
-        TEXT: {69..81} "Hello world!"
-        CLOSING_TAG: {81..86}
-          TAG_START: {81..83} "</"
-          IDENT: {83..85} "h1"
-          TAG_END: {85..86} ">"
-      TEXT: {86..95} "\n        "
-      NODE: {95..140}
-        OPENING_TAG: {95..98}
-          TAG_START: {95..96} "<"
-          IDENT: {96..97} "p"
-          TAG_END: {97..98} ">"
-        TEXT: {98..136} "In the beginning there was nothing. 🌍"
-        CLOSING_TAG: {136..140}
-          TAG_START: {136..138} "</"
-          IDENT: {138..139} "p"
-          TAG_END: {139..140} ">"
-      TEXT: {140..145} "\n    "
-      CLOSING_TAG: {145..152}
-        TAG_START: {145..147} "</"
-        IDENT: {147..151} "body"
-        TAG_END: {151..152} ">"
-    TEXT: {152..153} "\n"
-    CLOSING_TAG: {153..160}
-      TAG_START: {153..155} "</"
-      IDENT: {155..159} "html"
-      TAG_END: {159..160} ">"
-  TEXT: {160..161} "\n"
-  END_OF_FILE: {161..161} ""
+Document: {0..161}
+  Doctype: {0..15}
+    DoctypeStart: {0..2} "<!"
+    Ident: {2..9} "DOCTYPE"
+    Space: {9..10} " "
+    Ident: {10..14} "html"
+    TagEnd: {14..15} ">"
+  Text: {15..16} "\n"
+  Node: {16..160}
+    OpeningTag: {16..22}
+      TagStart: {16..17} "<"
+      Ident: {17..21} "html"
+      TagEnd: {21..22} ">"
+    Text: {22..27} "\n    "
+    Node: {27..45}
+      OpeningTag: {27..33}
+        TagStart: {27..28} "<"
+        Ident: {28..32} "head"
+        TagEnd: {32..33} ">"
+      Text: {33..38} "\n    "
+      ClosingTag: {38..45}
+        TagStart: {38..40} "</"
+        Ident: {40..44} "head"
+        TagEnd: {44..45} ">"
+    Text: {45..50} "\n    "
+    Node: {50..152}
+      OpeningTag: {50..56}
+        TagStart: {50..51} "<"
+        Ident: {51..55} "body"
+        TagEnd: {55..56} ">"
+      Text: {56..65} "\n        "
+      Node: {65..86}
+        OpeningTag: {65..69}
+          TagStart: {65..66} "<"
+          Ident: {66..68} "h1"
+          TagEnd: {68..69} ">"
+        Text: {69..81} "Hello world!"
+        ClosingTag: {81..86}
+          TagStart: {81..83} "</"
+          Ident: {83..85} "h1"
+          TagEnd: {85..86} ">"
+      Text: {86..95} "\n        "
+      Node: {95..140}
+        OpeningTag: {95..98}
+          TagStart: {95..96} "<"
+          Ident: {96..97} "p"
+          TagEnd: {97..98} ">"
+        Text: {98..136} "In the beginning there was nothing. 🌍"
+        ClosingTag: {136..140}
+          TagStart: {136..138} "</"
+          Ident: {138..139} "p"
+          TagEnd: {139..140} ">"
+      Text: {140..145} "\n    "
+      ClosingTag: {145..152}
+        TagStart: {145..147} "</"
+        Ident: {147..151} "body"
+        TagEnd: {151..152} ">"
+    Text: {152..153} "\n"
+    ClosingTag: {153..160}
+      TagStart: {153..155} "</"
+      Ident: {155..159} "html"
+      TagEnd: {159..160} ">"
+  Text: {160..161} "\n"
+  EndOfFile: {161..161} ""

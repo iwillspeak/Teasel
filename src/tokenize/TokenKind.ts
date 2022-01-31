@@ -16,5 +16,7 @@ export enum TokenKind {
   Space,
   Comment,
   Error,
-  EndOfFile
+  EndOfFile,
+  SingleQuote,
+  DoubleQuote
 }
