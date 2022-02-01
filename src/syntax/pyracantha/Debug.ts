@@ -73,3 +73,20 @@ export function debugDump(
 
   walk(element, new DebugWalker(kindFormatter, outputSink));
 }
+
+/**
+ * Debug Representation for a Node
+ *
+ * @param elemenet The element to convert to a string.
+ * @param kindFormatter THe formatter to use for the kinds in the syntax tree.
+ */
+export function debugToString(
+  elemenet: RedElement,
+  kindFormatter: ((k: SyntaxKind) => string) | undefined = undefined
+): string {
+  let result = '';
+  debugDump(elemenet, kindFormatter, (line) => {
+    result += line + '\n';
+  });
+  return result;
+}

@@ -2,20 +2,14 @@ import {assert} from 'chai';
 import {readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
 import {Parser, SyntaxKinds} from '../../parse/Parser.js';
-import {debugDump} from '../../syntax/pyracantha/Debug.js';
+import {debugToString} from '../../syntax/pyracantha/Debug.js';
 import {DocumentSyntax} from '../../syntax/Syntax.js';
 import {Tokenizer} from '../../tokenize/Tokenizer.js';
 
 function checkParse(input: string, expected: string) {
   const result = Parser.parseText(input);
-  let actual = '';
-  debugDump(
-    result.root,
-    (k) => SyntaxKinds[k],
-    (s) => {
-      actual += s + '\n';
-    }
-  );
+  let actual = debugToString(result.root, (k) => SyntaxKinds[k]);
+  assert.equal(result.diagnostics.length, 0);
   assert.equal(actual.trim(), expected.trim());
 }
 
@@ -31,10 +25,16 @@ suite('Parser', () => {
   });
 
   test('parse with utility method', () => {
-    const result = Parser.parseText('<p>hello world</p>');
+    const source = '<p>hello world</p>';
+    const result = Parser.parseText(source);
 
     assert.equal(result.diagnostics.length, 0);
-    // TODO: More assertions here.
+    assert.equal(result.root.kind, SyntaxKinds.Document);
+    let children = Array.from(result.root.children());
+    assert.equal(children.length, 2);
+    assert.equal(children[0].kind, SyntaxKinds.Doctype);
+    assert.equal(children[1].kind, SyntaxKinds.Node);
+    assert.equal(result.root.toString(), source);
   });
 
   test('parse doctype no root', () => {

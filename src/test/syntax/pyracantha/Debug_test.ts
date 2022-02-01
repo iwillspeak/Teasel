@@ -2,7 +2,7 @@ import {assert} from 'chai';
 import {GreenNode} from '../../../syntax/pyracantha/GreenNode.js';
 import {GreenToken} from '../../../syntax/pyracantha/GreenToken.js';
 import {RedNode} from '../../../syntax/pyracantha/RedNode.js';
-import {debugDump} from '../../../syntax/pyracantha/Debug.js';
+import {debugToString} from '../../../syntax/pyracantha/Debug.js';
 
 enum Kind {
   Node = 1,
@@ -27,16 +27,9 @@ suite('Debug', () => {
       ])
     );
 
-    let formatted = '';
-    debugDump(
-      tree,
-      (kind) => {
-        return Kind[kind as Kind];
-      },
-      (s) => {
-        formatted += s + '\n';
-      }
-    );
+    let formatted = debugToString(tree, (kind) => {
+      return Kind[kind as Kind];
+    });
 
     assert.equal(
       formatted,

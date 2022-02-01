@@ -35,6 +35,7 @@ text. Semanitc transformation into a DOM is _not_ the intent of this library.
    * [ ] Tolerate and warn on some malformed whitespace. e.g.: `< p>`.
    * [x] Malformed attribute lists syncrhonise on `>`.
  * [ ] Handle Closing of outer tags correctly. e.g.: `<p><i>hello</p>`.
+ * [ ] Handle Closing of non-nesting sibilings. e.g.: `<li>a<li>b`.
  * [ ] Node cache should cache nodes in the green tree builder.
   * [ ] Node cache interface and implementaiton.
   * [ ] Parser should accept optional cache.
