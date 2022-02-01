@@ -58,6 +58,28 @@ suite('Parser', () => {
     assert.equal(doc?.doctype?.documentKind, 'fibble');
   });
 
+  test('parse attr no quotes', () => {
+    const result = Parser.parseText('<html a = 1 b = 102 ><hr/></html>');
+
+    const documentParts = Array.from(result.root.children());
+    const htmlParts = Array.from(documentParts[0].children());
+    const openTag = htmlParts[0];
+    assert.equal(openTag.kind, SyntaxKinds.OpeningTag);
+    const attrs = Array.from(openTag.childrenOfKind(SyntaxKinds.Attribute));
+    assert.equal(attrs.length, 2);
+  });
+
+  test('parse malfromed attributes', () => {
+    const result = Parser.parseText('<!DOCTYPE html><html a="borked/>');
+
+    assert.equal(result.diagnostics.length, 1);
+    assert.equal(result.diagnostics[0].position.start, 30);
+    assert.equal(
+      result.diagnostics[0].message,
+      'Expecting DoubleQuote but found TagSelfCloseEnd'
+    );
+  });
+
   test('checkparse example doc', () => {
     checkParse(
       `<!DOCTYPE html>

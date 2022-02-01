@@ -63,7 +63,7 @@ const tokenSets = {
     TokenKind.TagEnd,
     TokenKind.TagCloseStart,
     TokenKind.TagSelfCloseEnd,
-    TokenKind.EndOfFile,
+    TokenKind.EndOfFile
   ],
 
   /**

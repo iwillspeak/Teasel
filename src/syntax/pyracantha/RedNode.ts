@@ -87,6 +87,19 @@ export class RedNode {
   }
 
   /**
+   * Iterate over a filtered set of the node's children.
+   *
+   * @param kind The kind to filter.
+   */
+  public *childrenOfKind(kind: SyntaxKind): IterableIterator<RedNode> {
+    for (const child of this.children()) {
+      if (child.kind === kind) {
+        yield child;
+      }
+    }
+  }
+
+  /**
    * Convert to Display String.
    *
    * @returns The source text represented by the underlying green node.
