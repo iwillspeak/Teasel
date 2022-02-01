@@ -31,6 +31,7 @@ suite('Tokeniser', () => {
     ['<!', TokenKind.DoctypeStart],
     ['>', TokenKind.TagEnd],
     ['</', TokenKind.TagCloseStart],
+    ['/>', TokenKind.TagSelfCloseEnd],
     ['p', TokenKind.Ident],
     ['script', TokenKind.Ident],
     ['href', TokenKind.Ident],

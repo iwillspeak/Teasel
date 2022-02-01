@@ -62,14 +62,15 @@ const tokenSets = {
     TokenKind.TagStart,
     TokenKind.TagEnd,
     TokenKind.TagCloseStart,
-    TokenKind.TagSelfClose
+    TokenKind.TagSelfCloseEnd,
+    TokenKind.EndOfFile,
   ],
 
   /**
    * Tokens that can end an unquoted attribute.
    */
   UNQUOTED_ATTR_FOLLOW: [
-    TokenKind.TagSelfClose,
+    TokenKind.TagSelfCloseEnd,
     TokenKind.TagEnd,
     TokenKind.Space,
     TokenKind.EndOfFile
@@ -79,7 +80,7 @@ const tokenSets = {
    * Tokens that can end an unquoted attribute.
    */
   SINGLE_QUOTE_ATTR_FOLLOW: [
-    TokenKind.TagSelfClose,
+    TokenKind.TagSelfCloseEnd,
     TokenKind.TagEnd,
     TokenKind.SingleQuote,
     TokenKind.EndOfFile
@@ -89,7 +90,7 @@ const tokenSets = {
    * Tokens that can end an unquoted attribute.
    */
   DOUBLE_QUOTE_ATTR_FOLLOW: [
-    TokenKind.TagSelfClose,
+    TokenKind.TagSelfCloseEnd,
     TokenKind.TagEnd,
     TokenKind.DoubleQuote,
     TokenKind.EndOfFile
@@ -102,7 +103,7 @@ const tokenSets = {
   ATTR_SYNCHRONISE: [
     TokenKind.Ident,
     TokenKind.TagEnd,
-    TokenKind.TagSelfClose,
+    TokenKind.TagSelfCloseEnd,
     TokenKind.EndOfFile
   ]
 };
@@ -154,7 +155,7 @@ export class Parser {
 
     return {
       root: RedNode.createRoot(this.builder.buildRoot(SyntaxKinds.Document)),
-      diagnostics: []
+      diagnostics: this.errors
     };
   }
 
@@ -239,13 +240,17 @@ export class Parser {
    * Parse the `<!DOCTYPE html>` node.
    */
   private parseDocType(): void {
-    this.builder.startNode(SyntaxKinds.Doctype);
-    this.expect(TokenKind.DoctypeStart, SyntaxKinds.DoctypeStart);
-    this.expect(TokenKind.Ident, SyntaxKinds.Ident);
-    this.expect(TokenKind.Space, SyntaxKinds.Space);
-    this.expect(TokenKind.Ident, SyntaxKinds.Ident);
-    this.expect(TokenKind.TagEnd, SyntaxKinds.TagEnd);
-    this.builder.finishNode();
+    if (this.lookingAt(TokenKind.DoctypeStart)) {
+      this.builder.startNode(SyntaxKinds.Doctype);
+      this.bump(SyntaxKinds.DoctypeStart);
+      this.expect(TokenKind.Ident, SyntaxKinds.Ident);
+      this.expect(TokenKind.Space, SyntaxKinds.Space);
+      this.expect(TokenKind.Ident, SyntaxKinds.Ident);
+      this.expect(TokenKind.TagEnd, SyntaxKinds.TagEnd);
+      this.builder.finishNode();
+    } else {
+      this.error('Missing doctype.', tokenSets.TAG_BOUNDARY);
+    }
   }
 
   /**
@@ -321,7 +326,7 @@ export class Parser {
       }
     }
 
-    if (this.lookingAt(TokenKind.TagSelfClose)) {
+    if (this.lookingAt(TokenKind.TagSelfCloseEnd)) {
       isSelfClose = true;
       this.bump(SyntaxKinds.TagEnd);
     } else {

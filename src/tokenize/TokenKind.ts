@@ -7,7 +7,7 @@ export enum TokenKind {
   TagStart,
   TagEnd,
   TagCloseStart,
-  TagSelfClose,
+  TagSelfCloseEnd,
   DoctypeStart,
   Ident,
   Eq,

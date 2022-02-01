@@ -22,6 +22,8 @@ enum LexState {
   SingleQuote,
   DoubleQuote,
   Eq,
+  Slash,
+  SelfClose,
   Error
 }
 
@@ -178,6 +180,8 @@ export class Tokenizer {
         return TokenKind.DoubleQuote;
       case LexState.Eq:
         return TokenKind.Eq;
+      case LexState.SelfClose:
+        return TokenKind.TagSelfCloseEnd;
       default:
         return TokenKind.Error;
     }
@@ -204,6 +208,8 @@ export class Tokenizer {
             return LexState.DoubleQuote;
           case "'":
             return LexState.SingleQuote;
+          case '/':
+            return LexState.Slash;
           case '=':
             return LexState.Eq;
           case '\t':
@@ -277,6 +283,13 @@ export class Tokenizer {
             return LexState.CommentSeenDoubleDash;
           default:
             return LexState.InComment;
+        }
+      }
+      case LexState.Slash: {
+        if (currentChar === '>') {
+          return LexState.SelfClose;
+        } else {
+          return null;
         }
       }
       default:

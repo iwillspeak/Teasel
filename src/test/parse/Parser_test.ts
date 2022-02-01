@@ -19,7 +19,10 @@ suite('Parser', () => {
 
     const tree = parser.parse();
 
-    assert.equal(tree.diagnostics.length, 0);
+    assert.equal(tree.diagnostics.length, 1);
+    assert.equal(tree.diagnostics[0].message, 'Missing doctype.');
+    assert.equal(tree.diagnostics[0].position.start, 0);
+    assert.equal(tree.diagnostics[0].position.end, 0);
     assert.equal(tree.root.range.start, 0);
     assert.equal(tree.root.range.end, 0);
   });
@@ -28,12 +31,13 @@ suite('Parser', () => {
     const source = '<p>hello world</p>';
     const result = Parser.parseText(source);
 
-    assert.equal(result.diagnostics.length, 0);
+    assert.equal(result.diagnostics[0].message, 'Missing doctype.');
+    assert.equal(result.diagnostics[0].position.start, 0);
+    assert.equal(result.diagnostics[0].position.end, 1);
     assert.equal(result.root.kind, SyntaxKinds.Document);
     let children = Array.from(result.root.children());
-    assert.equal(children.length, 2);
-    assert.equal(children[0].kind, SyntaxKinds.Doctype);
-    assert.equal(children[1].kind, SyntaxKinds.Node);
+    assert.equal(children.length, 1);
+    assert.equal(children[0].kind, SyntaxKinds.Node);
     assert.equal(result.root.toString(), source);
   });
 
@@ -63,10 +67,12 @@ suite('Parser', () => {
     <p>I'm a paragraph, with an image.
     <img src="spiky-tree.jpg" width="500" height="600" />
     <!-- comment example -->
+    </p>
     </body>
     </html>
     \n`,
-      `Document: {0..218}
+      `
+Document: {0..227}
   Doctype: {0..15}
     DoctypeStart: {0..2} "<!"
     Ident: {2..9} "DOCTYPE"
@@ -74,13 +80,13 @@ suite('Parser', () => {
     Ident: {10..14} "html"
     TagEnd: {14..15} ">"
   Text: {15..20} "\\n    "
-  Node: {20..218}
+  Node: {20..221}
     OpeningTag: {20..26}
       TagStart: {20..21} "<"
       Ident: {21..25} "html"
       TagEnd: {25..26} ">"
     Text: {26..31} "\\n    "
-    Node: {31..218}
+    Node: {31..209}
       OpeningTag: {31..37}
         TagStart: {31..32} "<"
         Ident: {32..36} "body"
@@ -97,13 +103,13 @@ suite('Parser', () => {
           Ident: {59..61} "h2"
           TagEnd: {61..62} ">"
       Text: {62..67} "\\n    "
-      Node: {67..212}
+      Node: {67..197}
         OpeningTag: {67..70}
           TagStart: {67..68} "<"
           Ident: {68..69} "p"
           TagEnd: {69..70} ">"
         Text: {70..106} "I'm a paragraph, with an image.\\n    "
-        Node: {106..200}
+        Node: {106..159}
           OpeningTag: {106..159}
             TagStart: {106..107} "<"
             Ident: {107..110} "img"
@@ -132,25 +138,26 @@ suite('Parser', () => {
                 Text: {152..155} "600"
                 Trivia: {155..156} "\\""
               Space: {156..157} " "
-            Error: {157..158} "/"
-            TagEnd: {158..159} ">"
-          Text: {159..164} "\\n    "
-          Comment: {164..188} "<!-- comment example -->"
-          Text: {188..193} "\\n    "
-          ClosingTag: {193..200}
-            TagStart: {193..195} "</"
-            Ident: {195..199} "body"
-            TagEnd: {199..200} ">"
-        Text: {200..205} "\\n    "
-        ClosingTag: {205..212}
-          TagStart: {205..207} "</"
-          Ident: {207..211} "html"
-          TagEnd: {211..212} ">"
-      Text: {212..218} "\\n    \\n"
-      ClosingTag: {218..218}
-    ClosingTag: {218..218}
-  EndOfFile: {218..218} ""
-    `
+            TagEnd: {157..159} "/>"
+        Text: {159..164} "\\n    "
+        Comment: {164..188} "<!-- comment example -->"
+        Text: {188..193} "\\n    "
+        ClosingTag: {193..197}
+          TagStart: {193..195} "</"
+          Ident: {195..196} "p"
+          TagEnd: {196..197} ">"
+      Text: {197..202} "\\n    "
+      ClosingTag: {202..209}
+        TagStart: {202..204} "</"
+        Ident: {204..208} "body"
+        TagEnd: {208..209} ">"
+    Text: {209..214} "\\n    "
+    ClosingTag: {214..221}
+      TagStart: {214..216} "</"
+      Ident: {216..220} "html"
+      TagEnd: {220..221} ">"
+  Text: {221..227} "\\n    \\n"
+  EndOfFile: {227..227} ""`
     );
   });
 
