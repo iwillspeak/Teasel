@@ -1,7 +1,7 @@
 import {GreenElement} from './GreenTree.js';
 import {GreenNode} from './GreenNode.js';
-import {GreenToken} from './GreenToken.js';
 import {SyntaxKind} from './Pyracantha.js';
+import { NodeCache } from './NodeCache.js';
 
 interface Mark {
   children: GreenElement[];
@@ -33,10 +33,21 @@ export class GreenTreeBuilder {
    */
   private children: GreenElement[] = [];
 
-  private nodeCache: unknown;
+  /**
+   * The node cache to use when creating tokens and nodes.
+   */
+  private nodeCache: NodeCache;
 
-  // TODO (jg): accept a cache and set it as this.nodeCache
-  public constructor() {}
+  /**
+   * Create a new tree builder, using the given node cache if provided.
+   */
+  public constructor(cache: NodeCache | number | undefined = undefined) {
+    if (cache instanceof NodeCache) {
+      this.nodeCache = cache;
+    } else {
+      this.nodeCache = new NodeCache(cache);
+    }
+  }
 
   /**
    * Start building a new child node of the given {@link kind}.
@@ -62,7 +73,7 @@ export class GreenTreeBuilder {
 
     const [kind, outerChildren] = pair;
 
-    outerChildren.push(new GreenNode(kind, this.children));
+    outerChildren.push(this.nodeCache.createNode(kind, this.children));
 
     this.children = outerChildren;
   }
@@ -103,7 +114,7 @@ export class GreenTreeBuilder {
       throw new Error('Mark has expired. Child state does not match.');
     }
 
-    const node = new GreenNode(kind, ourChildren);
+    const node = this.nodeCache.createNode(kind, ourChildren);
 
     this.children = [node, ...bufferedChildren];
   }
@@ -115,7 +126,7 @@ export class GreenTreeBuilder {
    * @param text The text / lexeme of the token.
    */
   public token(kind: SyntaxKind, text: string): void {
-    this.children.push(new GreenToken(kind, text));
+    this.children.push(this.nodeCache.createToken(kind, text));
   }
 
   /**
@@ -128,6 +139,6 @@ export class GreenTreeBuilder {
       throw new Error(`Expected empty stack. Found ${this.nodes}`);
     }
 
-    return new GreenNode(kind, this.children);
+    return this.nodeCache.createNode(kind, this.children);
   }
 }
