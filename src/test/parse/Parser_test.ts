@@ -69,6 +69,16 @@ suite('Parser', () => {
     assert.equal(attrs.length, 2);
   });
 
+  test('parse malformed closing tags', () => {
+    const result = Parser.parseText('<!DOCTYPE html>< html ></ html >');
+
+    assert.equal(result.diagnostics.length, 2);
+    assert.equal(result.diagnostics[0].position.start, 16);
+    assert.equal(result.diagnostics[0].position.end, 17);
+    assert.equal(result.diagnostics[1].position.start, 25);
+    assert.equal(result.diagnostics[1].position.end, 26);
+  });
+
   test('parse malfromed attributes', () => {
     const result = Parser.parseText('<!DOCTYPE html><html a="borked/>');
 

@@ -311,6 +311,7 @@ export class Parser {
 
     this.builder.startNode(SyntaxKinds.OpeningTag);
     this.expect(TokenKind.TagStart, SyntaxKinds.TagStart);
+    this.tolerateWhitespace();
     this.expect(TokenKind.Ident, SyntaxKinds.Ident);
     this.skipWhitespace();
 
@@ -343,6 +344,7 @@ export class Parser {
   private parseEndTag(): void {
     this.builder.startNode(SyntaxKinds.ClosingTag);
     this.expect(TokenKind.TagCloseStart, SyntaxKinds.TagStart);
+    this.tolerateWhitespace();
     this.expect(TokenKind.Ident, SyntaxKinds.Ident);
     this.skipWhitespace();
     this.expect(TokenKind.TagEnd, SyntaxKinds.TagEnd);
@@ -436,6 +438,16 @@ export class Parser {
   private skipWhitespace(): void {
     while (this.lookingAt(TokenKind.Space)) {
       this.bump(SyntaxKinds.Space);
+    }
+  }
+
+  /**
+   * Tolerate and skip whitespace where it shouldn't be.
+   */
+  private tolerateWhitespace(): void {
+    if (this.lookingAt(TokenKind.Space)) {
+      this.raiseError('Unexpected whitespace.');
+      this.skipWhitespace();
     }
   }
 

@@ -31,8 +31,8 @@ text. Semanitc transformation into a DOM is _not_ the intent of this library.
 ## 🐲 TODO 🐲:
 
  * [x] Handle attributes on opening tags
- * [ ] Better error recorvery when `expect` fails.
-   * [ ] Tolerate and warn on some malformed whitespace. e.g.: `< p>`.
+ * [x] Better error recorvery when `expect` fails.
+   * [x] Tolerate and warn on some malformed whitespace. e.g.: `< p>`.
    * [x] Malformed attribute lists syncrhonise on `>`.
  * [ ] Handle Closing of outer tags correctly. e.g.: `<p><i>hello</p>`.
  * [ ] Handle Closing of non-nesting sibilings. e.g.: `<li>a<li>b`.
