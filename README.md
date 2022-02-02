@@ -34,11 +34,11 @@ text. Semanitc transformation into a DOM is _not_ the intent of this library.
  * [x] Better error recorvery when `expect` fails.
    * [x] Tolerate and warn on some malformed whitespace. e.g.: `< p>`.
    * [x] Malformed attribute lists syncrhonise on `>`.
+ * [x] Node cache should cache nodes in the green tree builder.
+  * [x] Node cache interface and implementaiton.
+  * [x] Parser should accept optional cache.
  * [ ] Handle Closing of outer tags correctly. e.g.: `<p><i>hello</p>`.
  * [ ] Handle Closing of non-nesting sibilings. e.g.: `<li>a<li>b`.
- * [ ] Node cache should cache nodes in the green tree builder.
-  * [ ] Node cache interface and implementaiton.
-  * [ ] Parser should accept optional cache.
  * [ ] Support for `CDATA` values / tokens.
  * [ ] Handling for implicit self closing of 'void' elements `<hr>` etc.
  * [ ] Handling of raw text elements. e.g. `script`, and `style`.

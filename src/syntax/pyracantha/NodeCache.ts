@@ -1,14 +1,14 @@
-import { GreenElement } from './GreenTree.js';
-import { GreenNode } from './GreenNode.js';
-import { GreenToken } from './GreenToken.js';
-import { SyntaxKind } from './Pyracantha.js';
-import { SyntaxKinds } from '../../parse/Parser.js';
-
+import {GreenElement} from './GreenTree.js';
+import {GreenNode} from './GreenNode.js';
+import {GreenToken} from './GreenToken.js';
+import {SyntaxKind} from './Pyracantha.js';
+import {SyntaxKinds} from '../../parse/Parser.js';
 
 export class NodeCache {
   private size: number;
 
   private cachedTokens: Map<[SyntaxKind, string], GreenToken>;
+  private cachedNodes: Map<[SyntaxKind, GreenElement[]], GreenNode>;
 
   public constructor(size: number | undefined) {
     if (size === undefined) {
@@ -17,6 +17,7 @@ export class NodeCache {
 
     this.size = size;
     this.cachedTokens = new Map<[SyntaxKinds, string], GreenToken>();
+    this.cachedNodes = new Map<[SyntaxKinds, GreenElement[]], GreenNode>();
   }
 
   /**
@@ -26,7 +27,17 @@ export class NodeCache {
    * @param children The children for this node.
    */
   createNode(kind: number, children: GreenElement[]): GreenNode {
-    return new GreenNode(kind, children);
+    if (children.length <= this.size) {
+      return new GreenNode(kind, children);
+    }
+
+    let found = this.cachedNodes.get([kind, children]);
+    if (found === undefined) {
+      found = new GreenNode(kind, children);
+      this.cachedNodes.set([kind, children], found);
+    }
+
+    return found;
   }
 
   /**
