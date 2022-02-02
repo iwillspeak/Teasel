@@ -1,10 +1,14 @@
 import { GreenElement } from './GreenTree.js';
 import { GreenNode } from './GreenNode.js';
 import { GreenToken } from './GreenToken.js';
+import { SyntaxKind } from './Pyracantha.js';
+import { SyntaxKinds } from '../../parse/Parser.js';
 
 
 export class NodeCache {
   private size: number;
+
+  private cachedTokens: Map<[SyntaxKind, string], GreenToken>;
 
   public constructor(size: number | undefined) {
     if (size === undefined) {
@@ -12,6 +16,7 @@ export class NodeCache {
     }
 
     this.size = size;
+    this.cachedTokens = new Map<[SyntaxKinds, string], GreenToken>();
   }
 
   /**
@@ -31,6 +36,12 @@ export class NodeCache {
    * @param text The backing text for this token.
    */
   createToken(kind: number, text: string): GreenToken {
-    return new GreenToken(kind, text);
+    let found = this.cachedTokens.get([kind, text]);
+    if (found === undefined) {
+      found = new GreenToken(kind, text);
+      this.cachedTokens.set([kind, text], found);
+    }
+
+    return found;
   }
 }
