@@ -48,7 +48,9 @@ suite('Tokeniser', () => {
   ];
 
   tokens.forEach(([source, expectedKind]) => {
-    test(`Should tokenise ${JSON.stringify(source)} as ${TokenKind[expectedKind]}`, () => {
+    test(`Should tokenise ${JSON.stringify(source)} as ${
+      TokenKind[expectedKind]
+    }`, () => {
       const tokeniser = new Tokenizer(source);
 
       const token = tokeniser.current;

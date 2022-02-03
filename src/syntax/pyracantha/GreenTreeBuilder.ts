@@ -3,8 +3,15 @@ import {GreenNode} from './GreenNode.js';
 import {SyntaxKind} from './Pyracantha.js';
 import {NodeCache} from './NodeCache.js';
 
+/**
+ * Mark in the Tree Builder.
+ *
+ * These are returned from the `mark` API and represent cursors into the
+ * builder. Marks can be used to speculatively build nodes rather than using
+ * the main `startNode`/`finishNode` API.
+ */
 interface Mark {
-  children: GreenElement[];
+  index: number;
 }
 
 /**
@@ -26,12 +33,17 @@ export class GreenTreeBuilder {
    * kind for the node at that level, and the cached children from the parent
    * node to be applied when the node is popped.
    */
-  private nodes: Array<[SyntaxKind, GreenElement[]]> = [];
+  private nodes: Array<[SyntaxKind, GreenElement[], Mark[]]> = [];
 
   /**
    * Children for the current node being built.
    */
   private children: GreenElement[] = [];
+
+  /**
+   * Open marks at the current level
+   */
+  private marks: Mark[] = [];
 
   /**
    * The node cache to use when creating tokens and nodes.
@@ -55,8 +67,9 @@ export class GreenTreeBuilder {
    * @param kind The kind of node to start.
    */
   public startNode(kind: SyntaxKind): void {
-    this.nodes.push([kind, this.children]);
+    this.nodes.push([kind, this.children, this.marks]);
     this.children = [];
+    this.marks = [];
   }
 
   /**
@@ -71,11 +84,12 @@ export class GreenTreeBuilder {
       throw new Error('Unbalanced call to finishNode');
     }
 
-    const [kind, outerChildren] = pair;
+    const [kind, outerChildren, outerMarks] = pair;
 
     outerChildren.push(this.nodeCache.createNode(kind, this.children));
 
     this.children = outerChildren;
+    this.marks = outerMarks;
   }
 
   /**
@@ -84,9 +98,12 @@ export class GreenTreeBuilder {
    * @returns A new mark to the current bulder position.
    */
   public mark(): Mark {
-    return {
-      children: this.children
+    const index = this.children.length;
+    const mark = {
+      index: index
     };
+    this.marks.push(mark);
+    return mark;
   }
 
   /**
@@ -95,28 +112,38 @@ export class GreenTreeBuilder {
    * @param mark The mark to apply.
    * @param kind The node kind to create.
    */
-
   public applyMark(mark: Mark, kind: SyntaxKind): void {
-    const markLen = mark.children.length;
-    const ourLen = this.children.length;
+    const markedChildren = this.sliceOffMark(mark);
+    this.children.push(this.nodeCache.createNode(kind, markedChildren));
+  }
 
-    if (ourLen < markLen) {
-      throw new Error('Mark has expired. State has unwound past mark.');
+  /**
+   * Slice off the children after the given mark.
+   *
+   * @param mark The mark to slice.
+   * @returns The elements of the current node that are _after_ the given mark.
+   */
+  private sliceOffMark(mark: Mark): GreenElement[] {
+    const markIndex = this.marks.indexOf(mark);
+    if (markIndex < 0) {
+      throw new Error('Mark is not applicable to this node.');
     }
 
-    // TODO (jg): ensure these slices are actually right for what was
-    // intended
-    const ourChildren = this.children.slice(0, ourLen - markLen);
-    const bufferedChildren = this.children.slice(ourLen - markLen);
-
-    // TODO (jg): check this equality check is enough
-    if (!bufferedChildren.every((child, idx) => mark.children[idx] === child)) {
+    if (mark.index > this.children.length) {
       throw new Error('Mark has expired. Child state does not match.');
     }
 
-    const node = this.nodeCache.createNode(kind, ourChildren);
+    // Clear out marks that are no longer applicable.
+    const expiredIndex = this.marks.findIndex((m) => {
+      return m.index > mark.index;
+    });
+    if (expiredIndex > 0) {
+      this.marks = this.marks.slice(0, expiredIndex);
+    }
 
-    this.children = [node, ...bufferedChildren];
+    const markedChildren = this.children.slice(mark.index);
+    this.children = this.children.slice(0, mark.index);
+    return markedChildren;
   }
 
   /**

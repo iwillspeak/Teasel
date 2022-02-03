@@ -1,6 +1,8 @@
 import {assert} from 'chai';
+import {debugToString} from '../../../syntax/pyracantha/Debug.js';
 import {GreenNode} from '../../../syntax/pyracantha/GreenNode.js';
 import {GreenTreeBuilder} from '../../../syntax/pyracantha/GreenTreeBuilder.js';
+import {RedNode} from '../../../syntax/pyracantha/RedNode.js';
 
 suite('Green Tree Builder', () => {
   test('build empty tree has root node', () => {
@@ -37,5 +39,45 @@ suite('Green Tree Builder', () => {
     assert.equal(htmlNode.children[1].textLength, 4);
     assert.equal(htmlNode.children[2].kind, 3);
     assert.equal(htmlNode.children[2].textLength, 1);
+  });
+
+  test('build node with marks', () => {
+    const builder = new GreenTreeBuilder();
+
+    builder.token(1, ' ');
+    const nodeMark = builder.mark();
+    const tagMark = builder.mark();
+    builder.token(2, '<');
+    builder.token(3, 'hello');
+    builder.token(2, '>');
+    builder.applyMark(tagMark, 100);
+    builder.token(4, 'world');
+    const endTagmark = builder.mark();
+    builder.token(2, '<');
+    builder.token(3, 'hello');
+    builder.token(2, '>');
+    builder.applyMark(endTagmark, 101);
+    builder.token(1, '\t');
+    builder.applyMark(nodeMark, 102);
+
+    const root = builder.buildRoot(105);
+
+    assert.equal(
+      debugToString(RedNode.createRoot(root)).trim(),
+      `
+105: {0..21}
+  1: {0..1} " "
+  102: {1..21}
+    100: {1..8}
+      2: {1..2} "<"
+      3: {2..7} "hello"
+      2: {7..8} ">"
+    4: {8..13} "world"
+    101: {13..20}
+      2: {13..14} "<"
+      3: {14..19} "hello"
+      2: {19..20} ">"
+    1: {20..21} "\\t"`.trim()
+    );
   });
 });
