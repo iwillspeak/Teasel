@@ -151,7 +151,7 @@ export class Parser {
   public parse(): ParseResult {
     this.parseDocType();
     while (!this.lookingAt(TokenKind.EndOfFile)) {
-      this.parseRootElement();
+      this.parseElement();
     }
     this.expect(TokenKind.EndOfFile, SyntaxKinds.EndOfFile);
 
@@ -259,20 +259,11 @@ export class Parser {
    * Parse a single element in the document. This can be either a node, a text
    * elemenet, or a comment or other trivia.
    */
-  private parseRootElement(): void {
+  private parseElement(): void {
     if (this.lookingAt(TokenKind.TagCloseStart)) {
       this.raiseError('Unexpected end tag at document root');
       this.parseEndTag();
-    } else {
-      this.parseInnerElement();
-    }
-  }
-
-  /**
-   * Parse an inner element.
-   */
-  private parseInnerElement(): void {
-    if (this.lookingAt(TokenKind.TagStart)) {
+    } else if (this.lookingAt(TokenKind.TagStart)) {
       this.parseNode();
     } else if (this.lookingAt(TokenKind.Comment)) {
       this.bump(SyntaxKinds.Comment);
@@ -289,7 +280,7 @@ export class Parser {
     let selfClosing = this.parseStartTag();
     if (!selfClosing) {
       while (!this.lookingAtAny(tokenSets.INNER_ELEMENT_FOLLOW)) {
-        this.parseInnerElement();
+        this.parseElement();
       }
 
       this.parseEndTag();
