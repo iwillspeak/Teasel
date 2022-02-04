@@ -1,4 +1,5 @@
 import {GreenTreeBuilder} from '../syntax/pyracantha/GreenTreeBuilder.js';
+import {NodeCache} from '../syntax/pyracantha/NodeCache.js';
 import {SyntaxKind} from '../syntax/pyracantha/Pyracantha.js';
 import {RedNode} from '../syntax/pyracantha/RedNode.js';
 import {Tokenizer} from '../tokenize/Tokenizer.js';
@@ -127,11 +128,12 @@ export class Parser {
    *
    * @param tokens The tokens to parse into a tree.
    */
-  public constructor(tokens: Tokenizer) {
+  public constructor(
+    tokens: Tokenizer,
+    cache: NodeCache | number | undefined = undefined
+  ) {
     this.tokens = tokens;
-    // FIXME: Once this takes a token cache we should add a constructor so a
-    //        shared cache can be provided.
-    this.builder = new GreenTreeBuilder();
+    this.builder = new GreenTreeBuilder(cache);
     this.errors = [];
   }
 
