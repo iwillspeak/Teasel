@@ -1,7 +1,6 @@
 import {RedNode} from './pyracantha/RedNode.js';
 import {SyntaxKinds} from '../parse/Parser.js';
 import {RedToken} from './pyracantha/RedToken.js';
-import {map, filter, firstOr, drop} from 'iter-tools';
 
 export class DocumentSyntax {
   private syntax: RedNode;
@@ -11,10 +10,13 @@ export class DocumentSyntax {
   }
 
   public get doctype(): DoctypeSyntax | null {
-    return firstOr(
-      null,
-      filter((x) => x !== null, map(DoctypeSyntax.cast, this.syntax.children()))
-    );
+    for (const child of this.syntax.children()) {
+      const docType = DoctypeSyntax.cast(child);
+      if (docType) {
+        return docType;
+      }
+    }
+    return null;
   }
 
   public static cast(node: RedNode): DocumentSyntax | null {
@@ -34,22 +36,20 @@ export class DoctypeSyntax {
   }
 
   public get documentKind(): string | null {
-    return firstOr(
-      null,
-      drop(
-        1,
-        filter(
-          (x) => x !== null,
-          map((e) => {
-            if (e instanceof RedToken && e.kind == SyntaxKinds.Ident) {
-              return e.text;
-            } else {
-              return null;
-            }
-          }, this.syntax.childrenWithTokens())
-        )
-      )
-    );
+    let seen = false;
+
+    for (const child of this.syntax.childrenWithTokens()) {
+      if (child instanceof RedToken && child.kind === SyntaxKinds.Ident) {
+        if (!seen) {
+          seen = true;
+          continue;
+        }
+
+        return child.text;
+      }
+    }
+
+    return null;
   }
 
   public static cast(node: RedNode): DoctypeSyntax | null {
