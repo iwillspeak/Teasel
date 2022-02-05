@@ -39,7 +39,7 @@ text. Semanitc transformation into a DOM is _not_ the intent of this library.
   * [x] Parser should accept optional cache.
  * [ ] Handle Closing of outer tags correctly. e.g.: `<p><i>hello</p>`.
  * [ ] Handle Closing of non-nesting sibilings. e.g.: `<li>a<li>b`.
- * [ ] Handling for implicit self closing of 'void' elements `<hr>` etc.
+ * [x] Handling for implicit self closing of 'void' elements `<hr>` etc.
  * [ ] Support for raw text.
   * [ ] Handling of raw text elements. e.g. `script`, and `style`.
   * [ ] Support for `CDATA` values / tokens.
