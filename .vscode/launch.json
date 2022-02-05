@@ -29,7 +29,10 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/lib/main.js",
+      "program": "${workspaceFolder}/lib/cli.js",
+      "args": [
+        "${workspaceFolder}/spec.html"
+      ],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/lib/**/*.js"
