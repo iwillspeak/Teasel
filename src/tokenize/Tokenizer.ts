@@ -1,6 +1,19 @@
 import {Token} from './Token.js';
 import {TokenKind} from './TokenKind.js';
 
+enum Chars {
+  LeftAngle = '<'.charCodeAt(0),
+  RightAngle = '>'.charCodeAt(0),
+  DoubleQuote = '"'.charCodeAt(0),
+  SingleQuote = "'".charCodeAt(0),
+  Slash = '/'.charCodeAt(0),
+  Eq = '='.charCodeAt(0),
+  Space = ' '.charCodeAt(0),
+  Tab = '\t'.charCodeAt(0),
+  Minus = '-'.charCodeAt(0),
+  Bang = '!'.charCodeAt(0)
+}
+
 /**
  * Lexer's state. Each state is a point the lexer can be in between characters
  * in the input stream.
@@ -32,7 +45,12 @@ enum LexState {
  * other important information.
  */
 const charFacts = {
-  SPACES: ' \n\t\r',
+  SPACES: [
+    ' '.charCodeAt(0),
+    '\n'.charCodeAt(0),
+    '\t'.charCodeAt(0),
+    '\r'.charCodeAt(0)
+  ],
   A_LOWER: 'a'.charCodeAt(0),
   Z_LOWER: 'z'.charCodeAt(0),
   A_UPPER: 'A'.charCodeAt(0),
@@ -127,7 +145,7 @@ export class Tokenizer {
     let finished = false;
 
     while (!finished && currentCharIdx < this.buffer.length) {
-      const currentChar = this.buffer[currentCharIdx];
+      const currentChar = this.buffer.charCodeAt(currentCharIdx);
       const nextState = this.nextTransition(state, currentChar);
 
       if (nextState === null) {
@@ -195,25 +213,25 @@ export class Tokenizer {
    */
   private nextTransition(
     state: LexState,
-    currentChar: string
+    currentChar: number
   ): LexState | null {
     switch (state) {
       case LexState.Start:
         switch (currentChar) {
-          case '<':
+          case Chars.LeftAngle:
             return LexState.LeftAngle;
-          case '>':
+          case Chars.RightAngle:
             return LexState.RightAngle;
-          case '"':
+          case Chars.DoubleQuote:
             return LexState.DoubleQuote;
-          case "'":
+          case Chars.SingleQuote:
             return LexState.SingleQuote;
-          case '/':
+          case Chars.Slash:
             return LexState.Slash;
-          case '=':
+          case Chars.Eq:
             return LexState.Eq;
-          case '\t':
-          case ' ':
+          case Chars.Tab:
+          case Chars.Space:
             return LexState.Space;
           default:
             if (Tokenizer.isIdentChar(currentChar)) {
@@ -225,9 +243,9 @@ export class Tokenizer {
         }
       case LexState.LeftAngle:
         switch (currentChar) {
-          case '/':
+          case Chars.Slash:
             return LexState.Close;
-          case '!':
+          case Chars.Bang:
             return LexState.LeftAngleBang;
           default:
             return null;
@@ -247,14 +265,14 @@ export class Tokenizer {
         return null;
       }
       case LexState.LeftAngleBang: {
-        if (currentChar === '-') {
+        if (currentChar === Chars.Minus) {
           return LexState.CommentStartOneDash;
         } else {
           return null;
         }
       }
       case LexState.CommentStartOneDash: {
-        if (currentChar === '-') {
+        if (currentChar === Chars.Minus) {
           return LexState.CommentStartDoubleDash;
         } else {
           return null;
@@ -262,14 +280,14 @@ export class Tokenizer {
       }
       case LexState.InComment:
       case LexState.CommentStartDoubleDash: {
-        if (currentChar === '-') {
+        if (currentChar === Chars.Minus) {
           return LexState.CommentSeenDash;
         } else {
           return LexState.InComment;
         }
       }
       case LexState.CommentSeenDash: {
-        if (currentChar === '-') {
+        if (currentChar === Chars.Minus) {
           return LexState.CommentSeenDoubleDash;
         } else {
           return LexState.InComment;
@@ -277,16 +295,16 @@ export class Tokenizer {
       }
       case LexState.CommentSeenDoubleDash: {
         switch (currentChar) {
-          case '>':
+          case Chars.RightAngle:
             return LexState.CommentDone;
-          case '-':
+          case Chars.Minus:
             return LexState.CommentSeenDoubleDash;
           default:
             return LexState.InComment;
         }
       }
       case LexState.Slash: {
-        if (currentChar === '>') {
+        if (currentChar === Chars.RightAngle) {
           return LexState.SelfClose;
         } else {
           return null;
@@ -303,8 +321,8 @@ export class Tokenizer {
    * @param currentChar The input character
    * @returns true if the charactre represents a space.
    */
-  private static isSpaceChar(currentChar: string): boolean {
-    return charFacts.SPACES.indexOf(currentChar) > -1;
+  private static isSpaceChar(currentChar: number): boolean {
+    return charFacts.SPACES.includes(currentChar);
   }
 
   /**
@@ -313,13 +331,11 @@ export class Tokenizer {
    * @param currentChar The input character.
    * @returns True if the character is an identifier character.
    */
-  private static isIdentChar(currentChar: string): boolean {
-    const charCode = currentChar.charCodeAt(0);
-
+  private static isIdentChar(currentChar: number): boolean {
     return (
-      (charCode >= charFacts.A_LOWER && charCode <= charFacts.Z_LOWER) ||
-      (charCode >= charFacts.A_UPPER && charCode <= charFacts.Z_UPPER) ||
-      (charCode >= charFacts.ZERO && charCode <= charFacts.NINE)
+      (currentChar >= charFacts.A_LOWER && currentChar <= charFacts.Z_LOWER) ||
+      (currentChar >= charFacts.A_UPPER && currentChar <= charFacts.Z_UPPER) ||
+      (currentChar >= charFacts.ZERO && currentChar <= charFacts.NINE)
     );
   }
 }
