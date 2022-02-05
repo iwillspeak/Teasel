@@ -7,16 +7,16 @@ import {SyntaxKinds} from '../../parse/Parser.js';
 export class NodeCache {
   private size: number;
 
-  private cachedTokens: Map<[SyntaxKind, string], GreenToken>;
+  private cachedTokens: Map<SyntaxKind, Map<string, GreenToken>>;
   private cachedNodes: Map<[SyntaxKind, GreenElement[]], GreenNode>;
 
   public constructor(size: number | undefined) {
     if (size === undefined) {
-      size = 3;
+      size = 0;
     }
 
     this.size = size;
-    this.cachedTokens = new Map<[SyntaxKinds, string], GreenToken>();
+    this.cachedTokens = new Map<SyntaxKinds, Map<string, GreenToken>>();
     this.cachedNodes = new Map<[SyntaxKinds, GreenElement[]], GreenNode>();
   }
 
@@ -27,7 +27,7 @@ export class NodeCache {
    * @param children The children for this node.
    */
   createNode(kind: number, children: GreenElement[]): GreenNode {
-    if (children.length <= this.size) {
+    if (children.length >= this.size) {
       return new GreenNode(kind, children);
     }
 
@@ -47,12 +47,20 @@ export class NodeCache {
    * @param text The backing text for this token.
    */
   createToken(kind: number, text: string): GreenToken {
-    let found = this.cachedTokens.get([kind, text]);
-    if (found === undefined) {
-      found = new GreenToken(kind, text);
-      this.cachedTokens.set([kind, text], found);
+    let kindCache = this.cachedTokens.get(kind);
+
+    if (kindCache === undefined) {
+      kindCache = new Map<string, GreenToken>();
+      this.cachedTokens.set(kind, kindCache);
     }
 
-    return found;
+    let cachedToken = kindCache.get(text);
+
+    if (cachedToken === undefined) {
+      cachedToken = new GreenToken(kind, text);
+      kindCache.set(text, cachedToken);
+    }
+
+    return cachedToken;
   }
 }
