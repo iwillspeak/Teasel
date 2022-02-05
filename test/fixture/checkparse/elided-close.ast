@@ -1,0 +1,65 @@
+Document: {0..120}
+  Doctype: {0..15}
+    DoctypeStart: {0..2} "<!"
+    Ident: {2..9} "doctype"
+    Space: {9..10} " "
+    Ident: {10..14} "html"
+    TagEnd: {14..15} ">"
+  Text: {15..16} "\n"
+  Node: {16..120}
+    OpeningTag: {16..22}
+      TagStart: {16..17} "<"
+      Ident: {17..21} "html"
+      TagEnd: {21..22} ">"
+    Text: {22..25} "\n  "
+    Node: {25..120}
+      OpeningTag: {25..31}
+        TagStart: {25..26} "<"
+        Ident: {26..30} "body"
+        TagEnd: {30..31} ">"
+      Text: {31..36} "\n    "
+      Node: {36..63}
+        OpeningTag: {36..63}
+          TagStart: {36..37} "<"
+          Ident: {37..40} "img"
+          Space: {40..41} " "
+          Attribute: {41..62}
+            Ident: {41..44} "src"
+            Trivia: {44..45} "="
+            AttributeValue: {45..61}
+              Trivia: {45..46} "\""
+              Text: {46..60} "/a-n-p-n-g.jpg"
+              Trivia: {60..61} "\""
+            Space: {61..62} " "
+          TagEnd: {62..63} ">"
+      Text: {63..68} "\n    "
+      Node: {68..72}
+        OpeningTag: {68..72}
+          TagStart: {68..69} "<"
+          Ident: {69..71} "hr"
+          TagEnd: {71..72} ">"
+      Text: {72..77} "\n    "
+      Node: {77..119}
+        OpeningTag: {77..81}
+          TagStart: {77..78} "<"
+          Ident: {78..80} "ul"
+          TagEnd: {80..81} ">"
+        Text: {81..88} "\n      "
+        Node: {88..114}
+          OpeningTag: {88..92}
+            TagStart: {88..89} "<"
+            Ident: {89..91} "li"
+            TagEnd: {91..92} ">"
+          Text: {92..102} "One\n      "
+          Node: {102..114}
+            OpeningTag: {102..106}
+              TagStart: {102..103} "<"
+              Ident: {103..105} "li"
+              TagEnd: {105..106} ">"
+            Text: {106..114} "Two\n    "
+        ClosingTag: {114..119}
+          TagStart: {114..116} "</"
+          Ident: {116..118} "ul"
+          TagEnd: {118..119} ">"
+      Text: {119..120} "\n"
+  EndOfFile: {120..120} ""

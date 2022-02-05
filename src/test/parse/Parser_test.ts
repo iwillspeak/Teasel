@@ -95,7 +95,7 @@ suite('Parser', () => {
       `<!DOCTYPE html>
     <html>
     <body>
-    <h1>A N Example</h2>
+    <h1>A N Example</h1>
     <p>I'm a paragraph, with an image.
     <img src="spiky-tree.jpg" width="500" height="600" />
     <!-- comment example -->
@@ -132,7 +132,7 @@ Document: {0..227}
         Text: {46..57} "A N Example"
         ClosingTag: {57..62}
           TagStart: {57..59} "</"
-          Ident: {59..61} "h2"
+          Ident: {59..61} "h1"
           TagEnd: {61..62} ">"
       Text: {62..67} "\\n    "
       Node: {67..197}

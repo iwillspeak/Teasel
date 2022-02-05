@@ -280,23 +280,45 @@ export class Parser {
    * Parse a sequence of elements.
    */
   private parseElements(): void {
-    const outerElements = [];
+    const openElements = [];
     while (!this.lookingAt(TokenKind.EndOfFile)) {
       if (this.lookingAt(TokenKind.TagCloseStart)) {
-        const tag = outerElements.pop();
-        this.parseEndTag();
-        if (tag === undefined) {
-          this.raiseError('Unexpected end tag at document root');
+        // If we are looking at a closing tag we need to parse it and find the
+        // matching element to close.
+        const tagMark = this.builder.mark();
+        const tag = this.parseEndTag();
+        const matchingTagIdx = openElements.lastIndexOf(tag);
+
+        if (matchingTagIdx < 0) {
+          // We have a mis-matched closing tag. Raise an erorr and wrap this
+          // as a vestigial node.
+          this.raiseError('Unexpected end tag.');
+          this.builder.applyMark(tagMark, SyntaxKinds.Node);
         } else {
+          // Slice off the end tag, close any intermediate nodes.
+          const endTag = this.builder.sliceOffMark(tagMark);
+          while (openElements.length > matchingTagIdx + 1) {
+            this.builder.finishNode();
+            openElements.pop();
+          }
+
+          // Splice the tag back in and finish the node.
+          this.builder.elements(endTag);
           this.builder.finishNode();
+          openElements.pop();
         }
       } else if (this.lookingAt(TokenKind.TagStart)) {
+        // If we are looking at a start tag parse it and push it as an open
+        // element if it doesn't self-close
         this.builder.startNode(SyntaxKinds.Node);
         let [tag, selfClosing] = this.parseStartTag();
+
+        // If the node is self-closing then just end it now, otherwise push
+        // it on to our stack of open elements.
         if (selfClosing || this.isVoidElement(tag)) {
           this.builder.finishNode();
         } else {
-          outerElements.push(tag);
+          openElements.push(tag);
         }
       } else if (this.lookingAt(TokenKind.Comment)) {
         this.bump(SyntaxKinds.Comment);
@@ -306,7 +328,7 @@ export class Parser {
     }
 
     // Close off any un-terminated elements.
-    while (outerElements.pop()) {
+    while (openElements.pop()) {
       this.builder.finishNode();
     }
   }
@@ -368,14 +390,16 @@ export class Parser {
   /**
    * Parse the end tag of a node. e.g. `</p>`.
    */
-  private parseEndTag(): void {
+  private parseEndTag(): string {
     this.builder.startNode(SyntaxKinds.ClosingTag);
     this.expect(TokenKind.TagCloseStart, SyntaxKinds.TagStart);
     this.tolerateWhitespace();
+    const tag = this.tokens.current.lexeme;
     this.expect(TokenKind.Ident, SyntaxKinds.Ident);
     this.skipWhitespace();
     this.expect(TokenKind.TagEnd, SyntaxKinds.TagEnd);
     this.builder.finishNode();
+    return tag;
   }
 
   /**
