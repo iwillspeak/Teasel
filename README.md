@@ -37,7 +37,7 @@ text. Semanitc transformation into a DOM is _not_ the intent of this library.
  * [x] Node cache should cache nodes in the green tree builder.
   * [x] Node cache interface and implementaiton.
   * [x] Parser should accept optional cache.
- * [ ] Handle Closing of outer tags correctly. e.g.: `<p><i>hello</p>`.
+ * [x] Handle Closing of outer tags correctly. e.g.: `<p><i>hello</p>`.
  * [ ] Handle Closing of non-nesting sibilings. e.g.: `<li>a<li>b`.
  * [x] Handling for implicit self closing of 'void' elements `<hr>` etc.
  * [ ] Support for raw text.

@@ -123,7 +123,7 @@ export class GreenTreeBuilder {
    * @param mark The mark to slice.
    * @returns The elements of the current node that are _after_ the given mark.
    */
-  private sliceOffMark(mark: Mark): GreenElement[] {
+  public sliceOffMark(mark: Mark): GreenElement[] {
     const markIndex = this.marks.indexOf(mark);
     if (markIndex < 0) {
       throw new Error('Mark is not applicable to this node.');
@@ -154,6 +154,17 @@ export class GreenTreeBuilder {
    */
   public token(kind: SyntaxKind, text: string): void {
     this.children.push(this.nodeCache.createToken(kind, text));
+  }
+
+  /**
+   * Emit a given sequence of elements into the tree.
+   *
+   * @param elements The elements to buffer.
+   */
+  public elements(elements: GreenElement[]): void {
+    for (const element of elements) {
+      this.children.push(element);
+    }
   }
 
   /**
