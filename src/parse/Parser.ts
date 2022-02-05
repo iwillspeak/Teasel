@@ -109,6 +109,29 @@ const tokenSets = {
   ]
 };
 
+const elementFacts = {
+  /**
+   * Tag names that should be treated as void elements in HTML. These tags are
+   * always treated as self-closing, even if the `/>` form isn't used.
+   */
+  VOID_ELEMENTS: [
+    'area',
+    'base',
+    'br',
+    'col',
+    'embed',
+    'hr',
+    'img',
+    'input',
+    'link',
+    'meta',
+    'param',
+    'source',
+    'track',
+    'wbr'
+  ]
+};
+
 /**
  * HTML Document Parser
  *
@@ -150,9 +173,7 @@ export class Parser {
    */
   public parse(): ParseResult {
     this.parseDocType();
-    while (!this.lookingAt(TokenKind.EndOfFile)) {
-      this.parseElement();
-    }
+    this.parseElements();
     this.expect(TokenKind.EndOfFile, SyntaxKinds.EndOfFile);
 
     return {
@@ -256,36 +277,48 @@ export class Parser {
   }
 
   /**
-   * Parse a single element in the document. This can be either a node, a text
-   * elemenet, or a comment or other trivia.
+   * Parse a sequence of elements.
    */
-  private parseElement(): void {
-    if (this.lookingAt(TokenKind.TagCloseStart)) {
-      this.raiseError('Unexpected end tag at document root');
-      this.parseEndTag();
-    } else if (this.lookingAt(TokenKind.TagStart)) {
-      this.parseNode();
-    } else if (this.lookingAt(TokenKind.Comment)) {
-      this.bump(SyntaxKinds.Comment);
-    } else {
-      this.parseText();
+  private parseElements(): void {
+    const outerElements = [];
+    while (!this.lookingAt(TokenKind.EndOfFile)) {
+      if (this.lookingAt(TokenKind.TagCloseStart)) {
+        const tag = outerElements.pop();
+        this.parseEndTag();
+        if (tag === undefined) {
+          this.raiseError('Unexpected end tag at document root');
+        } else {
+          this.builder.finishNode();
+        }
+      } else if (this.lookingAt(TokenKind.TagStart)) {
+        this.builder.startNode(SyntaxKinds.Node);
+        let [tag, selfClosing] = this.parseStartTag();
+        if (selfClosing || this.isVoidElement(tag)) {
+          this.builder.finishNode();
+        } else {
+          outerElements.push(tag);
+        }
+      } else if (this.lookingAt(TokenKind.Comment)) {
+        this.bump(SyntaxKinds.Comment);
+      } else {
+        this.parseText();
+      }
+    }
+
+    // Close off any un-terminated elements.
+    while (outerElements.pop()) {
+      this.builder.finishNode();
     }
   }
 
   /**
-   * Parse a single node, be it a standard or self-closing one.
+   * Check if the given tag is an HTML void element.
+   *
+   * @param tag The tag to check.
+   * @returns True if the tag is an HTML void element.
    */
-  private parseNode(): void {
-    this.builder.startNode(SyntaxKinds.Node);
-    let selfClosing = this.parseStartTag();
-    if (!selfClosing) {
-      while (!this.lookingAtAny(tokenSets.INNER_ELEMENT_FOLLOW)) {
-        this.parseElement();
-      }
-
-      this.parseEndTag();
-    }
-    this.builder.finishNode();
+  private isVoidElement(tag: string): boolean {
+    return elementFacts.VOID_ELEMENTS.includes(tag.toLowerCase());
   }
 
   /**
@@ -299,12 +332,13 @@ export class Parser {
    *
    * @returns True if the tag is a self-closing tag, false otherwise.
    */
-  private parseStartTag(): boolean {
+  private parseStartTag(): [string, boolean] {
     let isSelfClose = false;
 
     this.builder.startNode(SyntaxKinds.OpeningTag);
     this.expect(TokenKind.TagStart, SyntaxKinds.TagStart);
     this.tolerateWhitespace();
+    const tag = this.tokens.current.lexeme;
     this.expect(TokenKind.Ident, SyntaxKinds.Ident);
     this.skipWhitespace();
 
@@ -328,7 +362,7 @@ export class Parser {
     }
 
     this.builder.finishNode();
-    return isSelfClose;
+    return [tag, isSelfClose];
   }
 
   /**
