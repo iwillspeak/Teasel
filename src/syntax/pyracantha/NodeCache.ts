@@ -12,6 +12,7 @@ export class NodeCache {
 
   public constructor(size: number | undefined) {
     if (size === undefined) {
+      // TODO: tweak this for best caching tradeoff.
       size = 0;
     }
 
@@ -27,10 +28,11 @@ export class NodeCache {
    * @param children The children for this node.
    */
   createNode(kind: number, children: GreenElement[]): GreenNode {
-    if (children.length >= this.size) {
+    if (children.length > this.size) {
       return new GreenNode(kind, children);
     }
 
+    // FIXME: caching of nodes.
     let found = this.cachedNodes.get([kind, children]);
     if (found === undefined) {
       found = new GreenNode(kind, children);
