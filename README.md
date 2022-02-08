@@ -43,5 +43,6 @@ text. Semanitc transformation into a DOM is _not_ the intent of this library.
  * [ ] Support for raw text.
   * [ ] Handling of raw text elements. e.g. `script`, and `style`.
   * [ ] Support for `CDATA` values / tokens.
+ * [ ] Support for esoteric DOCTYPEs e.g. `SYTEM 'about:legacy-compat'`.
  * [ ] Document and fragment parse APIs.
  * [ ] Syntax builder / factory API for creating and updating nodes.
