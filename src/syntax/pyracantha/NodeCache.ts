@@ -13,16 +13,21 @@ class MapEntry<K, V> {
 }
 
 class CacheMap<K, V> {
-  private map: Map<number, MapEntry<K, V>[]>;
+  private map: Map<SyntaxKind, Map<number, MapEntry<K, V>[]>>;
 
   public constructor(private hasher: Hasher<K>, private comparer: PartialEq<K>)
   {
-    this.map = new Map<number, MapEntry<K, V>[]>();
+    this.map = new Map<SyntaxKind, Map<number, MapEntry<K, V>[]>>();
   }
 
-  public get(key: K): V | undefined {
+  public get(kind: SyntaxKind, key: K): V | undefined {
+    const slab = this.map.get(kind);
+    if (slab === undefined) {
+      return undefined;
+    }
+
     const hash = this.hasher(key);
-    const bucket = this.map.get(hash);
+    const bucket = slab.get(hash);
     if (bucket === undefined) {
       return undefined;
     }
@@ -38,24 +43,31 @@ class CacheMap<K, V> {
     return entry.value;
   }
 
-  public set(key: K, value: V): void {
+  public set(kind: SyntaxKind, key: K, value: V): void {
+    let slab = this.map.get(kind);
+    if (slab === undefined) {
+      slab = new Map<number, MapEntry<K, V>[]>();
+      this.map.set(kind, slab);
+    }
+
     const hash = this.hasher(key);
-    let bucket = this.map.get(hash);
+    let bucket = slab.get(hash);
     if (bucket === undefined) {
       bucket = []
-      this.map.set(hash, bucket);
+      slab.set(hash, bucket);
+    } else if (bucket.length > 4) {
+      bucket.unshift();
     }
 
     bucket.push(new MapEntry(key, value));
   }
 }
 
-function djbCombine(hash: number, value: number) {
+function djbCombine(hash: number, value: number): number {
   return hash + (hash << 5) + value;
 }
 
-function djbMini(s: string) {
-  let hash = 5381;
+function djbCombineString(hash: number, s: string): number {
   for (const char of s) {
     hash = djbCombine(hash, char.charCodeAt(0));
   }
@@ -65,8 +77,8 @@ function djbMini(s: string) {
 export class NodeCache {
   private size: number;
 
-  private cachedTokens: CacheMap<[SyntaxKind, string], GreenToken>;
-  private cachedNodes: CacheMap<[SyntaxKind, GreenElement[]], GreenNode>;
+  private cachedTokens: CacheMap<string, GreenToken>;
+  private cachedNodes: CacheMap<GreenElement[], GreenNode>;
 
   public constructor(size: number | undefined) {
     if (size === undefined) {
@@ -75,25 +87,23 @@ export class NodeCache {
     }
 
     this.size = size;
-    this.cachedTokens = new CacheMap<[SyntaxKinds, string], GreenToken>(
+    this.cachedTokens = new CacheMap<string, GreenToken>(
       (k) => {
         let hash = 5381;
-        hash = djbCombine(hash, k[0]);
-        hash = djbCombine(hash, djbMini(k[1]));
+        hash = djbCombineString(hash, k);
         return hash;
       },
-      (l, r) => l[0] === r[0] && l[1] === r[1]
+      (l, r) => l === r
     );
-    this.cachedNodes = new CacheMap<[SyntaxKinds, GreenElement[]], GreenNode>(
+    this.cachedNodes = new CacheMap<GreenElement[], GreenNode>(
       (k) => {
         let hash = 5381;
-        hash = djbCombine(hash, k[0]);
-        for (const element of k[1]) {
+        for (const element of k) {
           hash = djbCombine(hash, element.hash);
         }
         return hash;
       },
-      (l, r) => l[0] === r[0] && l[1].length === r[1].length && l[1].every((e, i) => e === r[1][i])
+      (l, r) => l.length === r.length && l.every((e, i) => e === r[i])
     );
   }
 
@@ -108,11 +118,10 @@ export class NodeCache {
       return new GreenNode(kind, children);
     }
 
-    // FIXME: caching of nodes.
-    let found = this.cachedNodes.get([kind, children]);
+    let found = this.cachedNodes.get(kind, children);
     if (found === undefined) {
       found = new GreenNode(kind, children);
-      this.cachedNodes.set([kind, children], found);
+      this.cachedNodes.set(kind, children, found);
     }
 
     return found;
@@ -125,12 +134,11 @@ export class NodeCache {
    * @param text The backing text for this token.
    */
   public createToken(kind: SyntaxKind, text: string): GreenToken {
-    const key: [SyntaxKind, string] = [kind, text];
-    let cachedToken = this.cachedTokens.get(key);
+    let cachedToken = this.cachedTokens.get(kind, text);
 
     if (cachedToken === undefined) {
       cachedToken = new GreenToken(kind, text);
-      this.cachedTokens.set(key, cachedToken);
+      this.cachedTokens.set(kind, text, cachedToken);
     }
 
     return cachedToken;
