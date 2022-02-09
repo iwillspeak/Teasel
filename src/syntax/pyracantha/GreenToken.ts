@@ -8,6 +8,9 @@ import {SyntaxKind} from './Pyracantha';
  * lexical analysis phase, or may be composites of several lexical tokens.
  */
 export class GreenToken {
+  // TODO: Hashing?
+  public hash: number;
+
   /**
    * # Create a Green Token
    *
@@ -17,7 +20,9 @@ export class GreenToken {
    * @param kind The kind for this token
    * @param text The text of this token
    */
-  public constructor(public kind: SyntaxKind, public text: string) {}
+  public constructor(public kind: SyntaxKind, public text: string) {
+    this.hash = Math.random();
+  }
 
   /**
    * Get the length of this token in the underlying source text. This is the

@@ -16,6 +16,9 @@ export class GreenNode {
    */
   public width: number;
 
+  // TODO: Is this best?
+  public hash: number;
+
   /**
    * # Create a Green Node
    *
@@ -33,6 +36,7 @@ export class GreenNode {
       (prev, current) => prev + current.textLength,
       0
     );
+    this.hash = Math.random();
   }
 
   /**
