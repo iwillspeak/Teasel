@@ -2,13 +2,12 @@ import {GreenElement} from './GreenTree.js';
 import {GreenNode} from './GreenNode.js';
 import {GreenToken} from './GreenToken.js';
 import {SyntaxKind} from './Pyracantha.js';
-import {SyntaxKinds} from '../../parse/Parser.js';
 
 type Hasher<V> = (value: V) => number;
 type PartialEq<V> = (left: V, right: V) => boolean;
 
 class MapEntry<K, V> {
-  public constructor(public key: K, public value: V)
+  public constructor(public key: K, public value: V | undefined)
   {}
 }
 
@@ -20,30 +19,7 @@ class CacheMap<K, V> {
     this.map = new Map<SyntaxKind, Map<number, MapEntry<K, V>[]>>();
   }
 
-  public get(kind: SyntaxKind, key: K): V | undefined {
-    const slab = this.map.get(kind);
-    if (slab === undefined) {
-      return undefined;
-    }
-
-    const hash = this.hasher(key);
-    const bucket = slab.get(hash);
-    if (bucket === undefined) {
-      return undefined;
-    }
-
-    const entry = bucket.find((e) => {
-      return this.comparer(e.key, key);
-    });
-
-    if (entry === undefined) {
-      return undefined;
-    }
-
-    return entry.value;
-  }
-
-  public set(kind: SyntaxKind, key: K, value: V): void {
+  public entry(kind: SyntaxKind, key: K): MapEntry<K, V> {
     let slab = this.map.get(kind);
     if (slab === undefined) {
       slab = new Map<number, MapEntry<K, V>[]>();
@@ -55,11 +31,18 @@ class CacheMap<K, V> {
     if (bucket === undefined) {
       bucket = []
       slab.set(hash, bucket);
-    } else if (bucket.length > 4) {
-      bucket.unshift();
     }
 
-    bucket.push(new MapEntry(key, value));
+    let entry = bucket.find((e) => {
+      return this.comparer(e.key, key);
+    });
+
+    if (entry === undefined) {
+      entry = new MapEntry<K, V>(key, undefined);
+      bucket.push(entry);
+    }
+
+    return entry;
   }
 }
 
@@ -68,8 +51,8 @@ function djbCombine(hash: number, value: number): number {
 }
 
 function djbCombineString(hash: number, s: string): number {
-  for (const char of s) {
-    hash = djbCombine(hash, char.charCodeAt(0));
+  for (let i = 0; i < s.length && i < 10; i++) {
+    hash = djbCombine(hash, s.charCodeAt(i));
   }
   return hash;
 }
@@ -83,7 +66,7 @@ export class NodeCache {
   public constructor(size: number | undefined) {
     if (size === undefined) {
       // TODO: tweak this for best caching tradeoff.
-      size = 5;
+      size = 3;
     }
 
     this.size = size;
@@ -118,13 +101,12 @@ export class NodeCache {
       return new GreenNode(kind, children);
     }
 
-    let found = this.cachedNodes.get(kind, children);
-    if (found === undefined) {
-      found = new GreenNode(kind, children);
-      this.cachedNodes.set(kind, children, found);
+    const entry = this.cachedNodes.entry(kind, children);
+    if (entry.value === undefined) {
+      entry.value = new GreenNode(kind, children);
     }
 
-    return found;
+    return entry.value;
   }
 
   /**
@@ -134,13 +116,12 @@ export class NodeCache {
    * @param text The backing text for this token.
    */
   public createToken(kind: SyntaxKind, text: string): GreenToken {
-    let cachedToken = this.cachedTokens.get(kind, text);
+    const entry = this.cachedTokens.entry(kind, text);
 
-    if (cachedToken === undefined) {
-      cachedToken = new GreenToken(kind, text);
-      this.cachedTokens.set(kind, text, cachedToken);
+    if (entry.value === undefined) {
+      entry.value = new GreenToken(kind, text);
     }
 
-    return cachedToken;
+    return entry.value;
   }
 }
