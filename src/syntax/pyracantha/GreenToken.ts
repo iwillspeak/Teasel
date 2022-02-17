@@ -1,3 +1,4 @@
+import {Djb} from './Djb.js';
 import {SyntaxKind} from './Pyracantha';
 
 /**
@@ -8,8 +9,7 @@ import {SyntaxKind} from './Pyracantha';
  * lexical analysis phase, or may be composites of several lexical tokens.
  */
 export class GreenToken {
-  // TODO: Hashing?
-  public hash: number;
+  private hashCode: number | undefined;
 
   /**
    * # Create a Green Token
@@ -21,7 +21,21 @@ export class GreenToken {
    * @param text The text of this token
    */
   public constructor(public kind: SyntaxKind, public text: string) {
-    this.hash = Math.random();
+    this.hashCode = undefined;
+  }
+
+  /**
+   * Get the hash code for this element.
+   */
+  public get hash(): number {
+    if (this.hashCode === undefined) {
+      var hash = new Djb();
+      hash.writeNumber(this.kind);
+      hash.writeString(this.text);
+      this.hashCode = hash.finish();
+    }
+
+    return this.hashCode;
   }
 
   /**

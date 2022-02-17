@@ -2,20 +2,23 @@ import {GreenElement} from './GreenTree.js';
 import {GreenNode} from './GreenNode.js';
 import {GreenToken} from './GreenToken.js';
 import {SyntaxKind} from './Pyracantha.js';
+import {Djb} from './Djb.js';
 
 type Hasher<V> = (value: V) => number;
 type PartialEq<V> = (left: V, right: V) => boolean;
 
-class MapEntry<K, V> {
-  public constructor(public key: K, public value: V | undefined)
-  {}
+interface MapEntry<K, V> {
+  key: K;
+  value: V | undefined;
 }
 
 class CacheMap<K, V> {
   private map: Map<SyntaxKind, Map<number, MapEntry<K, V>[]>>;
 
-  public constructor(private hasher: Hasher<K>, private comparer: PartialEq<K>)
-  {
+  public constructor(
+    private hasher: Hasher<K>,
+    private comparer: PartialEq<K>
+  ) {
     this.map = new Map<SyntaxKind, Map<number, MapEntry<K, V>[]>>();
   }
 
@@ -29,7 +32,7 @@ class CacheMap<K, V> {
     const hash = this.hasher(key);
     let bucket = slab.get(hash);
     if (bucket === undefined) {
-      bucket = []
+      bucket = [];
       slab.set(hash, bucket);
     }
 
@@ -38,7 +41,11 @@ class CacheMap<K, V> {
     });
 
     if (entry === undefined) {
-      entry = new MapEntry<K, V>(key, undefined);
+      if (bucket.length > 5) {
+        bucket.unshift();
+      }
+
+      entry = {key: key, value: undefined};
       bucket.push(entry);
     }
 
@@ -46,45 +53,32 @@ class CacheMap<K, V> {
   }
 }
 
-function djbCombine(hash: number, value: number): number {
-  return hash + (hash << 5) + value;
-}
-
-function djbCombineString(hash: number, s: string): number {
-  for (let i = 0; i < s.length && i < 10; i++) {
-    hash = djbCombine(hash, s.charCodeAt(i));
-  }
-  return hash;
-}
-
 export class NodeCache {
-  private size: number;
-
+  private maxNodeSize: number;
   private cachedTokens: CacheMap<string, GreenToken>;
   private cachedNodes: CacheMap<GreenElement[], GreenNode>;
 
   public constructor(size: number | undefined) {
     if (size === undefined) {
-      // TODO: tweak this for best caching tradeoff.
-      size = 3;
+      size = 4;
     }
 
-    this.size = size;
+    this.maxNodeSize = size;
     this.cachedTokens = new CacheMap<string, GreenToken>(
       (k) => {
-        let hash = 5381;
-        hash = djbCombineString(hash, k);
-        return hash;
+        var hash = new Djb();
+        hash.writeString(k);
+        return hash.finish();
       },
       (l, r) => l === r
     );
     this.cachedNodes = new CacheMap<GreenElement[], GreenNode>(
       (k) => {
-        let hash = 5381;
+        let hash = new Djb();
         for (const element of k) {
-          hash = djbCombine(hash, element.hash);
+          hash.writeNumber(element.hash);
         }
-        return hash;
+        return hash.finish();
       },
       (l, r) => l.length === r.length && l.every((e, i) => e === r[i])
     );
@@ -97,7 +91,7 @@ export class NodeCache {
    * @param children The children for this node.
    */
   public createNode(kind: number, children: GreenElement[]): GreenNode {
-    if (children.length > this.size) {
+    if (children.length > this.maxNodeSize) {
       return new GreenNode(kind, children);
     }
 
