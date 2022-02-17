@@ -1,5 +1,6 @@
-import {SyntaxKind} from './Pyracantha';
-import {GreenToken} from './GreenToken';
+import {SyntaxKind} from './Pyracantha.js';
+import {GreenToken} from './GreenToken.js';
+import {Djb} from './Djb.js';
 
 /**
  * # Green Node
@@ -10,14 +11,13 @@ import {GreenToken} from './GreenToken';
  * enable sharing of portions of the syntax tree.
  */
 export class GreenNode {
+  private hashCode: number | undefined;
+
   /**
    * The width of this node. This is cached based on the width of the node's
    * children
    */
   public width: number;
-
-  // TODO: Is this best?
-  public hash: number;
 
   /**
    * # Create a Green Node
@@ -36,7 +36,23 @@ export class GreenNode {
       (prev, current) => prev + current.textLength,
       0
     );
-    this.hash = Math.random();
+    this.hashCode = undefined;
+  }
+
+  /**
+   * Get the hash code for this element.
+   */
+  public get hash(): number {
+    if (this.hashCode === undefined) {
+      var hash = new Djb();
+      hash.writeNumber(this.kind);
+      for (var element of this.children) {
+        hash.writeNumber(element.hash);
+      }
+      this.hashCode = hash.finish();
+    }
+
+    return this.hashCode;
   }
 
   /**
