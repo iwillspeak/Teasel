@@ -29,10 +29,11 @@ export class GreenToken {
    */
   public get hash(): number {
     if (this.hashCode === undefined) {
-      var hash = new Djb();
-      hash.writeNumber(this.kind);
-      hash.writeString(this.text);
-      this.hashCode = hash.finish();
+      const hasher = Djb.getPooled();
+      hasher.writeNumber(this.kind);
+      hasher.writeString(this.text);
+      this.hashCode = hasher.finish();
+      Djb.returnPooled(hasher);
     }
 
     return this.hashCode;
