@@ -5,8 +5,16 @@ import {Parser, SyntaxKinds} from './parse/Parser.js';
 import {readFile} from 'fs/promises';
 import {debugDump} from './syntax/pyracantha/Debug.js';
 
+interface Options {
+  path: string;
+  dump: boolean;
+  time: boolean;
+  showHeap: boolean;
+  cacheLimit: number;
+}
+
 yargs(hideBin(process.argv))
-  .command<{path: string; dump: boolean; time: boolean}>(
+  .command<Options>(
     ['parse <path>', '$0'],
     'parse a HTML file and output the AST',
     (args) => {
@@ -19,6 +27,16 @@ yargs(hideBin(process.argv))
           describe: 'Dump the parsed file to standard output.',
           boolean: true,
           default: true
+        })
+        .option('showHeap', {
+          describe: 'Dump the heap state after parsing.',
+          boolean: true,
+          default: true
+        })
+        .option('cacheLimit', {
+          describe: 'Node size limit for the parser\'s cache.',
+          number: true,
+          default: 6
         })
         .option('time', {
           describe: 'Emit timings for to standard output.',
@@ -38,10 +56,15 @@ yargs(hideBin(process.argv))
         console.time('parse');
       }
 
-      const result = Parser.parseText(contents);
+      const result = Parser.parseText(contents, argv.cacheLimit);
+
       if (argv.time) {
         console.timeEnd('parse');
         console.timeEnd('overall');
+      }
+
+      if (argv.showHeap) {
+        console.log(process.memoryUsage());
       }
 
       if (argv.dump) {

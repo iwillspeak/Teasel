@@ -135,14 +135,13 @@ export class Tokenizer {
     let state = LexState.Start;
     let currentCharIdx = this.tokenStart;
     let tokenEnd = this.tokenStart;
-    let finished = false;
 
-    while (!finished && currentCharIdx < this.buffer.length) {
+    while (currentCharIdx < this.buffer.length) {
       const currentChar = this.buffer.charCodeAt(currentCharIdx);
       const nextState = this.nextTransition(state, currentChar);
 
       if (nextState === null) {
-        finished = true;
+        break;
       } else {
         state = nextState;
         currentCharIdx++;
