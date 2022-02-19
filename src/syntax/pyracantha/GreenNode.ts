@@ -46,8 +46,8 @@ export class GreenNode {
     if (this.hashCode === undefined) {
       const hasher = Djb.getPooled();
       hasher.writeNumber(this.kind);
-      hasher.writeNumber(this.width);
       for (var element of this.children) {
+        hasher.writeNumber(element.textLength);
         hasher.writeNumber(element.kind);
       }
       this.hashCode = hasher.finish();
