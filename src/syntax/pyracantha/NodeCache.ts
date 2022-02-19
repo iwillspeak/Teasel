@@ -41,7 +41,7 @@ class CacheMap<K, V> {
     });
 
     if (entry === undefined) {
-      if (bucket.length > 5) {
+      if (bucket.length > 2) {
         bucket.unshift();
       }
 
@@ -66,21 +66,36 @@ export class NodeCache {
     this.maxNodeSize = size;
     this.cachedTokens = new CacheMap<string, GreenToken>(
       (k) => {
-        var hash = new Djb();
-        hash.writeString(k);
-        return hash.finish();
+        var hasher = Djb.getPooled();
+        hasher.writeString(k);
+        var hash = hasher.finish();
+        Djb.returnPooled(hasher);
+        return hash;
       },
       (l, r) => l === r
     );
     this.cachedNodes = new CacheMap<GreenElement[], GreenNode>(
       (k) => {
-        let hash = new Djb();
+        const hasher = Djb.getPooled();
         for (const element of k) {
-          hash.writeNumber(element.hash);
+          hasher.writeNumber(element.hash);
         }
-        return hash.finish();
+        const hash = hasher.finish();
+        return hash;
       },
-      (l, r) => l.length === r.length && l.every((e, i) => e === r[i])
+      (l, r) => {
+        if (l.length !== r.length) {
+          return false;
+        }
+
+        for (var i = 0; i < l.length; i++) {
+          if (l[i] !== r[i]) {
+            return false;
+          }
+        }
+
+        return true;
+      }
     );
   }
 

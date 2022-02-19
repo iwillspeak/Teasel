@@ -44,12 +44,14 @@ export class GreenNode {
    */
   public get hash(): number {
     if (this.hashCode === undefined) {
-      var hash = new Djb();
-      hash.writeNumber(this.kind);
+      const hasher = Djb.getPooled();
+      hasher.writeNumber(this.kind);
+      hasher.writeNumber(this.width);
       for (var element of this.children) {
-        hash.writeNumber(element.hash);
+        hasher.writeNumber(element.kind);
       }
-      this.hashCode = hash.finish();
+      this.hashCode = hasher.finish();
+      Djb.returnPooled(hasher);
     }
 
     return this.hashCode;

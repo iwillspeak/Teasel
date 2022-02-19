@@ -31,6 +31,8 @@
       ],
       "program": "${workspaceFolder}/lib/cli.js",
       "args": [
+        "--time=false",
+        "--dump=false",
         "${workspaceFolder}/spec.html"
       ],
       "preLaunchTask": "tsc: build - tsconfig.json",
