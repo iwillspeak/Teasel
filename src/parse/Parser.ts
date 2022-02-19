@@ -296,15 +296,19 @@ export class Parser {
           this.raiseError('Unexpected end tag.');
           this.builder.applyMark(tagMark, SyntaxKinds.Node);
         } else {
-          // Slice off the end tag, close any intermediate nodes.
-          const endTag = this.builder.sliceOffMark(tagMark);
-          while (openElements.length > matchingTagIdx + 1) {
-            this.builder.finishNode();
-            openElements.pop();
+          // If this tag wasn't the TOS then we have some backtracking to do..
+          if (openElements.length != matchingTagIdx + 1) {
+            // Slice off the end tag, close any intermediate nodes.
+            const endTag = this.builder.sliceOffMark(tagMark);
+            while (openElements.length > matchingTagIdx + 1) {
+              this.builder.finishNode();
+              openElements.pop();
+            }
+
+            // Splice the tag back in and finish the node.
+            this.builder.elements(endTag);
           }
 
-          // Splice the tag back in and finish the node.
-          this.builder.elements(endTag);
           this.builder.finishNode();
           openElements.pop();
         }
