@@ -110,7 +110,7 @@ const tokenSets = {
 };
 
 interface OptionalTagInfo {
-  closes: string;
+  closes: string[];
   closesWithin: string[];
 }
 
@@ -141,8 +141,18 @@ const elementFacts = {
    * close inside. Used to allow lists and tables to be expressed more compactly.
    */
   OPTIONAL_TAGS: new Map<string, OptionalTagInfo>([
-    ['li', {closes: 'li', closesWithin: ['ul', 'ol']}],
-    ['body', {closes: 'head', closesWithin: ['html']}]
+    ['body', {closes: ['head'], closesWithin: ['html']}],
+    ['li', {closes: ['li'], closesWithin: ['ul', 'ol']}],
+    ['dt', {closes: ['dd', 'dt'], closesWithin: ['dl']}],
+    ['dd', {closes: ['dt', 'dd'], closesWithin: ['dl']}],
+    // TODO: `<p>` tags are hard...
+    ['rt', {closes: ['rt', 'rp'], closesWithin: ['ruby']}],
+    ['rp', {closes: ['rp', 'rt'], closesWithin: ['ruby']}],
+    ['optgroup', {closes: ['optgroup', 'option'], closesWithin: ['select']}],
+    ['option', {closes: ['option'], closesWithin: ['select', 'optgroup']}],
+    ['colgroup', {closes: ['colgroup'], closesWithin: ['table']}]
+    // TODO: captions.
+    // TODO: table elements.
   ])
 };
 
@@ -390,18 +400,18 @@ export class Parser {
    * set to prevent auto-closing outer siblings.
    *
    * @param openElements The open elemnet statck.
-   * @param tag The tag to search for.
+   * @param tags The tags to search for.
    * @param autoClosesWithin The containers to break the auto-close lookup.
    * @returns The index within the open elements to auto-close, or undefined.
    */
   private findAutoClosers(
     openElements: string[],
-    tag: string,
+    tags: string[],
     autoClosesWithin: string[]
   ): number | undefined {
     for (let i = openElements.length - 1; i > -1; i--) {
       const element = openElements[i];
-      if (element === tag) {
+      if (tags.includes(element)) {
         return i;
       }
       if (autoClosesWithin.includes(element)) {
