@@ -510,8 +510,10 @@ export class Parser {
    * @param cache The node cache to use for green elements.
    * @returns A parse result representing the document in {@link input}.
    */
-  public static parseText(input: string,
-    cache: NodeCache | number | undefined = undefined): ParseResult {
+  public static parseText(
+    input: string,
+    cache: NodeCache | number | undefined = undefined
+  ): ParseResult {
     return new Parser(new Tokenizer(input), cache).parse();
   }
 }

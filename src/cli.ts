@@ -34,7 +34,7 @@ yargs(hideBin(process.argv))
           default: true
         })
         .option('cacheLimit', {
-          describe: 'Node size limit for the parser\'s cache.',
+          describe: "Node size limit for the parser's cache.",
           number: true,
           default: 6
         })
