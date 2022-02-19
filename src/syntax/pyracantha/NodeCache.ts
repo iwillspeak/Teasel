@@ -60,7 +60,8 @@ export class NodeCache {
 
   public constructor(size: number | undefined) {
     if (size === undefined) {
-      size = 4;
+      // 6 seems to give the best tradeoff of parsing speed against memory use
+      size = 6;
     }
 
     this.maxNodeSize = size;

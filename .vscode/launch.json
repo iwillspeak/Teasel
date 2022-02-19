@@ -33,6 +33,7 @@
       "args": [
         "--time=false",
         "--dump=false",
+        "--cacheLimit=6",
         "${workspaceFolder}/spec.html"
       ],
       "preLaunchTask": "tsc: build - tsconfig.json",

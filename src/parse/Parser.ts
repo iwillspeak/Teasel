@@ -150,6 +150,7 @@ export class Parser {
    * direclty constructed and instead the {@li}
    *
    * @param tokens The tokens to parse into a tree.
+   * @param cache The node cache to use for green elements.
    */
   public constructor(
     tokens: Tokenizer,
@@ -506,9 +507,11 @@ export class Parser {
    * Parse the given text as HTML.
    *
    * @param input The input text to parse.
+   * @param cache The node cache to use for green elements.
    * @returns A parse result representing the document in {@link input}.
    */
-  public static parseText(input: string): ParseResult {
-    return new Parser(new Tokenizer(input)).parse();
+  public static parseText(input: string,
+    cache: NodeCache | number | undefined = undefined): ParseResult {
+    return new Parser(new Tokenizer(input), cache).parse();
   }
 }
