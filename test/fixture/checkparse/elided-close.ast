@@ -45,18 +45,18 @@ Document: {0..120}
           Ident: {78..80} "ul"
           TagEnd: {80..81} ">"
         Text: {81..88} "\n      "
-        Node: {88..114}
+        Node: {88..102}
           OpeningTag: {88..92}
             TagStart: {88..89} "<"
             Ident: {89..91} "li"
             TagEnd: {91..92} ">"
           Text: {92..102} "One\n      "
-          Node: {102..114}
-            OpeningTag: {102..106}
-              TagStart: {102..103} "<"
-              Ident: {103..105} "li"
-              TagEnd: {105..106} ">"
-            Text: {106..114} "Two\n    "
+        Node: {102..114}
+          OpeningTag: {102..106}
+            TagStart: {102..103} "<"
+            Ident: {103..105} "li"
+            TagEnd: {105..106} ">"
+          Text: {106..114} "Two\n    "
         ClosingTag: {114..119}
           TagStart: {114..116} "</"
           Ident: {116..118} "ul"

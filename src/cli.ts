@@ -31,7 +31,7 @@ yargs(hideBin(process.argv))
         .option('showHeap', {
           describe: 'Dump the heap state after parsing.',
           boolean: true,
-          default: true
+          default: false
         })
         .option('cacheLimit', {
           describe: "Node size limit for the parser's cache.",

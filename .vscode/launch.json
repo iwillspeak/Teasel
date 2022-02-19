@@ -35,7 +35,7 @@
         "--time=false",
         "--dump=false",
         "--cacheLimit=6",
-        "${workspaceFolder}/spec.html"
+        "${workspaceFolder}/test/fixture/checkparse/autoclose-siblings.html"
       ],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [

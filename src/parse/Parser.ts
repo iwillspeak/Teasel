@@ -109,6 +109,11 @@ const tokenSets = {
   ]
 };
 
+interface OptionalTagInfo {
+  closes: string;
+  closesWithin: string[];
+}
+
 const elementFacts = {
   /**
    * Tag names that should be treated as void elements in HTML. These tags are
@@ -129,7 +134,16 @@ const elementFacts = {
     'source',
     'track',
     'wbr'
-  ]
+  ],
+
+  /**
+   * Auto close sibilings. For a given element what parent elements can it auto
+   * close inside. Used to allow lists and tables to be expressed more compactly.
+   */
+  OPTIONAL_TAGS: new Map<string, OptionalTagInfo>([
+    ['li', {closes: 'li', closesWithin: ['ul', 'ol']}],
+    ['body', {closes: 'head', closesWithin: ['html']}]
+  ])
 };
 
 /**
@@ -313,10 +327,40 @@ export class Parser {
           openElements.pop();
         }
       } else if (this.lookingAt(TokenKind.TagStart)) {
+        const nodeMark = this.builder.mark();
         // If we are looking at a start tag parse it and push it as an open
         // element if it doesn't self-close
         this.builder.startNode(SyntaxKinds.Node);
+        const tagMark = this.builder.mark();
         let [tag, selfClosing] = this.parseStartTag();
+
+        // Handle sibbling closers here. We heck to see if there are open tags
+        // that this tag should auto-close. If so we need to backtrack and
+        // unwind the element stack.
+        const tagInfo = elementFacts.OPTIONAL_TAGS.get(tag);
+        if (tagInfo !== undefined) {
+          const autoCloseIdx = this.findAutoClosers(
+            openElements,
+            tagInfo.closes,
+            tagInfo.closesWithin
+          );
+          if (autoCloseIdx !== undefined) {
+            // Reset the state to _before_ we parsed this opening tag.
+            const openTagElements = this.builder.sliceOffMark(tagMark);
+            this.builder.finishNode();
+            this.builder.sliceOffMark(nodeMark);
+
+            // Unwind the stack to the index.
+            while (openElements.length > autoCloseIdx) {
+              this.builder.finishNode();
+              openElements.pop();
+            }
+
+            // Re-apply the saved state.
+            this.builder.startNode(SyntaxKinds.Node);
+            this.builder.elements(openTagElements);
+          }
+        }
 
         // If the node is self-closing then just end it now, otherwise push
         // it on to our stack of open elements.
@@ -339,13 +383,43 @@ export class Parser {
   }
 
   /**
+   * Look for an auto-close sibling in the open element stack.
+   *
+   * This walks up the stack looking for a sbiling `tag` of the current tag. If
+   * one is found then that should be auto-closed. We use the `autoClosesWithin`
+   * set to prevent auto-closing outer siblings.
+   *
+   * @param openElements The open elemnet statck.
+   * @param tag The tag to search for.
+   * @param autoClosesWithin The containers to break the auto-close lookup.
+   * @returns The index within the open elements to auto-close, or undefined.
+   */
+  private findAutoClosers(
+    openElements: string[],
+    tag: string,
+    autoClosesWithin: string[]
+  ): number | undefined {
+    for (let i = openElements.length - 1; i > -1; i--) {
+      const element = openElements[i];
+      if (element === tag) {
+        return i;
+      }
+      if (autoClosesWithin.includes(element)) {
+        break;
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
    * Check if the given tag is an HTML void element.
    *
    * @param tag The tag to check.
    * @returns True if the tag is an HTML void element.
    */
   private isVoidElement(tag: string): boolean {
-    return elementFacts.VOID_ELEMENTS.includes(tag.toLowerCase());
+    return elementFacts.VOID_ELEMENTS.includes(tag);
   }
 
   /**
@@ -365,7 +439,7 @@ export class Parser {
     this.builder.startNode(SyntaxKinds.OpeningTag);
     this.expect(TokenKind.TagStart, SyntaxKinds.TagStart);
     this.tolerateWhitespace();
-    const tag = this.tokens.current.lexeme;
+    const tag = this.tokens.current.lexeme.toLowerCase();
     this.expect(TokenKind.Ident, SyntaxKinds.Ident);
     this.skipWhitespace();
 
@@ -399,7 +473,7 @@ export class Parser {
     this.builder.startNode(SyntaxKinds.ClosingTag);
     this.expect(TokenKind.TagCloseStart, SyntaxKinds.TagStart);
     this.tolerateWhitespace();
-    const tag = this.tokens.current.lexeme;
+    const tag = this.tokens.current.lexeme.toLowerCase();
     this.expect(TokenKind.Ident, SyntaxKinds.Ident);
     this.skipWhitespace();
     this.expect(TokenKind.TagEnd, SyntaxKinds.TagEnd);
