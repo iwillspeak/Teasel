@@ -1,0 +1,26 @@
+Document: {0..109}
+  Doctype: {0..102}
+    DoctypeStart: {0..2} "<!"
+    Ident: {2..9} "DOCTYPE"
+    Space: {9..10} " "
+    Ident: {10..14} "HTML"
+    Space: {14..15} " "
+    Ident: {15..21} "PUBLIC"
+    Space: {21..22} " "
+    AttributeValue: {22..62}
+      Trivia: {22..23} "\""
+      Text: {23..61} "-//W3C//DTD HTML 4.01 Transitional//EN"
+      Trivia: {61..62} "\""
+    Space: {62..63} " "
+    AttributeValue: {63..101}
+      Trivia: {63..64} "\""
+      Text: {64..100} "http://www.w3.org/TR/html4/loose.dtd"
+      Trivia: {100..101} "\""
+    TagEnd: {101..102} ">"
+  Text: {102..103} "\n"
+  Node: {103..109}
+    OpeningTag: {103..109}
+      TagStart: {103..104} "<"
+      Ident: {104..108} "html"
+      TagEnd: {108..109} ">"
+  EndOfFile: {109..109} ""

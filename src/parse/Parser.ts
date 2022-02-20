@@ -313,12 +313,47 @@ export class Parser {
    * Parse the `<!DOCTYPE html>` node.
    */
   private parseDocType(): void {
+    this.skipWhitespace();
     if (this.lookingAt(TokenKind.DoctypeStart)) {
       this.builder.startNode(SyntaxKinds.Doctype);
       this.bump(SyntaxKinds.DoctypeStart);
-      this.expect(TokenKind.Ident, SyntaxKinds.Ident);
-      this.expect(TokenKind.Space, SyntaxKinds.Space);
-      this.expect(TokenKind.Ident, SyntaxKinds.Ident);
+      this.expectIdentifier('doctype');
+      this.skipWhitespace();
+      this.expectIdentifier();
+
+      // DOCTYPE legacy handling. If we aren't at the end of the DOCTYPE then
+      // it should be a string such as SYSTEM 'about:legacy-compat'.
+      if (!this.lookingAt(TokenKind.TagEnd)) {
+        this.skipWhitespace();
+        const tag = this.expectIdentifier();
+        if (tag !== 'system' && tag !== 'public') {
+          this.raiseError(`unrecognised DOCTYPE domain: ${tag}`);
+        }
+
+        this.skipWhitespace();
+
+        while (!this.lookingAtAny(tokenSets.TAG_BOUNDARY)) {
+          if (this.lookingAt(TokenKind.SingleQuote)) {
+            this.parseQuotedAttributeValue(
+              TokenKind.SingleQuote,
+              tokenSets.SINGLE_QUOTE_ATTR_FOLLOW
+            );
+          } else if (this.lookingAt(TokenKind.DoubleQuote)) {
+            this.parseQuotedAttributeValue(
+              TokenKind.DoubleQuote,
+              tokenSets.DOUBLE_QUOTE_ATTR_FOLLOW
+            );
+          } else {
+            this.error(
+              'malformed DOCTYPE legacy string',
+              tokenSets.TAG_BOUNDARY
+            );
+          }
+          this.skipWhitespace();
+        }
+      }
+
+      this.tolerateWhitespace();
       this.expect(TokenKind.TagEnd, SyntaxKinds.TagEnd);
       this.builder.finishNode();
     } else {
@@ -474,8 +509,7 @@ export class Parser {
     this.builder.startNode(SyntaxKinds.OpeningTag);
     this.expect(TokenKind.TagStart, SyntaxKinds.TagStart);
     this.tolerateWhitespace();
-    const tag = this.tokens.current.lexeme.toLowerCase();
-    this.expect(TokenKind.Ident, SyntaxKinds.Ident);
+    const tag = this.expectIdentifier();
     this.skipWhitespace();
 
     while (!this.lookingAtAny(tokenSets.TAG_BOUNDARY)) {
@@ -502,14 +536,29 @@ export class Parser {
   }
 
   /**
+   * Expect the next token to be an identifier.
+   *
+   * @returns The identifier's lexeme.
+   */
+  private expectIdentifier(expected: string | undefined = undefined): string {
+    const tag = this.tokens.current.lexeme.toLowerCase();
+    this.expect(TokenKind.Ident, SyntaxKinds.Ident);
+
+    if (expected !== undefined && tag !== expected) {
+      this.raiseError(`Expected '${expected}, but found ${tag}`);
+    }
+
+    return tag;
+  }
+
+  /**
    * Parse the end tag of a node. e.g. `</p>`.
    */
   private parseEndTag(): string {
     this.builder.startNode(SyntaxKinds.ClosingTag);
     this.expect(TokenKind.TagCloseStart, SyntaxKinds.TagStart);
     this.tolerateWhitespace();
-    const tag = this.tokens.current.lexeme.toLowerCase();
-    this.expect(TokenKind.Ident, SyntaxKinds.Ident);
+    const tag = this.expectIdentifier();
     this.skipWhitespace();
     this.expect(TokenKind.TagEnd, SyntaxKinds.TagEnd);
     this.builder.finishNode();

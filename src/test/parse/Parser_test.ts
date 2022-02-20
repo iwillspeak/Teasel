@@ -49,6 +49,31 @@ suite('Parser', () => {
     assert.equal(result.root.range.end, 15);
   });
 
+  const legacyDoctypes = [
+    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
+    '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
+    '<!DOCTYPE html SYSTEM "about:legacy-compat">'
+  ];
+
+  for (const doctypeString of legacyDoctypes) {
+    test(`parse legacy doctype '${doctypeString}'`, () => {
+      const result = Parser.parseText(doctypeString);
+
+      assert.equal(result.root.kind, SyntaxKinds.Document);
+      assert.equal(result.diagnostics.length, 0);
+      assert.equal(result.root.range.start, 0);
+      assert.equal(result.root.range.end, doctypeString.length);
+
+      const children = Array.from(result.root.children());
+      assert.equal(children.length, 1);
+
+      const doctype = children[0];
+      assert.equal(doctype.kind, SyntaxKinds.Doctype);
+      assert.equal(doctype.range.start, 0);
+      assert.equal(doctype.range.end, doctypeString.length);
+    });
+  }
+
   test('parse simple document', () => {
     const result = Parser.parseText('<!DOCTYPE fibble><html></html>');
     const doc = DocumentSyntax.cast(result.root);
