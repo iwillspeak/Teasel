@@ -1,0 +1,79 @@
+import {RedNode} from './pyracantha/RedNode.js';
+import {SyntaxKinds} from '../parse/Parser.js';
+import {nthOfKind} from './Syntax.js';
+import {StartTagSyntax} from './StartTagSyntax.js';
+import {TagSyntax} from './TagSyntax.js';
+import {SyntaxItem} from './SyntaxItem.js';
+
+/**
+ * A node in the syntax tree. This is any syntax item that can have HTML
+ * nodes as children.
+ */
+export class SyntaxNode extends SyntaxItem {
+  public constructor(syntax: RedNode) {
+    super(syntax);
+  }
+
+  /**
+   * Iterator over the child elements of this syntax node.
+   */
+  public *childElements(): IterableIterator<ElementSyntax> {
+    for (const child of this.syntax.childrenOfKind(SyntaxKinds.Node)) {
+      const element = ElementSyntax.cast(child);
+      if (element !== null) {
+        yield element;
+      }
+    }
+  }
+}
+
+/**
+ * Sytnax wrapper for an HTML element.
+ */
+export class ElementSyntax extends SyntaxNode {
+  public constructor(syntax: RedNode) {
+    super(syntax);
+  }
+
+  /**
+   * Get the opening tag of this element.
+   *
+   * @returns The opening tag, if one existed.
+   */
+  public startTag(): StartTagSyntax | null {
+    const child = nthOfKind(this.syntax.children(), SyntaxKinds.OpeningTag, 1);
+    if (child instanceof RedNode) {
+      return new StartTagSyntax(child);
+    }
+
+    return null;
+  }
+
+  /**
+   * Get the closing tag of this element.
+   *
+   * @returns The closing tag, if one existed.
+   */
+  public endTag(): TagSyntax | null {
+    const child = nthOfKind(this.syntax.children(), SyntaxKinds.ClosingTag, 1);
+    if (child instanceof RedNode) {
+      return new TagSyntax(child);
+    }
+
+    return null;
+  }
+
+  /**
+   * Cast a raw node to the strongly typed syntax.
+   *
+   * @param node The node to cast
+   * @returns The casted node, or null if the cast coiuld not be made.
+   */
+  public static cast(node: RedNode): ElementSyntax | null {
+    if (node.kind === SyntaxKinds.Node) {
+      return new ElementSyntax(node);
+    }
+
+    return null;
+  }
+}
