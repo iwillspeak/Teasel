@@ -1,0 +1,227 @@
+Document: {0..662}
+  Doctype: {0..15}
+    DoctypeStart: {0..2} "<!"
+    Ident: {2..9} "DOCTYPE"
+    Space: {9..10} " "
+    Ident: {10..14} "html"
+    TagEnd: {14..15} ">"
+  Text: {15..16} "\n"
+  Comment: {16..84} "<!-- This table elides many closing tags for compact formatting. -->"
+  Text: {84..85} "\n"
+  Node: {85..662}
+    OpeningTag: {85..92}
+      TagStart: {85..86} "<"
+      Ident: {86..91} "table"
+      TagEnd: {91..92} ">"
+    Text: {92..94} "\n "
+    Node: {94..143}
+      OpeningTag: {94..103}
+        TagStart: {94..95} "<"
+        Ident: {95..102} "caption"
+        TagEnd: {102..103} ">"
+      Text: {103..143} "Key Properties of Domesticated Felines\n "
+    Node: {143..170}
+      OpeningTag: {143..153}
+        TagStart: {143..144} "<"
+        Ident: {144..152} "colgroup"
+        TagEnd: {152..153} ">"
+      Node: {153..158}
+        OpeningTag: {153..158}
+          TagStart: {153..154} "<"
+          Ident: {154..157} "col"
+          TagEnd: {157..158} ">"
+      Node: {158..163}
+        OpeningTag: {158..163}
+          TagStart: {158..159} "<"
+          Ident: {159..162} "col"
+          TagEnd: {162..163} ">"
+      Node: {163..168}
+        OpeningTag: {163..168}
+          TagStart: {163..164} "<"
+          Ident: {164..167} "col"
+          TagEnd: {167..168} ">"
+      Text: {168..170} "\n "
+    Node: {170..247}
+      OpeningTag: {170..177}
+        TagStart: {170..171} "<"
+        Ident: {171..176} "thead"
+        TagEnd: {176..177} ">"
+      Text: {177..180} "\n  "
+      Node: {180..247}
+        OpeningTag: {180..184}
+          TagStart: {180..181} "<"
+          Ident: {181..183} "tr"
+          TagEnd: {183..184} ">"
+        Node: {184..216}
+          OpeningTag: {184..188}
+            TagStart: {184..185} "<"
+            Ident: {185..187} "th"
+            TagEnd: {187..188} ">"
+          Text: {188..216} "Property                    "
+        Node: {216..237}
+          OpeningTag: {216..220}
+            TagStart: {216..217} "<"
+            Ident: {217..219} "th"
+            TagEnd: {219..220} ">"
+          Text: {220..237} "Breaks Physics   "
+        Node: {237..247}
+          OpeningTag: {237..241}
+            TagStart: {237..238} "<"
+            Ident: {238..240} "th"
+            TagEnd: {240..241} ">"
+          Text: {241..247} "Cute\n "
+    Node: {247..581}
+      OpeningTag: {247..254}
+        TagStart: {247..248} "<"
+        Ident: {248..253} "tbody"
+        TagEnd: {253..254} ">"
+      Text: {254..257} "\n  "
+      Node: {257..322}
+        OpeningTag: {257..261}
+          TagStart: {257..258} "<"
+          Ident: {258..260} "tr"
+          TagEnd: {260..261} ">"
+        Node: {261..293}
+          OpeningTag: {261..265}
+            TagStart: {261..262} "<"
+            Ident: {262..264} "td"
+            TagEnd: {264..265} ">"
+          Text: {265..293} "Toe beans                   "
+        Node: {293..314}
+          OpeningTag: {293..297}
+            TagStart: {293..294} "<"
+            Ident: {294..296} "td"
+            TagEnd: {296..297} ">"
+          Text: {297..314} "                 "
+        Node: {314..322}
+          OpeningTag: {314..318}
+            TagStart: {314..315} "<"
+            Ident: {315..317} "td"
+            TagEnd: {317..318} ">"
+          Text: {318..322} "✔\n  "
+      Node: {322..387}
+        OpeningTag: {322..326}
+          TagStart: {322..323} "<"
+          Ident: {323..325} "tr"
+          TagEnd: {325..326} ">"
+        Node: {326..358}
+          OpeningTag: {326..330}
+            TagStart: {326..327} "<"
+            Ident: {327..329} "td"
+            TagEnd: {329..330} ">"
+          Text: {330..358} "Big Jumps                   "
+        Node: {358..379}
+          OpeningTag: {358..362}
+            TagStart: {358..359} "<"
+            Ident: {359..361} "td"
+            TagEnd: {361..362} ">"
+          Text: {362..379} "✔                "
+        Node: {379..387}
+          OpeningTag: {379..383}
+            TagStart: {379..380} "<"
+            Ident: {380..382} "td"
+            TagEnd: {382..383} ">"
+          Text: {383..387} "✔\n  "
+      Node: {387..452}
+        OpeningTag: {387..391}
+          TagStart: {387..388} "<"
+          Ident: {388..390} "tr"
+          TagEnd: {390..391} ">"
+        Node: {391..423}
+          OpeningTag: {391..395}
+            TagStart: {391..392} "<"
+            Ident: {392..394} "td"
+            TagEnd: {394..395} ">"
+          Text: {395..423} "Fluff                       "
+        Node: {423..444}
+          OpeningTag: {423..427}
+            TagStart: {423..424} "<"
+            Ident: {424..426} "td"
+            TagEnd: {426..427} ">"
+          Text: {427..444} "                 "
+        Node: {444..452}
+          OpeningTag: {444..448}
+            TagStart: {444..445} "<"
+            Ident: {445..447} "td"
+            TagEnd: {447..448} ">"
+          Text: {448..452} "✔\n  "
+      Node: {452..517}
+        OpeningTag: {452..456}
+          TagStart: {452..453} "<"
+          Ident: {453..455} "tr"
+          TagEnd: {455..456} ">"
+        Node: {456..488}
+          OpeningTag: {456..460}
+            TagStart: {456..457} "<"
+            Ident: {457..459} "td"
+            TagEnd: {459..460} ">"
+          Text: {460..488} "Liquidity                   "
+        Node: {488..509}
+          OpeningTag: {488..492}
+            TagStart: {488..489} "<"
+            Ident: {489..491} "td"
+            TagEnd: {491..492} ">"
+          Text: {492..509} "✔                "
+        Node: {509..517}
+          OpeningTag: {509..513}
+            TagStart: {509..510} "<"
+            Ident: {510..512} "td"
+            TagEnd: {512..513} ">"
+          Text: {513..517} "✔\n  "
+      Node: {517..581}
+        OpeningTag: {517..521}
+          TagStart: {517..518} "<"
+          Ident: {518..520} "tr"
+          TagEnd: {520..521} ">"
+        Node: {521..553}
+          OpeningTag: {521..525}
+            TagStart: {521..522} "<"
+            Ident: {522..524} "td"
+            TagEnd: {524..525} ">"
+          Text: {525..553} "Long stretches              "
+        Node: {553..574}
+          OpeningTag: {553..557}
+            TagStart: {553..554} "<"
+            Ident: {554..556} "td"
+            TagEnd: {556..557} ">"
+          Text: {557..574} "                 "
+        Node: {574..581}
+          OpeningTag: {574..578}
+            TagStart: {574..575} "<"
+            Ident: {575..577} "td"
+            TagEnd: {577..578} ">"
+          Text: {578..581} "✔\n "
+    Node: {581..654}
+      OpeningTag: {581..588}
+        TagStart: {581..582} "<"
+        Ident: {582..587} "tfoot"
+        TagEnd: {587..588} ">"
+      Text: {588..591} "\n  "
+      Node: {591..654}
+        OpeningTag: {591..595}
+          TagStart: {591..592} "<"
+          Ident: {592..594} "tr"
+          TagEnd: {594..595} ">"
+        Node: {595..627}
+          OpeningTag: {595..599}
+            TagStart: {595..596} "<"
+            Ident: {596..598} "td"
+            TagEnd: {598..599} ">"
+          Text: {599..627} "Overall                     "
+        Node: {627..648}
+          OpeningTag: {627..631}
+            TagStart: {627..628} "<"
+            Ident: {628..630} "td"
+            TagEnd: {630..631} ">"
+          Text: {631..648} "                 "
+        Node: {648..654}
+          OpeningTag: {648..652}
+            TagStart: {648..649} "<"
+            Ident: {649..651} "td"
+            TagEnd: {651..652} ">"
+          Text: {652..654} "✔\n"
+    ClosingTag: {654..662}
+      TagStart: {654..656} "</"
+      Ident: {656..661} "table"
+      TagEnd: {661..662} ">"
+  EndOfFile: {662..662} ""

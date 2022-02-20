@@ -150,9 +150,34 @@ const elementFacts = {
     ['rp', {closes: ['rp', 'rt'], closesWithin: ['ruby']}],
     ['optgroup', {closes: ['optgroup', 'option'], closesWithin: ['select']}],
     ['option', {closes: ['option'], closesWithin: ['select', 'optgroup']}],
-    ['colgroup', {closes: ['colgroup'], closesWithin: ['table']}]
-    // TODO: captions.
-    // TODO: table elements.
+    ['colgroup', {closes: ['colgroup', 'caption'], closesWithin: ['table']}],
+    [
+      'tbody',
+      {
+        closes: ['thead', 'tbody', 'colgroup', 'caption'],
+        closesWithin: ['table']
+      }
+    ],
+    [
+      'tfoot',
+      {
+        closes: ['thead', 'tbody', 'colgroup', 'caption'],
+        closesWithin: ['table']
+      }
+    ],
+    ['thead', {closes: ['colgroup', 'caption'], closesWithin: ['table']}],
+    [
+      'tr',
+      {closes: ['tr'], closesWithin: ['table', 'tbody', 'thead', 'tfoot']}
+    ],
+    [
+      'th',
+      {closes: ['th', 'td'], closesWithin: ['table', 'tbody', 'thead', 'tfoot']}
+    ],
+    [
+      'td',
+      {closes: ['th', 'td'], closesWithin: ['table', 'tbody', 'thead', 'tfoot']}
+    ]
   ])
 };
 
