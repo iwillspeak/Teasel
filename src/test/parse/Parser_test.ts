@@ -3,7 +3,7 @@ import {readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
 import {Parser, SyntaxKinds} from '../../parse/Parser.js';
 import {debugToString} from '../../syntax/pyracantha/Debug.js';
-import {DocumentSyntax} from '../../syntax/Syntax.js';
+import {DocumentSyntax} from '../../syntax/DocumentSyntax.js';
 import {Tokenizer} from '../../tokenize/Tokenizer.js';
 
 function checkParse(input: string, expected: string) {
@@ -49,28 +49,49 @@ suite('Parser', () => {
     assert.equal(result.root.range.end, 15);
   });
 
-  const legacyDoctypes = [
-    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
-    '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
-    '<!DOCTYPE html SYSTEM "about:legacy-compat">'
+  const legacyDoctypes: {
+    text: string;
+    keyword: string;
+    public: string | null;
+    system: string | null;
+  }[] = [
+    {
+      text: '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
+      keyword: 'PUBLIC',
+      public: '-//W3C//DTD XHTML 1.1//EN',
+      system: 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'
+    },
+    {
+      text: '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
+      keyword: 'PUBLIC',
+      public: '-//W3C//DTD HTML 4.01 Transitional//EN',
+      system: 'http://www.w3.org/TR/html4/loose.dtd'
+    },
+    {
+      text: '<!DOCTYPE html SYSTEM "about:legacy-compat">',
+      keyword: 'SYSTEM',
+      public: null,
+      system: 'about:legacy-compat'
+    }
   ];
 
-  for (const doctypeString of legacyDoctypes) {
-    test(`parse legacy doctype '${doctypeString}'`, () => {
-      const result = Parser.parseDocumentRaw(doctypeString);
+  for (const testInfo of legacyDoctypes) {
+    test(`parse legacy doctype '${testInfo.text}'`, () => {
+      const result = Parser.parseDocument(testInfo.text);
 
-      assert.equal(result.root.kind, SyntaxKinds.Document);
+      assert.isTrue(result.root instanceof DocumentSyntax);
       assert.equal(result.diagnostics.length, 0);
       assert.equal(result.root.range.start, 0);
-      assert.equal(result.root.range.end, doctypeString.length);
+      assert.equal(result.root.range.end, testInfo.text.length);
 
-      const children = Array.from(result.root.children());
-      assert.equal(children.length, 1);
-
-      const doctype = children[0];
-      assert.equal(doctype.kind, SyntaxKinds.Doctype);
+      assert.isNotNull(result.root.doctype);
+      const doctype = result.root.doctype!;
       assert.equal(doctype.range.start, 0);
-      assert.equal(doctype.range.end, doctypeString.length);
+      assert.equal(doctype.range.end, testInfo.text.length);
+      assert.equal(doctype.name?.toLowerCase(), 'html');
+      assert.equal(doctype.keyword, testInfo.keyword);
+      assert.equal(doctype.publicIdentifier?.text, testInfo.public);
+      assert.equal(doctype.systemIdentifier?.text, testInfo.system);
     });
   }
 
@@ -80,7 +101,7 @@ suite('Parser', () => {
 
     assert.isNotNull(doc);
     assert.isNotNull(doc?.doctype);
-    assert.equal(doc?.doctype?.documentKind, 'fibble');
+    assert.equal(doc?.doctype?.name, 'fibble');
   });
 
   test('parse attr no quotes', () => {
@@ -119,7 +140,7 @@ suite('Parser', () => {
     const result = Parser.parseDocument('<!DOCTYPE html><html>');
 
     assert.equal(result.diagnostics.length, 0);
-    assert.equal(result.root.doctype?.documentKind, 'html');
+    assert.equal(result.root.doctype?.name, 'html');
     // TODO: more assertions here
   });
 

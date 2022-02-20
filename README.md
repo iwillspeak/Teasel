@@ -40,9 +40,11 @@ text. Semanitc transformation into a DOM is _not_ the intent of this library.
  * [x] Handle Closing of outer tags correctly. e.g.: `<p><i>hello</p>`.
  * [x] Handle Closing of non-nesting sibilings. e.g.: `<li>a<li>b`.
  * [x] Handling for implicit self closing of 'void' elements `<hr>` etc.
+ * [x] Support for esoteric DOCTYPEs e.g. `SYTEM 'about:legacy-compat'`.
+ * [x] Document and fragment parse APIs.
+ * [ ] Support for character references. e.g. `&amp;`.
  * [ ] Support for raw text.
   * [ ] Handling of raw text elements. e.g. `script`, and `style`.
   * [ ] Support for `CDATA` values / tokens.
- * [x] Support for esoteric DOCTYPEs e.g. `SYTEM 'about:legacy-compat'`.
- * [ ] Document and fragment parse APIs.
+ * [ ] Support for *processing instructions*, e.g. `<?xml version="1.0">`.
  * [ ] Syntax builder / factory API for creating and updating nodes.
