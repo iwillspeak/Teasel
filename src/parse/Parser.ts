@@ -2,6 +2,7 @@ import {GreenTreeBuilder} from '../syntax/pyracantha/GreenTreeBuilder.js';
 import {NodeCache} from '../syntax/pyracantha/NodeCache.js';
 import {SyntaxKind} from '../syntax/pyracantha/Pyracantha.js';
 import {RedNode} from '../syntax/pyracantha/RedNode.js';
+import {DocumentFragmentSyntax, DocumentSyntax} from '../syntax/Syntax.js';
 import {Tokenizer} from '../tokenize/Tokenizer.js';
 import {TokenKind} from '../tokenize/TokenKind.js';
 import {Diagnostic} from './Diagnostic.js';
@@ -22,6 +23,7 @@ export enum SyntaxKinds {
   ClosingTag = 5,
   Attribute = 6,
   AttributeValue = 7,
+  DocumentFragment = 8,
 
   // TOKENS
   TagStart = 100,
@@ -182,6 +184,14 @@ const elementFacts = {
 };
 
 /**
+ * Parser mode.
+ */
+export enum ParseMode {
+  Document,
+  DocumentFragment
+}
+
+/**
  * HTML Document Parser
  *
  * The parser is responsible for wlaknig through the tokens produced  by our
@@ -221,13 +231,24 @@ export class Parser {
    *
    * @returns A structured parse result for the syntax tree.
    */
-  public parse(): ParseResult {
-    this.parseDocType();
+  public parse(mode: ParseMode | undefined = undefined): ParseResult<RedNode> {
+    if (mode === undefined) {
+      mode = ParseMode.Document;
+    }
+
+    if (mode === ParseMode.Document) {
+      this.parseDocType();
+    }
+
     this.parseElements();
     this.expect(TokenKind.EndOfFile, SyntaxKinds.EndOfFile);
 
+    const rootKind =
+      mode === ParseMode.Document
+        ? SyntaxKinds.Document
+        : SyntaxKinds.DocumentFragment;
     return {
-      root: RedNode.createRoot(this.builder.buildRoot(SyntaxKinds.Document)),
+      root: RedNode.createRoot(this.builder.buildRoot(rootKind)),
       diagnostics: this.errors
     };
   }
@@ -672,10 +693,56 @@ export class Parser {
    * @param cache The node cache to use for green elements.
    * @returns A parse result representing the document in {@link input}.
    */
-  public static parseText(
+  public static parseDocumentRaw(
     input: string,
     cache: NodeCache | number | undefined = undefined
-  ): ParseResult {
-    return new Parser(new Tokenizer(input), cache).parse();
+  ): ParseResult<RedNode> {
+    return new Parser(new Tokenizer(input), cache).parse(ParseMode.Document);
+  }
+
+  /**
+   * Parse the given text as an HTML Document
+   *
+   * @param input The input to parse.
+   * @param cache The node cahce to use, or `undefined` to use the default one.
+   * @returns The parsed document.
+   */
+  public static parseDocument(
+    input: string,
+    cache: NodeCache | number | undefined = undefined
+  ): ParseResult<DocumentSyntax> {
+    const result = this.parseDocumentRaw(input, cache);
+    return {...result, root: new DocumentSyntax(result.root)};
+  }
+
+  /**
+   * Parse the given text as an HTML fragment.
+   *
+   * @param input The input text to parse.
+   * @param cache The node cache to use for green elements.
+   * @returns A parse result representing the document in {@link input}.
+   */
+  public static parseFragmentRaw(
+    input: string,
+    cache: NodeCache | number | undefined = undefined
+  ): ParseResult<RedNode> {
+    return new Parser(new Tokenizer(input), cache).parse(
+      ParseMode.DocumentFragment
+    );
+  }
+
+  /**
+   * Parse the given text as an HTML fragment
+   *
+   * @param input The input to parse.
+   * @param cache The node cahce to use, or `undefined` to use the default one.
+   * @returns The parsed document fragment.
+   */
+  public static parseFragment(
+    input: string,
+    cache: NodeCache | number | undefined = undefined
+  ): ParseResult<DocumentFragmentSyntax> {
+    const result = this.parseFragmentRaw(input, cache);
+    return {...result, root: new DocumentFragmentSyntax(result.root)};
   }
 }

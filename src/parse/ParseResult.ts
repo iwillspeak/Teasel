@@ -1,14 +1,13 @@
-import {RedNode} from '../syntax/pyracantha/RedNode.js';
 import {Diagnostic} from './Diagnostic.js';
 
 /**
  * The result of a single parse.
  */
-export interface ParseResult {
+export interface ParseResult<T> {
   /**
    * The root of the syntax tree.
    */
-  root: RedNode;
+  root: T;
 
   /**
    * The diagnostics produced during the parse.

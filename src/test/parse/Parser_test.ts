@@ -7,7 +7,7 @@ import {DocumentSyntax} from '../../syntax/Syntax.js';
 import {Tokenizer} from '../../tokenize/Tokenizer.js';
 
 function checkParse(input: string, expected: string) {
-  const result = Parser.parseText(input);
+  const result = Parser.parseDocumentRaw(input);
   let actual = debugToString(result.root, (k) => SyntaxKinds[k]);
   assert.equal(result.diagnostics.length, 0);
   assert.equal(actual.trim(), expected.trim());
@@ -29,7 +29,7 @@ suite('Parser', () => {
 
   test('parse with utility method', () => {
     const source = '<p>hello world</p>';
-    const result = Parser.parseText(source);
+    const result = Parser.parseDocumentRaw(source);
 
     assert.equal(result.diagnostics[0].message, 'Missing doctype.');
     assert.equal(result.diagnostics[0].position.start, 0);
@@ -42,7 +42,7 @@ suite('Parser', () => {
   });
 
   test('parse doctype no root', () => {
-    const result = Parser.parseText('<!DOCTYPE html>');
+    const result = Parser.parseDocumentRaw('<!DOCTYPE html>');
 
     assert.equal(result.root.kind, SyntaxKinds.Document);
     assert.equal(result.root.range.start, 0);
@@ -57,7 +57,7 @@ suite('Parser', () => {
 
   for (const doctypeString of legacyDoctypes) {
     test(`parse legacy doctype '${doctypeString}'`, () => {
-      const result = Parser.parseText(doctypeString);
+      const result = Parser.parseDocumentRaw(doctypeString);
 
       assert.equal(result.root.kind, SyntaxKinds.Document);
       assert.equal(result.diagnostics.length, 0);
@@ -75,7 +75,7 @@ suite('Parser', () => {
   }
 
   test('parse simple document', () => {
-    const result = Parser.parseText('<!DOCTYPE fibble><html></html>');
+    const result = Parser.parseDocumentRaw('<!DOCTYPE fibble><html></html>');
     const doc = DocumentSyntax.cast(result.root);
 
     assert.isNotNull(doc);
@@ -84,7 +84,7 @@ suite('Parser', () => {
   });
 
   test('parse attr no quotes', () => {
-    const result = Parser.parseText('<html a = 1 b = 102 ><hr/></html>');
+    const result = Parser.parseDocumentRaw('<html a = 1 b = 102 ><hr/></html>');
 
     const documentParts = Array.from(result.root.children());
     const htmlParts = Array.from(documentParts[0].children());
@@ -95,7 +95,7 @@ suite('Parser', () => {
   });
 
   test('parse malformed closing tags', () => {
-    const result = Parser.parseText('<!DOCTYPE html>< html ></ html >');
+    const result = Parser.parseDocumentRaw('<!DOCTYPE html>< html ></ html >');
 
     assert.equal(result.diagnostics.length, 2);
     assert.equal(result.diagnostics[0].position.start, 16);
@@ -105,7 +105,7 @@ suite('Parser', () => {
   });
 
   test('parse malfromed attributes', () => {
-    const result = Parser.parseText('<!DOCTYPE html><html a="borked/>');
+    const result = Parser.parseDocumentRaw('<!DOCTYPE html><html a="borked/>');
 
     assert.equal(result.diagnostics.length, 1);
     assert.equal(result.diagnostics[0].position.start, 30);
@@ -113,6 +113,21 @@ suite('Parser', () => {
       result.diagnostics[0].message,
       'Expecting DoubleQuote but found TagSelfCloseEnd'
     );
+  });
+
+  test('parse as document', () => {
+    const result = Parser.parseDocument('<!DOCTYPE html><html>');
+
+    assert.equal(result.diagnostics.length, 0);
+    assert.equal(result.root.doctype?.documentKind, 'html');
+    // TODO: more assertions here
+  });
+
+  test('parse as fragment', () => {
+    const result = Parser.parseFragment('<html>');
+
+    assert.equal(result.diagnostics.length, 0);
+    // TODO: more assertions here
   });
 
   test('checkparse example doc', () => {

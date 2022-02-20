@@ -1,12 +1,45 @@
 import {RedNode} from './pyracantha/RedNode.js';
 import {SyntaxKinds} from '../parse/Parser.js';
 import {RedToken} from './pyracantha/RedToken.js';
+import {RedElement} from './pyracantha/RedTree.js';
+import {SyntaxKind} from './pyracantha/Pyracantha.js';
 
-export class DocumentSyntax {
-  private syntax: RedNode;
+function nthOfKind(
+  elements: IterableIterator<RedElement>,
+  kind: SyntaxKind,
+  n: number
+): RedElement | null {
+  let seen = 0;
+  for (const element of elements) {
+    if (element.kind === kind) {
+      if (++seen === n) {
+        return element;
+      }
+    }
+  }
+
+  return null;
+}
+
+export class DocumentFragmentSyntax {
+  protected syntax: RedNode;
 
   public constructor(syntax: RedNode) {
     this.syntax = syntax;
+  }
+
+  public static cast(node: RedNode): DocumentFragmentSyntax | null {
+    if (node.kind == SyntaxKinds.Document) {
+      return new DocumentFragmentSyntax(node);
+    }
+
+    return null;
+  }
+}
+
+export class DocumentSyntax extends DocumentFragmentSyntax {
+  public constructor(syntax: RedNode) {
+    super(syntax);
   }
 
   public get doctype(): DoctypeSyntax | null {
@@ -36,17 +69,13 @@ export class DoctypeSyntax {
   }
 
   public get documentKind(): string | null {
-    let seen = false;
-
-    for (const child of this.syntax.childrenWithTokens()) {
-      if (child instanceof RedToken && child.kind === SyntaxKinds.Ident) {
-        if (!seen) {
-          seen = true;
-          continue;
-        }
-
-        return child.text;
-      }
+    const child = nthOfKind(
+      this.syntax.childrenWithTokens(),
+      SyntaxKinds.Ident,
+      2
+    );
+    if (child instanceof RedToken) {
+      return child.text;
     }
 
     return null;
