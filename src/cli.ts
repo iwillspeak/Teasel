@@ -56,7 +56,7 @@ yargs(hideBin(process.argv))
         console.time('parse');
       }
 
-      const result = Parser.parseText(contents, argv.cacheLimit);
+      const result = Parser.parseDocumentRaw(contents, argv.cacheLimit);
 
       if (argv.time) {
         console.timeEnd('parse');
