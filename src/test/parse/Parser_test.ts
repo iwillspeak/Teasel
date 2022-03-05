@@ -1,4 +1,4 @@
-import {assert} from 'chai';
+import {assert, AssertionError} from 'chai';
 import {readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
 import {Parser, SyntaxKinds} from '../../parse/Parser.js';
@@ -137,18 +137,40 @@ suite('Parser', () => {
   });
 
   test('parse as document', () => {
-    const result = Parser.parseDocument('<!DOCTYPE html><html>');
+    const result = Parser.parseDocument(
+      '<!DOCTYPE html><html><a href=about:about special/>'
+    );
 
     assert.equal(result.diagnostics.length, 0);
     assert.equal(result.root.doctype?.name, 'html');
-    // TODO: more assertions here
+    const rootElements = Array.from(result.root.childElements());
+    assert.equal(rootElements.length, 1);
+    assert.equal(rootElements[0].startTag()?.name, 'html');
+    assert.isNull(rootElements[0].endTag());
+    const htmlElements = Array.from(rootElements[0].childElements());
+    assert.equal(htmlElements.length, 1);
+    assert.equal(htmlElements[0].startTag()?.name, 'a');
+    assert.isNull(htmlElements[0].endTag());
+    const attrs = Array.from(htmlElements[0].startTag()!.attributes());
+    assert.equal(attrs.length, 2);
+    assert.equal(attrs[0].name(), 'href');
+    assert.isNotNull(attrs[0].value());
+    assert.equal(attrs[1].name(), 'special');
+    assert.isNull(attrs[1].value());
   });
 
   test('parse as fragment', () => {
-    const result = Parser.parseFragment('<html>');
+    const result = Parser.parseFragment('<p>Hello<i>world</i>');
 
     assert.equal(result.diagnostics.length, 0);
-    // TODO: more assertions here
+    const rootElements = Array.from(result.root.childElements());
+    assert.equal(rootElements.length, 1);
+    assert.equal(rootElements[0].startTag()?.name, 'p');
+    assert.isNull(rootElements[0].endTag());
+    const paraElements = Array.from(rootElements[0].childElements());
+    assert.equal(paraElements.length, 1);
+    assert.equal(paraElements[0].startTag()?.name, 'i');
+    assert.equal(paraElements[0].endTag()?.name, 'i');
   });
 
   test('checkparse example doc', () => {
