@@ -38,7 +38,7 @@ export class RedNode {
    * Initialises a new red tree rooted at the given green node.
    *
    * @param node The root node of the tree.
-   * @returns A new red tree for the given root.
+   * @return A new red tree for the given root.
    */
   public static createRoot(node: GreenNode): RedNode {
     return new RedNode(null, 0, node);
@@ -63,7 +63,7 @@ export class RedNode {
    * Get an iterator over the child elements of this node.
    */
   public *childrenWithTokens(): IterableIterator<RedNode | RedToken> {
-    var index = this.offset;
+    let index = this.offset;
     for (const child of this.green.children) {
       if (child instanceof GreenNode) {
         yield new RedNode(this, index, child);
@@ -102,7 +102,7 @@ export class RedNode {
   /**
    * Convert to Display String.
    *
-   * @returns The source text represented by the underlying green node.
+   * @return The source text represented by the underlying green node.
    */
   public toString(): string {
     return this.green.toString();

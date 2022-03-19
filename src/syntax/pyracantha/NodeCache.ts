@@ -67,9 +67,9 @@ export class NodeCache {
     this.maxNodeSize = size;
     this.cachedTokens = new CacheMap<string, GreenToken>(
       (k) => {
-        var hasher = Djb.getPooled();
+        const hasher = Djb.getPooled();
         hasher.writeString(k);
-        var hash = hasher.finish();
+        const hash = hasher.finish();
         Djb.returnPooled(hasher);
         return hash;
       },

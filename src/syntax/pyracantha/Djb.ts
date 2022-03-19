@@ -47,7 +47,7 @@ export class Djb {
   /**
    * Get a pooled hasher.
    *
-   * @returns A pooled builder, or a new one if none available.
+   * @return A pooled builder, or a new one if none available.
    */
   public static getPooled(): Djb {
     const found = this.pool.pop();

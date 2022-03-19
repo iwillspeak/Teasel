@@ -95,7 +95,7 @@ export class GreenTreeBuilder {
   /**
    * Store a mark to later optionally turn into a node.
    *
-   * @returns A new mark to the current bulder position.
+   * @return A new mark to the current bulder position.
    */
   public mark(): Mark {
     const index = this.children.length;
@@ -121,7 +121,7 @@ export class GreenTreeBuilder {
    * Slice off the children after the given mark.
    *
    * @param mark The mark to slice.
-   * @returns The elements of the current node that are _after_ the given mark.
+   * @return The elements of the current node that are _after_ the given mark.
    */
   public sliceOffMark(mark: Mark): GreenElement[] {
     const markIndex = this.marks.indexOf(mark);
@@ -170,7 +170,7 @@ export class GreenTreeBuilder {
   /**
    * Finish building the tree by creating a root node of the given kind.
    * @param kind The root node kind
-   * @returns A new syntax tree root node.
+   * @return A new syntax tree root node.
    */
   public buildRoot(kind: SyntaxKind): GreenNode {
     if (this.nodes.length !== 0) {

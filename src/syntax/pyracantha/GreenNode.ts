@@ -46,7 +46,7 @@ export class GreenNode {
     if (this.hashCode === undefined) {
       const hasher = Djb.getPooled();
       hasher.writeNumber(this.kind);
-      for (var element of this.children) {
+      for (const element of this.children) {
         hasher.writeNumber(element.textLength);
         hasher.writeNumber(element.kind);
       }
@@ -68,7 +68,7 @@ export class GreenNode {
   /**
    * Convert to Display String.
    *
-   * @returns The source text represented by this node.
+   * @return The source text represented by this node.
    */
   public toString(): string {
     let result = '';
