@@ -1,5 +1,5 @@
 {
-  "name": "parser",
+  "name": "teasel",
   "version": "0.0.1",
   "type": "module",
   "bin": "lib/cli.js",
@@ -20,14 +20,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iwillspeak/a-n-parser.git"
+    "url": "git+https://github.com/iwillspeak/teasel.git"
   },
   "author": "Parser Authors",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/iwillspeak/a-n-parser/issues"
+    "url": "https://github.com/iwillspeak/teasel/issues"
   },
-  "homepage": "https://github.com/iwillspeak/a-n-parser#readme",
+  "homepage": "https://github.com/iwillspeak/teasel#readme",
   "devDependencies": {
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.1.0",
