@@ -8,8 +8,12 @@ import {nthOfKind} from './Syntax.js';
  * Attribute value. This could be attached to an attribute in a tag, or part
  * of the DOCTYPE declaration.
  */
-
 export class AttributeValueSyntax extends SyntaxItem {
+  /**
+   * Create an attribute value syntax wrapping the given node.
+   *
+   * @param {RedNode} syntax The node to wrap.
+   */
   public constructor(syntax: RedNode) {
     super(syntax);
   }
@@ -33,8 +37,9 @@ export class AttributeValueSyntax extends SyntaxItem {
   /**
    * Cast a raw node to the strongly typed syntax.
    *
-   * @param node The node to cast
-   * @returns The casted node, or null if the cast coiuld not be made.
+   * @param {RedNode} node The node to cast
+   * @return {AttributeValueSyntax | null} The casted node, or null if the cast
+   *                                       could not be made.
    */
   public static cast(node: RedNode): AttributeValueSyntax | null {
     if (node.kind === SyntaxKinds.AttributeValue) {

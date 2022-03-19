@@ -7,8 +7,12 @@ import {nthOfKind} from './Syntax.js';
 /**
  * Element tag.
  */
-
 export class TagSyntax extends SyntaxItem {
+  /**
+   * Create a tag syntax for the given node.
+   *
+   * @param {RedNode} syntax The syntax node to wrap.
+   */
   public constructor(syntax: RedNode) {
     super(syntax);
   }

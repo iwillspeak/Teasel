@@ -20,6 +20,15 @@ interface MapEntry<K, V> {
 class CacheMap<K, V> {
   private map: Map<SyntaxKind, Map<number, MapEntry<K, V>[]>>;
 
+  /**
+   * Create a new instance of the cache map.
+   *
+   * The cache map takes a hasher and euality comparer for the inner keys. When
+   * looking up entries these will be used to check for key equality by value.
+   *
+   * @param {Hasher<K>} hasher The hasher to use for the keys.
+   * @param {PartialEq<K>} comparer Equality comparer for the keys.
+   */
   public constructor(
     private hasher: Hasher<K>,
     private comparer: PartialEq<K>
@@ -27,6 +36,20 @@ class CacheMap<K, V> {
     this.map = new Map<SyntaxKind, Map<number, MapEntry<K, V>[]>>();
   }
 
+  /**
+   * Cache Entrpy API
+   *
+   * Look up a single 'entry' in the cache. An entry is referenced by a given
+   * {@link SyntaxKind} and cache key. Each entry can then be manipulated to
+   * store a value in the cache.
+   *
+   * This API is designed to avoid a second key lookup if a value is missing
+   * from the cahce and requires insertion.
+   *
+   * @param {SyntaxKind} kind The syntax kind for the element.
+   * @param {K} key The key for the element.
+   * @return {MapEntry<K, V>} The entry in the cache.
+   */
   public entry(kind: SyntaxKind, key: K): MapEntry<K, V> {
     let slab = this.map.get(kind);
     if (slab === undefined) {
@@ -58,11 +81,30 @@ class CacheMap<K, V> {
   }
 }
 
+/**
+ * Syntax Node Cache
+ *
+ * A asyntax node cache is designed to allow re-use of identicial sub-elements
+ * of a given syntax tree. This can reduce the memory use of a tree if there
+ * are many sub-sections which share a common format.
+ *
+ * Once a tree is built the cache can be discard, or used to parse further
+ * documents. Each syntax element is not tied to a specific location or tree.
+ */
 export class NodeCache {
   private maxNodeSize: number;
   private cachedTokens: CacheMap<string, GreenToken>;
   private cachedNodes: CacheMap<GreenElement[], GreenNode>;
 
+  /**
+   * Initialse a node cache with an optional size.
+   *
+   * Node cahces will store all syntax tokens, and any nodes with {@link size}
+   * or fiewer children. This avoids the overhead of storing or looking up
+   * larger syntax elements which are unlikely to be repeated.
+   *
+   * @param {number} [size] The maximum size of node to cache.
+   */
   public constructor(size: number | undefined) {
     if (size === undefined) {
       // 6 seems to give the best tradeoff of parsing speed against memory use

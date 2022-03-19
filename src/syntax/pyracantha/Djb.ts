@@ -12,6 +12,9 @@ export class Djb {
 
   private static pool: Djb[] = [];
 
+  /**
+   * Create and initialise a new DJB hasher.
+   */
   public constructor() {
     this.hash = DJB_INIT;
   }

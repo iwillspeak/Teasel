@@ -7,6 +7,11 @@ import {AttributeSyntax} from './AttributeSyntax.js';
  * Element start tag
  */
 export class StartTagSyntax extends TagSyntax {
+  /**
+   * Create a tag syntax for the given node.
+   *
+   * @param {RedNode} syntax The node to wrap.
+   */
   public constructor(syntax: RedNode) {
     super(syntax);
   }
