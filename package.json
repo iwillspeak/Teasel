@@ -1,5 +1,5 @@
 {
-  "name": "teasel",
+  "name": "@iwillspeak/teasel",
   "version": "0.0.1",
   "type": "module",
   "bin": "lib/cli.js",
