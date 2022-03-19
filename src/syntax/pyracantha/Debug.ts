@@ -39,7 +39,7 @@ export class DebugWalker implements TreeWalker {
     );
   }
 
-  public leaveNode(kind: SyntaxKind, position: Range): void {
+  public leaveNode(_kind: SyntaxKind, _position: Range): void {
     this.indent--;
   }
 
@@ -56,14 +56,16 @@ export class DebugWalker implements TreeWalker {
  * node.
  *
  * @param element The element to dump to the output sink.
- * @param kindFormatter The formatter to use for syntax kinds, or `toString` if not provided..
- * @param outputSink The output sink to write to, or `console.log` if not provided.
+ * @param kindFormatter The formatter to use for syntax kinds, or `toString` if
+ *                      not provided.
+ * @param outputSink The output sink to write to, or `console.log` if not
+ *                   provided.
  */
 export function debugDump(
   element: RedElement,
   kindFormatter: ((k: SyntaxKind) => string) | undefined = undefined,
   outputSink: ((s: string) => void) | undefined = undefined
-) {
+): void {
   if (kindFormatter === undefined) {
     kindFormatter = (k) => k.toString();
   }

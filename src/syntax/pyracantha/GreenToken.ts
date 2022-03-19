@@ -50,7 +50,7 @@ export class GreenToken {
   /**
    * Convert to Display String.
    *
-   * @returns The source text represented by this token.
+   * @return The source text represented by this token.
    */
   public toString(): string {
     return this.text;

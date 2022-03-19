@@ -1,4 +1,3 @@
-import {SyntaxKind} from './Pyracantha';
 import {GreenNode} from './GreenNode';
 import {GreenToken} from './GreenToken';
 

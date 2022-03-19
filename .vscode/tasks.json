@@ -30,6 +30,13 @@
       "problemMatcher": [],
       "label": "npm: test",
       "detail": "c8 --reporter=text-summary mocha \"lib/test/**/*_test.js\""
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "problemMatcher": "$eslint-stylish",
+      "label": "npm: lint",
+      "detail": "eslint \"src/**/*.ts\""
     }
   ]
 }

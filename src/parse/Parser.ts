@@ -141,7 +141,7 @@ const elementFacts = {
 
   /**
    * Auto close sibilings. For a given element what parent elements can it auto
-   * close inside. Used to allow lists and tables to be expressed more compactly.
+   * close inside. Used to allow lists and tables to be expressed compactly.
    */
   OPTIONAL_TAGS: new Map<string, OptionalTagInfo>([
     ['body', {closes: ['head'], closesWithin: ['html']}],
@@ -230,7 +230,7 @@ export class Parser {
    * _any_ input text _can_ be considered an HTML document. Some are just more
    * malformed than others.
    *
-   * @returns A structured parse result for the syntax tree.
+   * @return A structured parse result for the syntax tree.
    */
   public parse(mode: ParseMode | undefined = undefined): ParseResult<RedNode> {
     if (mode === undefined) {
@@ -267,7 +267,7 @@ export class Parser {
    * Check if the current token is one of the given kinds.
    *
    * @param kinds The token kinds to check for.
-   * @returns True if the current token is one of the given kinds.
+   * @return True if the current token is one of the given kinds.
    */
   private lookingAtAny(kinds: TokenKind[]): boolean {
     const currentKind = this.tokens.current.kind;
@@ -279,7 +279,7 @@ export class Parser {
    *
    * @param kind Kind of syntax to emit.
    */
-  private bump(kind: SyntaxKind) {
+  private bump(kind: SyntaxKind): void {
     const token = this.tokens.current;
     this.tokens.bump();
     this.builder.token(kind, token.lexeme);
@@ -293,7 +293,7 @@ export class Parser {
    * @param tokenKind The kind of token to expect.
    * @param syntaxKind The kind of syntax token to emit.
    */
-  private expect(tokenKind: TokenKind, syntaxKind: SyntaxKind) {
+  private expect(tokenKind: TokenKind, syntaxKind: SyntaxKind): void {
     if (this.lookingAt(tokenKind)) {
       this.bump(syntaxKind);
     } else {
@@ -424,7 +424,7 @@ export class Parser {
         // element if it doesn't self-close
         this.builder.startNode(SyntaxKinds.Node);
         const tagMark = this.builder.mark();
-        let [tag, selfClosing] = this.parseStartTag();
+        const [tag, selfClosing] = this.parseStartTag();
 
         // Handle sibbling closers here. We heck to see if there are open tags
         // that this tag should auto-close. If so we need to backtrack and
@@ -484,7 +484,7 @@ export class Parser {
    * @param openElements The open elemnet statck.
    * @param tags The tags to search for.
    * @param autoClosesWithin The containers to break the auto-close lookup.
-   * @returns The index within the open elements to auto-close, or undefined.
+   * @return The index within the open elements to auto-close, or undefined.
    */
   private findAutoClosers(
     openElements: string[],
@@ -508,7 +508,7 @@ export class Parser {
    * Check if the given tag is an HTML void element.
    *
    * @param tag The tag to check.
-   * @returns True if the tag is an HTML void element.
+   * @return True if the tag is an HTML void element.
    */
   private isVoidElement(tag: string): boolean {
     return elementFacts.VOID_ELEMENTS.includes(tag);
@@ -523,7 +523,7 @@ export class Parser {
    *
    * No handling yet for implicitly self-closing tags.
    *
-   * @returns True if the tag is a self-closing tag, false otherwise.
+   * @return True if the tag is a self-closing tag, false otherwise.
    */
   private parseStartTag(): [string, boolean] {
     let isSelfClose = false;
@@ -560,7 +560,7 @@ export class Parser {
   /**
    * Expect the next token to be an identifier.
    *
-   * @returns The identifier's lexeme.
+   * @return The identifier's lexeme.
    */
   private expectIdentifier(expected: string | undefined = undefined): string {
     const tag = this.tokens.current.lexeme.toLowerCase();
@@ -692,7 +692,7 @@ export class Parser {
    *
    * @param input The input text to parse.
    * @param cache The node cache to use for green elements.
-   * @returns A parse result representing the document in {@link input}.
+   * @return A parse result representing the document in {@link input}.
    */
   public static parseDocumentRaw(
     input: string,

@@ -99,7 +99,7 @@ export class Tokenizer {
   /**
    * Advance past the current token.
    */
-  public bump() {
+  public bump(): void {
     if (this.bufferedCurrent !== null) {
       // If we had a token buffered then clear that.
       this.bufferedCurrent = null;
@@ -164,9 +164,9 @@ export class Tokenizer {
    * Get the token kind from a completed state machine state.
    *
    * @param state The final state the state machine arrived at.
-   * @returns The kind of token to produce.
+   * @return The kind of token to produce.
    */
-  private tokenKindFromFinalState(state: LexState) {
+  private tokenKindFromFinalState(state: LexState): TokenKind {
     switch (state) {
       case LexState.Start:
         return TokenKind.EndOfFile;
@@ -311,7 +311,7 @@ export class Tokenizer {
    * Is Space Character
    *
    * @param currentChar The input character
-   * @returns true if the charactre represents a space.
+   * @return true if the charactre represents a space.
    */
   private static isSpaceChar(currentChar: number): boolean {
     return (
@@ -326,7 +326,7 @@ export class Tokenizer {
    * Is Identifier Character
    *
    * @param currentChar The input character.
-   * @returns True if the character is an identifier character.
+   * @return True if the character is an identifier character.
    */
   private static isIdentChar(currentChar: number): boolean {
     return (

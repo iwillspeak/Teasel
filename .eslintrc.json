@@ -5,26 +5,49 @@
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "plugins": ["@typescript-eslint"],
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "ignorePatterns": [
+    "src/**/*_test.ts"
+  ],
   "rules": {
     "indent": "off",
     "quote-props": "off",
+    "valid-jsdoc": "Off",
+    "require-jsdoc": "Off",
     "max-len": "error",
     "no-unused-vars": "off",
     "spaced-comment": "off",
-    "comma-dangle": ["error", "never"],
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "generator-star-spacing": [
+      "error",
+      "before"
+    ],
     "quotes": [
       "error",
-      "single"
+      "single",
+      "avoid-escape"
     ],
-    "@typescript-eslint/explicit-function-return-type": ["error", {
-      "allowExpressions": true
-    }],
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
     "@typescript-eslint/explicit-member-accessibility": "error",
     "@typescript-eslint/member-delimiter-style": "error",
     "@typescript-eslint/no-array-constructor": "error",
     "@typescript-eslint/no-empty-interface": "error",
-    "@typescript-eslint/no-explicit-any": "error",
-    "@typescript-eslint/no-parameter-properties": "error"
+    "@typescript-eslint/no-explicit-any": "error"
   }
 }
