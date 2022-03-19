@@ -10,6 +10,11 @@ import {SyntaxItem} from './SyntaxItem.js';
  * nodes as children.
  */
 export class SyntaxNode extends SyntaxItem {
+  /**
+   * Create a syntax node for the given red node.
+   *
+   * @param {RedNode} syntax The node to wrap.
+   */
   public constructor(syntax: RedNode) {
     super(syntax);
   }
@@ -31,6 +36,11 @@ export class SyntaxNode extends SyntaxItem {
  * Sytnax wrapper for an HTML element.
  */
 export class ElementSyntax extends SyntaxNode {
+  /**
+   * Create an eelemnet syntax for the given node.
+   *
+   * @param {RedNode} syntax The node to wrap.
+   */
   public constructor(syntax: RedNode) {
     super(syntax);
   }
@@ -38,7 +48,7 @@ export class ElementSyntax extends SyntaxNode {
   /**
    * Get the opening tag of this element.
    *
-   * @returns The opening tag, if one existed.
+   * @return {StartTagSyntax | null} The opening tag, if one existed.
    */
   public startTag(): StartTagSyntax | null {
     const child = nthOfKind(this.syntax.children(), SyntaxKinds.OpeningTag, 1);
@@ -52,7 +62,7 @@ export class ElementSyntax extends SyntaxNode {
   /**
    * Get the closing tag of this element.
    *
-   * @returns The closing tag, if one existed.
+   * @return {TagSyntax | null} The closing tag, if one existed.
    */
   public endTag(): TagSyntax | null {
     const child = nthOfKind(this.syntax.children(), SyntaxKinds.ClosingTag, 1);
@@ -66,8 +76,9 @@ export class ElementSyntax extends SyntaxNode {
   /**
    * Cast a raw node to the strongly typed syntax.
    *
-   * @param node The node to cast
-   * @returns The casted node, or null if the cast coiuld not be made.
+   * @param {RedNode} node The node to cast
+   * @return {ElementSyntax | null} The casted node, or null if the cast coiuld
+   *                                not be made.
    */
   public static cast(node: RedNode): ElementSyntax | null {
     if (node.kind === SyntaxKinds.Node) {

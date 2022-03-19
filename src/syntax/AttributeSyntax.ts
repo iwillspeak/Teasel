@@ -8,8 +8,12 @@ import {AttributeValueSyntax} from './AttributeValueSyntax.js';
 /**
  * Tag attribute
  */
-
 export class AttributeSyntax extends SyntaxItem {
+  /**
+   * Create an attribute syntax wrapping the given node.
+   *
+   * @param {RedNode} syntax The node to wrap.
+   */
   public constructor(syntax: RedNode) {
     super(syntax);
   }
@@ -17,7 +21,7 @@ export class AttributeSyntax extends SyntaxItem {
   /**
    * Get the name of the attribute.
    *
-   * @returns The name of the attribute, if available.
+   * @return {string | null} The name of the attribute, if available.
    */
   public name(): string | null {
     const name = nthOfKind(
@@ -35,7 +39,7 @@ export class AttributeSyntax extends SyntaxItem {
   /**
    * Get the value of the attribute.
    *
-   * @returns The attribute value, if available.
+   * @return {string | null} The attribute value, if available.
    */
   public value(): AttributeValueSyntax | null {
     const value = nthOfKind(
@@ -54,8 +58,9 @@ export class AttributeSyntax extends SyntaxItem {
   /**
    * Cast a raw node to the strongly typed syntax.
    *
-   * @param node The node to cast
-   * @returns The casted node, or null if the cast coiuld not be made.
+   * @param {RedNode} node The node to cast
+   * @return {AttributeSyntax | null} The casted node, or null if the cast could
+   *                                  not be made.
    */
   public static cast(node: RedNode): AttributeSyntax | null {
     if (node.kind === SyntaxKinds.Attribute) {

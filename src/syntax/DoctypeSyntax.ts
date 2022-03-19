@@ -7,9 +7,16 @@ import {AttributeValueSyntax} from './AttributeValueSyntax.js';
 
 /**
  * Syntax elemnet for an HTML document's DOCTYPE declration.
+ *
+ * Provides a strucutred way to intract with syntax nodes representing a
+ * `<!doctype ..` element.
  */
-
 export class DoctypeSyntax extends SyntaxItem {
+  /**
+   * interpret the given node as a doctype element.
+   *
+   * @param {RedNode} syntax The node to wrap as a doctype syntax.
+   */
   public constructor(syntax: RedNode) {
     super(syntax);
   }
@@ -46,6 +53,9 @@ export class DoctypeSyntax extends SyntaxItem {
     return null;
   }
 
+  /**
+   * Get the public identifier from the DOCTYPE element, if any.
+   */
   public get publicIdentifier(): AttributeValueSyntax | null {
     if (this.keyword !== 'PUBLIC') {
       return null;
@@ -63,6 +73,9 @@ export class DoctypeSyntax extends SyntaxItem {
     return null;
   }
 
+  /**
+   * Get the system identifier from the DOCTYPE element, if any.
+   */
   public get systemIdentifier(): AttributeValueSyntax | null {
     const offset = this.keyword === 'SYSTEM' ? 1 : 2;
 
@@ -79,10 +92,11 @@ export class DoctypeSyntax extends SyntaxItem {
   }
 
   /**
-   * Cast a raw node to the strongly typed syntax.
+   * Try and cast a node as a doctype element.
    *
-   * @param node The node to cast
-   * @returns The casted node, or null if the cast coiuld not be made.
+   * @param {RedNode} node The syntax node to cast.
+   * @return {DoctypeSyntax | null} The DoctypeSyntax if the node is a Doctype,
+   *                                or null otherwise.
    */
   public static cast(node: RedNode): DoctypeSyntax | null {
     if (node.kind === SyntaxKinds.Doctype) {

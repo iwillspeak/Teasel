@@ -14,7 +14,8 @@
   "rules": {
     "indent": "off",
     "quote-props": "off",
-    "require-jsdoc": "Off",
+    "operator-linebreak": "off",
+    "require-jsdoc": "warn",
     "max-len": "error",
     "no-unused-vars": "off",
     "spaced-comment": "off",

@@ -231,6 +231,7 @@ export class Parser {
    * _any_ input text _can_ be considered an HTML document. Some are just more
    * malformed than others.
    *
+   * @param {ParseMode} [mode] The parser mode to use.
    * @return {ParseResult} A structured parse result for the syntax tree.
    */
   public parse(mode: ParseMode | undefined = undefined): ParseResult<RedNode> {
@@ -716,9 +717,10 @@ export class Parser {
   /**
    * Parse the given text as an HTML Document
    *
-   * @param input The input to parse.
-   * @param cache The node cahce to use, or `undefined` to use the default one.
-   * @returns The parsed document.
+   * @param {string} input The input to parse.
+   * @param {NodeCache | number} [cache] The node cahce to use, or `undefined`
+   *                                     to use the default one.
+   * @return {ParseResult<DocumentSyntax>} The parsed document.
    */
   public static parseDocument(
     input: string,
@@ -731,9 +733,11 @@ export class Parser {
   /**
    * Parse the given text as an HTML fragment.
    *
-   * @param input The input text to parse.
-   * @param cache The node cache to use for green elements.
-   * @returns A parse result representing the document in {@link input}.
+   * @param {string} input The input text to parse.
+   * @param {NodeCache | number} [cache] The node cache to use for green
+   *                                     elements.
+   * @return {ParseResult<RedNode>} A parse result representing the document in
+   *                                {@link input}.
    */
   public static parseFragmentRaw(
     input: string,
@@ -747,9 +751,10 @@ export class Parser {
   /**
    * Parse the given text as an HTML fragment
    *
-   * @param input The input to parse.
-   * @param cache The node cahce to use, or `undefined` to use the default one.
-   * @returns The parsed document fragment.
+   * @param {string} input The input to parse.
+   * @param {NodeCache | number} [cache] The node cahce to use, or `undefined
+   *                                     to use the default one.
+   * @return {ParseResult<DocumentFragmentSyntax>} The parsed document fragment.
    */
   public static parseFragment(
     input: string,
