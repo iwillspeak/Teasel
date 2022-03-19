@@ -1,6 +1,7 @@
 name: release
-release:
-  types: [created]
+on:
+  release:
+    types: [created]
 jobs:
   ci-build-and-test:
     runs-on: ubuntu-latest
