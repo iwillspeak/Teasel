@@ -12,6 +12,11 @@ interface MapEntry<K, V> {
   value: V | undefined;
 }
 
+/**
+ * Node Cache Map
+ *
+ * A double-level map for caching syntax elements.
+ */
 class CacheMap<K, V> {
   private map: Map<SyntaxKind, Map<number, MapEntry<K, V>[]>>;
 
@@ -94,10 +99,11 @@ export class NodeCache {
   /**
    * Create or retrieve a node of the given kind with the given children.
    *
-   * @param kind The kind for this node.
-   * @param children The children for this node.
+   * @param {SyntaxKind} kind The kind for this node.
+   * @param {GreenElement[]} children The children for this node.
+   * @return {GreenNode} The resulting node.
    */
-  public createNode(kind: number, children: GreenElement[]): GreenNode {
+  public createNode(kind: SyntaxKind, children: GreenElement[]): GreenNode {
     if (children.length > this.maxNodeSize) {
       return new GreenNode(kind, children);
     }
@@ -113,8 +119,9 @@ export class NodeCache {
   /**
    * Create or retrieve a token of the given kind.
    *
-   * @param kind The kind for this token.
-   * @param text The backing text for this token.
+   * @param {SyntaxKind} kind The kind for this token.
+   * @param {string} text The backing text for this token.
+   * @return {GreenToken} The resulting token.
    */
   public createToken(kind: SyntaxKind, text: string): GreenToken {
     const entry = this.cachedTokens.entry(kind, text);

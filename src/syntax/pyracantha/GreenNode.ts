@@ -25,8 +25,8 @@ export class GreenNode {
    * Green nodes can be built using this constructor to manually produce syntax.
    * For ergonomics however it is best to use a green tree builder instead.
    *
-   * @param kind The kind for this node
-   * @param children The children of this node
+   * @param {SyntaxKind} kind The kind for this node.
+   * @param {Array<GreenNode | GreenToken>} children The children of this node.
    */
   public constructor(
     public kind: SyntaxKind,
@@ -41,6 +41,8 @@ export class GreenNode {
 
   /**
    * Get the hash code for this element.
+   *
+   * @return {number} A structural hash of this node and its children.
    */
   public get hash(): number {
     if (this.hashCode === undefined) {
@@ -60,6 +62,8 @@ export class GreenNode {
   /**
    * The length of this node in the underlying source text. This is the width
    * of the node _inclusive_ of its children.
+   *
+   * @return {number} The text length in characters.
    */
   public get textLength(): number {
     return this.width;
@@ -68,7 +72,7 @@ export class GreenNode {
   /**
    * Convert to Display String.
    *
-   * @return The source text represented by this node.
+   * @return {string} The source text represented by this node.
    */
   public toString(): string {
     let result = '';

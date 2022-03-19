@@ -77,7 +77,7 @@ export class Tokenizer {
   /**
    * Create a tokeniser instance.
    *
-   * @param text The text buffer to lex.
+   * @param {string} text The text buffer to lex.
    */
   public constructor(text: string) {
     this.buffer = text;
@@ -130,6 +130,8 @@ export class Tokenizer {
    * Advance the state machine and retrive the next token in the stream. This
    * method always returns some {@link Token} value. If no further characters
    * are avialable in the input then the EOF token is returned.
+   *
+   * @return {Token} the next token.
    */
   private getNextToken(): Token {
     let state = LexState.Start;
@@ -163,8 +165,8 @@ export class Tokenizer {
   /**
    * Get the token kind from a completed state machine state.
    *
-   * @param state The final state the state machine arrived at.
-   * @return The kind of token to produce.
+   * @param {LexState} state The final state the state machine arrived at.
+   * @return {TokenKind} The kind of token to produce.
    */
   private tokenKindFromFinalState(state: LexState): TokenKind {
     switch (state) {
@@ -202,6 +204,10 @@ export class Tokenizer {
    *
    * Given the current {@paramref state} and {@paramref currentChar} return the
    * state transition, if any. If no transition exists then `null` is returned.
+   *
+   * @param {LexState} state The current lexer state.
+   * @param {number} currentChar The unicode code unit of the current character.
+   * @return {LexState | null} The next state, if any.
    */
   private nextTransition(
     state: LexState,
@@ -308,10 +314,10 @@ export class Tokenizer {
   }
 
   /**
-   * Is Space Character
+   * Check if a given character represents whitespace
    *
-   * @param currentChar The input character
-   * @return true if the charactre represents a space.
+   * @param {number} currentChar The input character code unit.
+   * @return {boolean} true if the charactre represents a space.
    */
   private static isSpaceChar(currentChar: number): boolean {
     return (
@@ -323,10 +329,10 @@ export class Tokenizer {
   }
 
   /**
-   * Is Identifier Character
+   * Check if a given character is an identifier
    *
-   * @param currentChar The input character.
-   * @return True if the character is an identifier character.
+   * @param {number} currentChar The input character code unit.
+   * @return {boolean} True if the character is an identifier character.
    */
   private static isIdentChar(currentChar: number): boolean {
     return (
