@@ -14,7 +14,6 @@
   "rules": {
     "indent": "off",
     "quote-props": "off",
-    "valid-jsdoc": "Off",
     "require-jsdoc": "Off",
     "max-len": "error",
     "no-unused-vars": "off",

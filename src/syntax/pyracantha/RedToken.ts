@@ -16,9 +16,10 @@ export class RedToken {
    * Red tokens should not need to be constructed manually, instead they are
    * produced on demand when traversing a red node.
    *
-   * @param parent The parent node for this token.
-   * @param offset The offset of this token from the start of the source text.
-   * @param green The underlying {@link GreenToken}.
+   * @param {RedNode} parent The parent node for this token.
+   * @param {number} offset The offset of this token from the start of the
+   *                        source text.
+   * @param {GreenToken} green The underlying {@link GreenToken}.
    */
   public constructor(parent: RedNode, offset: number, green: GreenToken) {
     this.parent = parent;
@@ -51,7 +52,7 @@ export class RedToken {
   /**
    * Convert to Display String.
    *
-   * @return The source text represented by the underlying green node.
+   * @return {string} The source text represented by the underlying green node.
    */
   public toString(): string {
     return this.green.toString();

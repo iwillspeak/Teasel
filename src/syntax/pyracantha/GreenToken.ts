@@ -17,8 +17,8 @@ export class GreenToken {
    * Green tokens can be manually created, but it is best to use a green tree
    * builder to allow for caching of nodes and tokens.
    *
-   * @param kind The kind for this token
-   * @param text The text of this token
+   * @param {SyntaxKind} kind The kind for this token
+   * @param {string} text The text of this token
    */
   public constructor(public kind: SyntaxKind, public text: string) {
     this.hashCode = undefined;
@@ -26,6 +26,8 @@ export class GreenToken {
 
   /**
    * Get the hash code for this element.
+   *
+   * @retrun {number} The structural hash of this token.
    */
   public get hash(): number {
     if (this.hashCode === undefined) {
@@ -42,6 +44,8 @@ export class GreenToken {
   /**
    * Get the length of this token in the underlying source text. This is the
    * length of the text that makes up this token.
+   *
+   * @return {number} The length of this element in characters.
    */
   public get textLength(): number {
     return this.text.length;
@@ -50,7 +54,7 @@ export class GreenToken {
   /**
    * Convert to Display String.
    *
-   * @return The source text represented by this token.
+   * @return {string} The source text represented by this token.
    */
   public toString(): string {
     return this.text;

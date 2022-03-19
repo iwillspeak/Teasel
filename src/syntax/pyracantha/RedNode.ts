@@ -22,9 +22,10 @@ export class RedNode {
    * Red nodes shouldn't be constructed directly. Instead red nodes can be
    * traversed from a parent node.
    *
-   * @param parent The parent of this node.
-   * @param offset The offset of this node from the start of the source text.
-   * @param green The green node that backs this red node.
+   * @param {RedNode} [parent] The parent of this node.
+   * @param {number} offset The offset of this node from the start of the source
+   *                        text.
+   * @param {GreenNode} green The green node that backs this red node.
    */
   public constructor(parent: RedNode | null, offset: number, green: GreenNode) {
     this.parent = parent;
@@ -37,8 +38,8 @@ export class RedNode {
    *
    * Initialises a new red tree rooted at the given green node.
    *
-   * @param node The root node of the tree.
-   * @return A new red tree for the given root.
+   * @param {GreenNode} node The root node of the tree.
+   * @return {RedNode} A new red tree for the given root.
    */
   public static createRoot(node: GreenNode): RedNode {
     return new RedNode(null, 0, node);
@@ -89,7 +90,7 @@ export class RedNode {
   /**
    * Iterate over a filtered set of the node's children.
    *
-   * @param kind The kind to filter.
+   * @param {SyntaxKind} kind The kind to filter.
    */
   public *childrenOfKind(kind: SyntaxKind): IterableIterator<RedNode> {
     for (const child of this.children()) {
@@ -102,7 +103,7 @@ export class RedNode {
   /**
    * Convert to Display String.
    *
-   * @return The source text represented by the underlying green node.
+   * @return {string} The source text represented by the underlying green node.
    */
   public toString(): string {
     return this.green.toString();

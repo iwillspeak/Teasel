@@ -52,6 +52,9 @@ export class GreenTreeBuilder {
 
   /**
    * Create a new tree builder, using the given node cache if provided.
+   *
+   * @param {NodeCache | number} [cache] The node cache to use when creating
+   *                                     new tree elements.
    */
   public constructor(cache: NodeCache | number | undefined = undefined) {
     if (cache instanceof NodeCache) {
@@ -64,7 +67,7 @@ export class GreenTreeBuilder {
   /**
    * Start building a new child node of the given {@link kind}.
    *
-   * @param kind The kind of node to start.
+   * @param {SyntaxKind} kind The kind of node to start.
    */
   public startNode(kind: SyntaxKind): void {
     this.nodes.push([kind, this.children, this.marks]);
@@ -95,7 +98,7 @@ export class GreenTreeBuilder {
   /**
    * Store a mark to later optionally turn into a node.
    *
-   * @return A new mark to the current bulder position.
+   * @return {Mark} A new mark to the current bulder position.
    */
   public mark(): Mark {
     const index = this.children.length;
@@ -109,8 +112,8 @@ export class GreenTreeBuilder {
   /**
    * Convert a cached mark into a new node.
    *
-   * @param mark The mark to apply.
-   * @param kind The node kind to create.
+   * @param {Mark} mark The mark to apply.
+   * @param {SyntaxKind} kind The node kind to create.
    */
   public applyMark(mark: Mark, kind: SyntaxKind): void {
     const markedChildren = this.sliceOffMark(mark);
@@ -120,8 +123,9 @@ export class GreenTreeBuilder {
   /**
    * Slice off the children after the given mark.
    *
-   * @param mark The mark to slice.
-   * @return The elements of the current node that are _after_ the given mark.
+   * @param {Mark} mark The mark to slice.
+   * @return {GreenElement[]} The elements of the current node that are _after_
+   *                          the given mark.
    */
   public sliceOffMark(mark: Mark): GreenElement[] {
     const markIndex = this.marks.indexOf(mark);
@@ -149,8 +153,8 @@ export class GreenTreeBuilder {
   /**
    * Emit a token in the tree of the given kind.
    *
-   * @param kind The token kind to emit.
-   * @param text The text / lexeme of the token.
+   * @param {SyntaxKind} kind The token kind to emit.
+   * @param {string} text The text / lexeme of the token.
    */
   public token(kind: SyntaxKind, text: string): void {
     this.children.push(this.nodeCache.createToken(kind, text));
@@ -159,7 +163,7 @@ export class GreenTreeBuilder {
   /**
    * Emit a given sequence of elements into the tree.
    *
-   * @param elements The elements to buffer.
+   * @param {GreenElement[]} elements The elements to buffer.
    */
   public elements(elements: GreenElement[]): void {
     for (const element of elements) {
@@ -169,8 +173,9 @@ export class GreenTreeBuilder {
 
   /**
    * Finish building the tree by creating a root node of the given kind.
-   * @param kind The root node kind
-   * @return A new syntax tree root node.
+   *
+   * @param {SyntaxKind} kind The root node kind
+   * @return {GreenNode} A new syntax tree root node.
    */
   public buildRoot(kind: SyntaxKind): GreenNode {
     if (this.nodes.length !== 0) {

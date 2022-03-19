@@ -209,8 +209,9 @@ export class Parser {
    * This is the low-level entry point to the parser. Generally a parser is not
    * direclty constructed and instead the {@li}
    *
-   * @param tokens The tokens to parse into a tree.
-   * @param cache The node cache to use for green elements.
+   * @param {Tokeniser} tokens The tokens to parse into a tree.
+   * @param {NodeCache | number} [cache] The node cache to use for green
+   *                                     elements.
    */
   public constructor(
     tokens: Tokenizer,
@@ -230,7 +231,7 @@ export class Parser {
    * _any_ input text _can_ be considered an HTML document. Some are just more
    * malformed than others.
    *
-   * @return A structured parse result for the syntax tree.
+   * @return {ParseResult} A structured parse result for the syntax tree.
    */
   public parse(mode: ParseMode | undefined = undefined): ParseResult<RedNode> {
     if (mode === undefined) {
@@ -257,7 +258,8 @@ export class Parser {
   /**
    * Check if the current token is of the given kind.
    *
-   * @param kind The kind to check for.
+   * @param {TokenKind} kind The kind to check for.
+   * @return {boolean} True if the current token is of the given kind.
    */
   private lookingAt(kind: TokenKind): boolean {
     return this.tokens.current.kind === kind;
@@ -266,8 +268,8 @@ export class Parser {
   /**
    * Check if the current token is one of the given kinds.
    *
-   * @param kinds The token kinds to check for.
-   * @return True if the current token is one of the given kinds.
+   * @param {TokenKind[]} kinds The token kinds to check for.
+   * @return {boolean} True if the current token is one of the given kinds.
    */
   private lookingAtAny(kinds: TokenKind[]): boolean {
     const currentKind = this.tokens.current.kind;
@@ -277,7 +279,7 @@ export class Parser {
   /**
    * Consume the current token and emit a green token of the given kind.
    *
-   * @param kind Kind of syntax to emit.
+   * @param {SyntaxKind} kind Kind of syntax to emit.
    */
   private bump(kind: SyntaxKind): void {
     const token = this.tokens.current;
@@ -290,8 +292,8 @@ export class Parser {
    * token into the green tree. If the token is not of the expected kind then
    * an error is buffered instead.
    *
-   * @param tokenKind The kind of token to expect.
-   * @param syntaxKind The kind of syntax token to emit.
+   * @param {TokenKind} tokenKind The kind of token to expect.
+   * @param {SyntaxKind} syntaxKind The kind of syntax token to emit.
    */
   private expect(tokenKind: TokenKind, syntaxKind: SyntaxKind): void {
     if (this.lookingAt(tokenKind)) {
@@ -308,8 +310,8 @@ export class Parser {
   /**
    * Raise an error and skip past junk tokens.
    *
-   * @param message The message to use in the error description.
-   * @param syncSet The syncrhonisation set for this error position.
+   * @param {string} message The message to use in the error description.
+   * @param {TokenKind[]} syncSet The syncrhonisation set for this error.
    */
   private error(message: string, syncSet: TokenKind[]): void {
     this.raiseError(message);
@@ -321,8 +323,10 @@ export class Parser {
   /**
    * Raise a parser error at the current position.
    *
-   * This buffers up a diagnostic message
-   * @param message The error message to raise.
+   * Fabricates a `Diagnostic` using the given `message` at the current lexer
+   * location and buffers it.
+   *
+   * @param {string} message The error message to raise.
    */
   private raiseError(message: string): void {
     this.errors.push({
@@ -481,10 +485,12 @@ export class Parser {
    * one is found then that should be auto-closed. We use the `autoClosesWithin`
    * set to prevent auto-closing outer siblings.
    *
-   * @param openElements The open elemnet statck.
-   * @param tags The tags to search for.
-   * @param autoClosesWithin The containers to break the auto-close lookup.
-   * @return The index within the open elements to auto-close, or undefined.
+   * @param {string[]} openElements The open elemnet statck.
+   * @param {string[]} tags The tags to search for.
+   * @param {string[]} autoClosesWithin The containers to break the auto-close
+   *                                    lookup.
+   * @return {number | undefined} The index within the open elements to
+   *                              auto-close, or undefined.
    */
   private findAutoClosers(
     openElements: string[],
@@ -507,8 +513,8 @@ export class Parser {
   /**
    * Check if the given tag is an HTML void element.
    *
-   * @param tag The tag to check.
-   * @return True if the tag is an HTML void element.
+   * @param {string} tag The tag to check.
+   * @return {boolean} True if the tag is an HTML void element.
    */
   private isVoidElement(tag: string): boolean {
     return elementFacts.VOID_ELEMENTS.includes(tag);
@@ -523,7 +529,7 @@ export class Parser {
    *
    * No handling yet for implicitly self-closing tags.
    *
-   * @return True if the tag is a self-closing tag, false otherwise.
+   * @return {boolean} True if the tag is a self-closing tag, false otherwise.
    */
   private parseStartTag(): [string, boolean] {
     let isSelfClose = false;
@@ -560,7 +566,10 @@ export class Parser {
   /**
    * Expect the next token to be an identifier.
    *
-   * @return The identifier's lexeme.
+   * Pass in {@paramrref expected} to check for a specific idnetifier value.
+   *
+   * @param {string} [expected] The expected identifier value..
+   * @return {string} The identifier's lexeme.
    */
   private expectIdentifier(expected: string | undefined = undefined): string {
     const tag = this.tokens.current.lexeme.toLowerCase();
@@ -575,6 +584,8 @@ export class Parser {
 
   /**
    * Parse the end tag of a node. e.g. `</p>`.
+   *
+   * @return {string} the tag's identifier.
    */
   private parseEndTag(): string {
     this.builder.startNode(SyntaxKinds.ClosingTag);
@@ -588,7 +599,7 @@ export class Parser {
   }
 
   /**
-   * # Parse an Attribute
+   * Parse an Attribute
    *
    * Parses a single attribute vlaue in one of the four valid attribute forms.
    * If an attribute has a value associated that vluae is stored in a nested
@@ -631,7 +642,7 @@ export class Parser {
   /**
    * Parse tokens as text data until one of the given follow tokens.
    *
-   * @param follow The tokens to end the text node at.
+   * @param {TokenKind[]} follow The tokens to end the text node at.
    */
   private parseTextData(follow: TokenKind[]): void {
     let accum = '';
@@ -645,8 +656,8 @@ export class Parser {
   /**
    * Parse the value of an attribute.
    *
-   * @param quote The quote to expect around the attribute value.
-   * @param follow The folow set for the atttribute value.
+   * @param {TokenKind} quote The quote to expect around the attribute value.
+   * @param {TokenKind[]} follow The folow set for the atttribute value.
    */
   private parseQuotedAttributeValue(
     quote: TokenKind,
@@ -690,9 +701,10 @@ export class Parser {
   /**
    * Parse the given text as HTML.
    *
-   * @param input The input text to parse.
-   * @param cache The node cache to use for green elements.
-   * @return A parse result representing the document in {@link input}.
+   * @param {string} input The input text to parse.
+   * @param {NodeCache | number} [cache] The node cache to use for green
+   *                                     elements.
+   * @return {ParseResult} A parse result representing the document in `input`.
    */
   public static parseDocumentRaw(
     input: string,
