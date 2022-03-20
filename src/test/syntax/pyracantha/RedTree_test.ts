@@ -22,12 +22,12 @@ suite('RedTree', () => {
     assert.equal(tree.range.end, 7);
     assert.equal(tree.toString(), '(12+34)');
 
-    let children = Array.from(tree.childrenWithTokens());
+    const children = Array.from(tree.childrenWithTokens());
     assert.equal(children[0].toString(), '(');
     assert.equal(children[0].kind, 100);
 
     assert.isTrue(children[1] instanceof RedNode);
-    var node = children[1] as RedNode;
+    const node = children[1] as RedNode;
     assert.equal(node.kind, 2);
     assert.equal(node.range.start, 1);
     assert.equal(node.range.end, 6);
@@ -35,7 +35,7 @@ suite('RedTree', () => {
     assert.equal(children[2].toString(), ')');
     assert.equal(children[2].kind, 101);
 
-    let childNodes = Array.from(tree.children());
+    const childNodes = Array.from(tree.children());
     assert.equal(childNodes.length, 1);
     assert.equal(childNodes[0].kind, node.kind);
   });
