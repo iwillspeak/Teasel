@@ -6,6 +6,8 @@ import {GreenNode} from './pyracantha/GreenNode.js';
 import {GreenToken} from './pyracantha/GreenToken.js';
 import {GreenElement} from './pyracantha/GreenTree.js';
 import {RedNode} from './pyracantha/RedNode.js';
+import {StartTagSyntax} from './StartTagSyntax.js';
+import {TagSyntax} from './TagSyntax.js';
 
 /**
  * The type of quote to use when creating atttributes.
@@ -95,6 +97,56 @@ export class SyntaxFactory {
           new GreenToken(SyntaxKinds.Ident, 'doctype'),
           new GreenToken(SyntaxKinds.Trivia, ' '),
           new GreenToken(SyntaxKinds.Ident, kind),
+          new GreenToken(SyntaxKinds.TagEnd, '>')
+        ])
+      )
+    );
+  }
+
+  /**
+   * Create a new opening tag syntax.
+   *
+   * @param {string} name The tag name to open.
+   * @param {AttributeSyntax[]} [attributes] Any attributes for this tag.
+   * @return {StartTagSyntax} theThe new tag syntax.
+   */
+  public static startTag(
+    name: string,
+    attributes: AttributeSyntax[] | undefined = undefined
+  ): StartTagSyntax {
+    const body: GreenElement[] = [
+      new GreenToken(SyntaxKinds.TagStart, '<'),
+      new GreenToken(SyntaxKinds.Ident, name)
+    ];
+
+    if (attributes !== undefined) {
+      const space = new GreenToken(SyntaxKinds.Trivia, ' ');
+      for (const attr of attributes) {
+        body.push(space);
+        body.push(attr.rawSyntax.rawItem);
+      }
+    }
+
+    body.push(new GreenToken(SyntaxKinds.TagEnd, '>'));
+    return new StartTagSyntax(
+      new RedNode(null, 0, new GreenNode(SyntaxKinds.OpeningTag, body))
+    );
+  }
+
+  /**
+   * Create a new end tag syntax.
+   *
+   * @param {string} name The tag name to close.
+   * @return {TagSyntax} The new end tag.
+   */
+  public static endTag(name: string): TagSyntax {
+    return new TagSyntax(
+      new RedNode(
+        null,
+        0,
+        new GreenNode(SyntaxKinds.ClosingTag, [
+          new GreenToken(SyntaxKinds.TagStart, '</'),
+          new GreenToken(SyntaxKinds.Ident, name),
           new GreenToken(SyntaxKinds.TagEnd, '>')
         ])
       )
