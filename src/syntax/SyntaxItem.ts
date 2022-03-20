@@ -17,6 +17,13 @@ export class SyntaxItem {
   }
 
   /**
+   * Get the raw syntax node for this item.
+   */
+  public get rawSyntax(): RedNode {
+    return this.syntax;
+  }
+
+  /**
    * Get the text span that this node represents. */
   public get range(): Range {
     return this.syntax.range;

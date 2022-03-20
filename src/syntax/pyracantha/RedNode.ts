@@ -34,6 +34,13 @@ export class RedNode {
   }
 
   /**
+   * Get the raw syntax item behind this node.
+   */
+  public get rawItem(): GreenNode {
+    return this.green;
+  }
+
+  /**
    * Create a red tree from a given root.
    *
    * Initialises a new red tree rooted at the given green node.
