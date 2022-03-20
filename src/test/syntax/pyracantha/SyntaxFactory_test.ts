@@ -73,4 +73,13 @@ suite('Syntax Factory', () => {
     assert.equal('</section>', secClose.toString());
     assert.equal('section', secClose.name);
   });
+  test('simple element', () => {
+    const p = SyntaxFactory.element(
+      SyntaxFactory.startTag('p', [SyntaxFactory.attribute('class', 'loud')]),
+      [SyntaxFactory.text('hello world')],
+      SyntaxFactory.endTag('p')
+    );
+
+    assert.equal('<p class="loud">hello world</p>', p.toString());
+  });
 });

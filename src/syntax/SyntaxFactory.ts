@@ -2,6 +2,7 @@ import {SyntaxKinds} from '../parse/Parser.js';
 import {AttributeSyntax} from './AttributeSyntax.js';
 import {AttributeValueSyntax} from './AttributeValueSyntax.js';
 import {DoctypeSyntax} from './DoctypeSyntax.js';
+import {ElementSyntax} from './ElementSyntax.js';
 import {GreenNode} from './pyracantha/GreenNode.js';
 import {GreenToken} from './pyracantha/GreenToken.js';
 import {GreenElement} from './pyracantha/GreenTree.js';
@@ -17,6 +18,18 @@ export enum QuoteStyle {
   Single,
   Double
 }
+
+/**
+ * A fragment of text
+ */
+export interface TextFragment {
+  textToken: GreenToken;
+}
+
+/**
+ * Content item for a syntax element, document, or document fragment.
+ */
+export type Content = ElementSyntax | TextFragment;
 
 /**
  * Factory methods for syntax items.
@@ -150,6 +163,46 @@ export class SyntaxFactory {
           new GreenToken(SyntaxKinds.TagEnd, '>')
         ])
       )
+    );
+  }
+
+  /**
+   * Create a new text node.
+   *
+   * @param {string} text The content of the text fragment.
+   * @return {TextFragment} The new text fragment.
+   */
+  public static text(text: string): TextFragment {
+    return {textToken: new GreenToken(SyntaxKinds.Text, text)};
+  }
+
+  /**
+   * Create an element syntax.
+   *
+   * @param {StartTagSyntax} start The opening tag of the element.
+   * @param {Content[]} contents The content of the tag.
+   * @param {TagSyntax} end The closing tag of the element.
+   * @return {ElementSyntax} The newly created element.
+   */
+  public static element(
+    start: StartTagSyntax,
+    contents: Content[],
+    end: TagSyntax
+  ): ElementSyntax {
+    const body: GreenElement[] = [start.rawSyntax.rawItem];
+
+    for (const content of contents) {
+      if (content instanceof ElementSyntax) {
+        body.push(content.rawSyntax.rawItem);
+      } else {
+        body.push(content.textToken);
+      }
+    }
+
+    body.push(end.rawSyntax.rawItem);
+
+    return new ElementSyntax(
+      new RedNode(null, 0, new GreenNode(SyntaxKinds.Node, body))
     );
   }
 }
