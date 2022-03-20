@@ -8,14 +8,10 @@
   "plugins": [
     "@typescript-eslint"
   ],
-  "ignorePatterns": [
-    "src/**/*_test.ts"
-  ],
   "rules": {
     "indent": "off",
     "quote-props": "off",
     "operator-linebreak": "off",
-    "require-jsdoc": "warn",
     "max-len": "error",
     "no-unused-vars": "off",
     "spaced-comment": "off",
@@ -38,12 +34,7 @@
         "allowExpressions": true
       }
     ],
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      {
-        "argsIgnorePattern": "^_"
-      }
-    ],
+    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/explicit-member-accessibility": "error",
     "@typescript-eslint/member-delimiter-style": "error",
     "@typescript-eslint/no-array-constructor": "error",

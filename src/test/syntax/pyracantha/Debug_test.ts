@@ -27,7 +27,7 @@ suite('Debug', () => {
       ])
     );
 
-    let formatted = debugToString(tree, (kind) => {
+    const formatted = debugToString(tree, (kind) => {
       return Kind[kind as Kind];
     });
 

@@ -6,9 +6,9 @@ import {debugToString} from '../../syntax/pyracantha/Debug.js';
 import {DocumentSyntax} from '../../syntax/DocumentSyntax.js';
 import {Tokenizer} from '../../tokenize/Tokenizer.js';
 
-function checkParse(input: string, expected: string) {
+function checkParse(input: string, expected: string): void {
   const result = Parser.parseDocumentRaw(input);
-  let actual = debugToString(result.root, (k) => SyntaxKinds[k]);
+  const actual = debugToString(result.root, (k) => SyntaxKinds[k]);
   assert.equal(result.diagnostics.length, 0);
   assert.equal(actual.trim(), expected.trim());
 }
@@ -35,7 +35,7 @@ suite('Parser', () => {
     assert.equal(result.diagnostics[0].position.start, 0);
     assert.equal(result.diagnostics[0].position.end, 1);
     assert.equal(result.root.kind, SyntaxKinds.Document);
-    let children = Array.from(result.root.children());
+    const children = Array.from(result.root.children());
     assert.equal(children.length, 1);
     assert.equal(children[0].kind, SyntaxKinds.Node);
     assert.equal(result.root.toString(), source);
