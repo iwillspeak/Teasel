@@ -1,6 +1,7 @@
 import {SyntaxKinds} from '../parse/Parser.js';
 import {AttributeSyntax} from './AttributeSyntax.js';
 import {AttributeValueSyntax} from './AttributeValueSyntax.js';
+import {DoctypeSyntax} from './DoctypeSyntax.js';
 import {GreenNode} from './pyracantha/GreenNode.js';
 import {GreenToken} from './pyracantha/GreenToken.js';
 import {GreenElement} from './pyracantha/GreenTree.js';
@@ -75,6 +76,28 @@ export class SyntaxFactory {
 
     return new AttributeValueSyntax(
       new RedNode(null, 0, new GreenNode(SyntaxKinds.AttributeValue, body))
+    );
+  }
+
+  /**
+   * Create a new doctype syntax with the given document type.
+   *
+   * @param {string} kind The document kind.
+   * @return {DoctypeSyntax} The new doctype syntax value.
+   */
+  public static doctype(kind: string): DoctypeSyntax {
+    return new DoctypeSyntax(
+      new RedNode(
+        null,
+        0,
+        new GreenNode(SyntaxKinds.Doctype, [
+          new GreenToken(SyntaxKinds.DoctypeStart, '<!'),
+          new GreenToken(SyntaxKinds.Ident, 'doctype'),
+          new GreenToken(SyntaxKinds.Trivia, ' '),
+          new GreenToken(SyntaxKinds.Ident, kind),
+          new GreenToken(SyntaxKinds.TagEnd, '>')
+        ])
+      )
     );
   }
 }
