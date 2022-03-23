@@ -18,8 +18,10 @@ export class SyntaxItem {
 
   /**
    * Get the raw syntax node for this item.
+   *
+   * @internal
    */
-  public get rawSyntax(): RedNode {
+  public get __rawSyntax(): RedNode {
     return this.syntax;
   }
 

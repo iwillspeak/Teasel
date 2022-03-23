@@ -35,8 +35,10 @@ export class RedNode {
 
   /**
    * Get the raw syntax item behind this node.
+   *
+   * @internal
    */
-  public get rawItem(): GreenNode {
+  public get __rawItem(): GreenNode {
     return this.green;
   }
 

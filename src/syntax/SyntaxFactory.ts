@@ -47,7 +47,7 @@ export function attribute(
   if (value !== undefined) {
     body.push(new GreenToken(SyntaxKinds.Trivia, '='));
     if (value instanceof AttributeValueSyntax) {
-      body.push(value.rawSyntax.rawItem);
+      body.push(value.__rawSyntax.__rawItem);
     } else {
       body.push(
         new GreenNode(SyntaxKinds.AttributeValue, [
@@ -132,7 +132,7 @@ export function startTag(
     const space = new GreenToken(SyntaxKinds.Trivia, ' ');
     for (const attr of attributes) {
       body.push(space);
-      body.push(attr.rawSyntax.rawItem);
+      body.push(attr.__rawSyntax.__rawItem);
     }
   }
 
@@ -185,17 +185,17 @@ export function element(
   contents: Content[],
   end: TagSyntax
 ): ElementSyntax {
-  const body: GreenElement[] = [start.rawSyntax.rawItem];
+  const body: GreenElement[] = [start.__rawSyntax.__rawItem];
 
   for (const content of contents) {
     if (content instanceof ElementSyntax) {
-      body.push(content.rawSyntax.rawItem);
+      body.push(content.__rawSyntax.__rawItem);
     } else {
       body.push(content.textToken);
     }
   }
 
-  body.push(end.rawSyntax.rawItem);
+  body.push(end.__rawSyntax.__rawItem);
 
   return new ElementSyntax(
     new RedNode(null, 0, new GreenNode(SyntaxKinds.Node, body))
