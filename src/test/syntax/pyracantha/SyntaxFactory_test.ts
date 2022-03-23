@@ -1,5 +1,6 @@
 import {assert} from 'chai';
-import {QuoteStyle, SyntaxFactory} from '../../../syntax/SyntaxFactory.js';
+import {QuoteStyle} from '../../../syntax/SyntaxFactory.js';
+import * as SyntaxFactory from '../../../syntax/SyntaxFactory.js';
 
 suite('Syntax Factory', () => {
   test('attribute simple', () => {
