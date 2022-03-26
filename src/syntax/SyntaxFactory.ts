@@ -14,9 +14,9 @@ import {TagSyntax} from './TagSyntax.js';
  * The type of quote to use when creating atttributes.
  */
 export enum QuoteStyle {
-  None,
-  Single,
-  Double
+  None = 'none',
+  Single = 'single',
+  Double = 'double'
 }
 
 /**
