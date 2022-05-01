@@ -1,6 +1,6 @@
 {
   "name": "@iwillspeak/teasel",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "bin": "lib/cli.js",
   "description": "A parser of some sort.",
