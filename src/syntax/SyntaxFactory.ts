@@ -123,7 +123,7 @@ export function doctype(kind: string): DoctypeSyntax {
 export function startTag(
   name: string,
   attributes: AttributeSyntax[] | undefined = undefined,
-  selfClosing: boolean = false
+  selfClosing = false
 ): StartTagSyntax {
   const body: GreenElement[] = [
     new GreenToken(SyntaxKinds.TagStart, '<'),
@@ -215,7 +215,7 @@ export function element(
  * Create a new void or self closing element.
  *
  * @param {StartTagSyntax} tag The tag for this void element.
- * @returns {ElementSyntax} A new ly created element.
+ * @return {ElementSyntax} A new ly created element.
  */
 export function voidElement(tag: StartTagSyntax): ElementSyntax {
   return new ElementSyntax(
