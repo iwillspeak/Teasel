@@ -117,11 +117,13 @@ export function doctype(kind: string): DoctypeSyntax {
  *
  * @param {string} name The tag name to open.
  * @param {AttributeSyntax[]} [attributes] Any attributes for this tag.
+ * @param {boolean} selfClosing Should the tag be self closing?
  * @return {StartTagSyntax} theThe new tag syntax.
  */
 export function startTag(
   name: string,
-  attributes: AttributeSyntax[] | undefined = undefined
+  attributes: AttributeSyntax[] | undefined = undefined,
+  selfClosing: boolean = false
 ): StartTagSyntax {
   const body: GreenElement[] = [
     new GreenToken(SyntaxKinds.TagStart, '<'),
@@ -136,7 +138,12 @@ export function startTag(
     }
   }
 
-  body.push(new GreenToken(SyntaxKinds.TagEnd, '>'));
+  if (selfClosing) {
+    body.push(new GreenToken(SyntaxKinds.TagEnd, '/>'));
+  } else {
+    body.push(new GreenToken(SyntaxKinds.TagEnd, '>'));
+  }
+
   return new StartTagSyntax(
     new RedNode(null, 0, new GreenNode(SyntaxKinds.OpeningTag, body))
   );
@@ -183,7 +190,7 @@ export function text(text: string): TextFragment {
 export function element(
   start: StartTagSyntax,
   contents: Content[],
-  end: TagSyntax
+  end: TagSyntax | undefined = undefined
 ): ElementSyntax {
   const body: GreenElement[] = [start.__rawSyntax.__rawItem];
 
@@ -195,9 +202,27 @@ export function element(
     }
   }
 
-  body.push(end.__rawSyntax.__rawItem);
+  if (end !== undefined) {
+    body.push(end.__rawSyntax.__rawItem);
+  }
 
   return new ElementSyntax(
     new RedNode(null, 0, new GreenNode(SyntaxKinds.Node, body))
+  );
+}
+
+/**
+ * Create a new void or self closing element.
+ *
+ * @param {StartTagSyntax} tag The tag for this void element.
+ * @returns {ElementSyntax} A new ly created element.
+ */
+export function voidElement(tag: StartTagSyntax): ElementSyntax {
+  return new ElementSyntax(
+    new RedNode(
+      null,
+      0,
+      new GreenNode(SyntaxKinds.Node, [tag.__rawSyntax.__rawItem])
+    )
   );
 }

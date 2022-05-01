@@ -43,6 +43,10 @@ suite('Syntax Factory', () => {
     assert.equal('<p>', p.toString());
     assert.equal('p', p.name);
   });
+  test('self-close tag', () => {
+    const emptyP = SyntaxFactory.startTag('p', undefined, true);
+    assert.equal('<p/>', emptyP.toString());
+  });
   test('tag with attrs', () => {
     const img = SyntaxFactory.startTag('img', [
       SyntaxFactory.attribute('width', '100'),
@@ -82,5 +86,12 @@ suite('Syntax Factory', () => {
     );
 
     assert.equal('<p class="loud">hello world</p>', p.toString());
+  });
+  test('void element', () => {
+    const hr = SyntaxFactory.voidElement(
+      SyntaxFactory.startTag('hr', [SyntaxFactory.attribute('id', 'test')])
+    );
+
+    assert.equal('<hr id="test">', hr.toString());
   });
 });
