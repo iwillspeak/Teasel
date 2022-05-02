@@ -11,7 +11,7 @@
         "--timeout",
         "999999",
         "--colors",
-        "${workspaceFolder}/lib/test/**/*_test.js"
+        "${workspaceFolder}/packages/**/lib/test/**/*_test.js"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "name": "Mocha Tests",
@@ -29,15 +29,15 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/lib/cli.js",
+      "program": "${workspaceFolder}/packages/teasel/lib/cli.js",
       "runtimeArgs": [ "--expose-gc" ],
       "args": [
         "--time=false",
         "--dump=false",
         "--cacheLimit=6",
-        "${workspaceFolder}/test/fixture/checkparse/autoclose-siblings.html"
+        "${workspaceFolder}/packages/teasel/test/fixture/checkparse/autoclose-siblings.html"
       ],
-      "preLaunchTask": "tsc: build - tsconfig.json",
+      "preLaunchTask": "npm: build",
       "outFiles": [
         "${workspaceFolder}/lib/**/*.js"
       ]
