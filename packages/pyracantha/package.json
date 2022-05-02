@@ -1,0 +1,26 @@
+{
+  "name": "@iwillspeak/pyracantha",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "lib/main.js",
+  "files": [
+    "lib/!(test)"
+  ],
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p tsconfig.pkg.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iwillspeak/Teasel.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iwillspeak/Teasel/issues"
+  },
+  "homepage": "https://github.com/iwillspeak/Teasel#readme"
+}
