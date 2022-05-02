@@ -1,17 +1,17 @@
 {
   "private": true,
   "workspaces": [
-    "./packages/*"
+    "./packages/pyracantha",
+    "./packages/teasel"
   ],
   "scripts": {
-    "clean": "rimraf ./packages/**/lib ./lib",
+    "clean": "npm run clean -ws",
     "lint": "eslint \"packages/**/src/**/*.ts\"",
-    "prebuild": "npm run clean",
     "build": "npm run build -ws",
     "test": "c8 --reporter=text-summary mocha \"packages/**/lib/test/**/*_test.js\"",
     "format": "prettier --write \"packages/**/src/**/*.ts\"",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run lint && npm run test"
+    "prepublishOnly": "echo 'use workspace publish (npm publish --workspaces)' && exit 1"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",

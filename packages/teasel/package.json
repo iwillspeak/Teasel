@@ -1,29 +1,42 @@
 {
   "name": "@iwillspeak/teasel",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "type": "module",
-  "main": "lib/index.js",
   "bin": "lib/cli.js",
+  "description": "Teasing HTML elements from plain text.",
+  "main": "lib/main.js",
   "files": [
     "lib/!(test)"
   ],
+  "types": "lib/main.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc -p tsconfig.pkg.json"
+    "test": "c8 --reporter=text-summary mocha \"lib/test/**/*_test.js\"",
+    "clean": "rimraf ./lib",
+    "prebuild": "npm run clean",
+    "build": "tsc -p tsconfig.pkg.json",
+    "start": "node $npm_package_bin_teasel",
+    "lint": "eslint \"src/**/*.ts\"",
+    "prepublishOnly": "npm run lint && npm run test"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/iwillspeak/Teasel.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Will Speak <will@willspeak.me>",
+  "contributors": [
+    "James Garbutt"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "html",
+    "parser"
+  ],
   "bugs": {
     "url": "https://github.com/iwillspeak/Teasel/issues"
   },
   "homepage": "https://github.com/iwillspeak/Teasel#readme",
-  "description": "",
   "dependencies": {
+    "@iwillspeak/pyracantha": "^0.3.0",
     "@types/yargs": "^17.0.10",
     "yargs": "^17.4.1"
   }

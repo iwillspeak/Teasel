@@ -1,24 +1,32 @@
 {
   "name": "@iwillspeak/pyracantha",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "type": "module",
-  "description": "",
+  "description": "Red/Green syntax trees for Typescript",
   "main": "lib/main.js",
   "files": [
     "lib/!(test)"
   ],
-  "devDependencies": {},
+  "types": "lib/main.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc -p tsconfig.pkg.json"
+    "test": "c8 --reporter=text-summary mocha \"lib/test/**/*_test.js\"",
+    "clean": "rimraf ./lib",
+    "prebuild": "npm run clean",
+    "build": "tsc -p tsconfig.pkg.json",
+    "lint": "eslint \"src/**/*.ts\"",
+    "prepublishOnly": "npm run lint && npm run test"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/iwillspeak/Teasel.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Will Speak <will@willspeak.me>",
+  "license": "MIT",
+  "keywords": [
+    "syntax",
+    "trees",
+    "red-green"
+  ],
   "bugs": {
     "url": "https://github.com/iwillspeak/Teasel/issues"
   },
