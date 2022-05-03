@@ -1,4 +1,4 @@
-import {RedElement} from '@iwillspeak/pyracantha/lib/RedTree.js';
+import {RedElement} from '@iwillspeak/pyracantha/lib/red/RedTree.js';
 import {SyntaxKind} from '@iwillspeak/pyracantha/lib/Pyracantha.js';
 
 /**

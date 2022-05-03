@@ -1,6 +1,6 @@
 import {GreenElement} from './GreenTree.js';
 import {GreenNode} from './GreenNode.js';
-import {SyntaxKind} from './Pyracantha.js';
+import {SyntaxKind} from '../Pyracantha.js';
 import {NodeCache} from './NodeCache.js';
 
 /**

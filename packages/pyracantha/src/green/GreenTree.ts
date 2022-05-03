@@ -1,5 +1,5 @@
-import {GreenNode} from './GreenNode';
-import {GreenToken} from './GreenToken';
+import {GreenNode} from './GreenNode.js';
+import {GreenToken} from './GreenToken.js';
 
 /**
  * Element in the green tree. Either a node or a token.

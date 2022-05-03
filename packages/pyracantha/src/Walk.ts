@@ -1,6 +1,6 @@
 import {SyntaxKind, Range} from './Pyracantha.js';
-import {RedNode} from './RedNode.js';
-import {RedElement} from './RedTree.js';
+import {RedNode} from './red/RedNode.js';
+import {RedElement} from './red/RedTree.js';
 
 /**
  * Callback interface for tree walking.

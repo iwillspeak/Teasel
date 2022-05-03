@@ -1,8 +1,8 @@
 import {assert} from 'chai';
 import {debugToString} from '../Debug.js';
-import {GreenNode} from '../GreenNode.js';
-import {GreenTreeBuilder} from '../GreenTreeBuilder.js';
-import {RedNode} from '../RedNode.js';
+import {GreenNode} from '../green/GreenNode.js';
+import {GreenTreeBuilder} from '../green/GreenTreeBuilder.js';
+import {RedNode} from '../red/RedNode.js';
 
 suite('Green Tree Builder', () => {
   test('build empty tree has root node', () => {

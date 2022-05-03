@@ -1,6 +1,6 @@
-import {SyntaxKind} from './Pyracantha.js';
+import {SyntaxKind} from '../Pyracantha.js';
 import {GreenToken} from './GreenToken.js';
-import {Djb} from './Djb.js';
+import {Djb} from '../utils/Djb.js';
 
 /**
  * # Green Node
