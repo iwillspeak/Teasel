@@ -4,7 +4,7 @@
 
 Pyracantha is a lightweight library aimed at providing an abstract red / green
 syntax tree which can be used as the output of error tolerant parsers. Trees
-are split into two layers: green - which represents abtract syntax items, and
+are split into two layers: green - which represents abstract syntax items, and
 red - which represents specific pieces of syntax in a document including
 position information.
 
@@ -17,7 +17,7 @@ traverse.
 
 Each node or token in the tree has a `SyntaxKind` attached to it. As far as
 Pyracantha is concerned this is an opaque number. It is up to a higher level
-syntax wrapper in conusmers to impose meaning on these kinds.
+syntax wrapper in consumers to impose meaning on these kinds.
 
 A common pattern is to define distinct ranges of kinds for nodes, tokens, and
 a unique kind for error nodes. When printing a tree using the `Debug.debugDump`
@@ -44,7 +44,7 @@ const tree = builder.buildRoot(SyntaxKinds.PROGRAM);
 ```
 
 In addition to the basic build API a 'mark' based API is available to allow for
-specualitve parsing, and re-parenting of nodes.
+speculative parsing, and re-parenting of nodes.
 
 For speculative parsing of nodes a `Mark` is first created, and later *applied*
 using the `applyMark()` function to retroactively start a node at the marked
@@ -63,7 +63,7 @@ builder.Token(SyntaxKinds.PAREN, ")");
 builder.applyMark(mark, SyntaxKinds.CALL)
 ```
 
-The mark API also alows parsing to be backtracked using the `sliceOffMark()`
+The mark API also allows parsing to be backtracked using the `sliceOffMark()`
 and `elements()` functions. An alternative implementation of the above:
 
 ```typescript
@@ -88,7 +88,7 @@ builder.finishNode();
 
 ## The Red Tree
 
-Once a green tree has been created it can be turned into a fully-fledted red
+Once a green tree has been created it can be turned into a fully-fledged red
 tree with the `RedNode.createRoot()` function. This returns a new red tree
 wrapping the given green node with an offset of `0`. Red trees are lightweight
 wrappers over the green tree with a `range` on each node which tracks the
@@ -115,7 +115,7 @@ export enum SyntaxKinds {
 
   // NODES
   Program = 1
-  Call = 2,
+  Operator = 2,
 
   // TOKENS
   Number = 100,
@@ -124,4 +124,21 @@ export enum SyntaxKinds {
 
 // dump with pretty-printed kinds
 debugDump(root, (k) => SyntaxKinds[k]);
+
+// Program: {0..3}
+//   Number: {0..1} "1"
+//   Operator: {1..2} "+"
+//   Identifier: {2..3} "a"
 ```
+
+## Prior Art
+
+Pyracantha is a derivative of the [`Firethorn` library][firethorn], itself based
+on [`Rowan`][rowan]. For a more detailed discussion of red-green trees see
+[*Red Green Syntax Trees - an Overview*][blog-overview], and
+[*Syntax in rust-analyzer*][ra-syntax].
+
+ [firethorn]: https://github.com/iwillspeak/Firethorn
+ [rowan]: https://github.com/rust-analyzer/rowan
+ [blog-overview]: https://willspeak.me/2021/11/24/red-green-syntax-trees-an-overview.html
+ [ra-syntax]: https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/syntax.md
