@@ -1,5 +1,5 @@
-import {GreenNode} from './GreenNode.js';
-import {SyntaxKind, Range} from './Pyracantha.js';
+import {GreenNode} from '../green/GreenNode.js';
+import {SyntaxKind, Range} from '../Pyracantha.js';
 import {RedToken} from './RedToken.js';
 
 /**

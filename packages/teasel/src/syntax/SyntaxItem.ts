@@ -1,4 +1,4 @@
-import {RedNode} from '@iwillspeak/pyracantha/lib/RedNode.js';
+import {RedNode} from '@iwillspeak/pyracantha/lib/red/RedNode.js';
 import {Range} from '@iwillspeak/pyracantha/lib/Pyracantha.js';
 
 /**

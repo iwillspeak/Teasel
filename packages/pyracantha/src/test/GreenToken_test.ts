@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {GreenToken} from '../GreenToken.js';
+import {GreenToken} from '../green/GreenToken.js';
 
 suite('GreenToken', () => {
   test('instantiates correctly', () => {

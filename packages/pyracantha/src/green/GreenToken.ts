@@ -1,5 +1,5 @@
-import {Djb} from './Djb.js';
-import {SyntaxKind} from './Pyracantha';
+import {Djb} from '../utils/Djb.js';
+import {SyntaxKind} from '../Pyracantha.js';
 
 /**
  * # Green Tree Token

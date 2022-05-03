@@ -1,5 +1,5 @@
-import {RedNode} from './RedNode';
-import {RedToken} from './RedToken';
+import {RedNode} from './RedNode.js';
+import {RedToken} from './RedToken.js';
 
 /**
  * Element in the red tree. Either a {@link RedNode} or {@link RedToken}.

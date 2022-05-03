@@ -1,5 +1,5 @@
 import {Range, SyntaxKind} from './Pyracantha.js';
-import {RedElement} from './RedTree.js';
+import {RedElement} from './red/RedTree.js';
 import {TreeWalker, walk} from './Walk.js';
 
 /**

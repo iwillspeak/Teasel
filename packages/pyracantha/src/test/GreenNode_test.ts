@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-import {GreenNode} from '../GreenNode.js';
-import {GreenToken} from '../GreenToken.js';
+import {GreenNode} from '../green/GreenNode.js';
+import {GreenToken} from '../green/GreenToken.js';
 
 suite('GreenNode', () => {
   test('empty node is 0 wide', () => {

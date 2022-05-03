@@ -3,10 +3,10 @@ import {AttributeSyntax} from './AttributeSyntax.js';
 import {AttributeValueSyntax} from './AttributeValueSyntax.js';
 import {DoctypeSyntax} from './DoctypeSyntax.js';
 import {ElementSyntax} from './ElementSyntax.js';
-import {GreenNode} from '@iwillspeak/pyracantha/lib/GreenNode.js';
-import {GreenToken} from '@iwillspeak/pyracantha/lib/GreenToken.js';
-import {GreenElement} from '@iwillspeak/pyracantha/lib/GreenTree.js';
-import {RedNode} from '@iwillspeak/pyracantha/lib/RedNode.js';
+import {GreenNode} from '@iwillspeak/pyracantha/lib/green/GreenNode.js';
+import {GreenToken} from '@iwillspeak/pyracantha/lib/green/GreenToken.js';
+import {GreenElement} from '@iwillspeak/pyracantha/lib/green/GreenTree.js';
+import {RedNode} from '@iwillspeak/pyracantha/lib/red/RedNode.js';
 import {StartTagSyntax} from './StartTagSyntax.js';
 import {TagSyntax} from './TagSyntax.js';
 

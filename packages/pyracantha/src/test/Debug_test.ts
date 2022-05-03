@@ -1,7 +1,7 @@
 import {assert} from 'chai';
-import {GreenNode} from '../GreenNode.js';
-import {GreenToken} from '../GreenToken.js';
-import {RedNode} from '../RedNode.js';
+import {GreenNode} from '../green/GreenNode.js';
+import {GreenToken} from '../green/GreenToken.js';
+import {RedNode} from '../red/RedNode.js';
 import {debugToString} from '../Debug.js';
 
 enum Kind {

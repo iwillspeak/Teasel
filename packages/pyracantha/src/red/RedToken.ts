@@ -1,6 +1,6 @@
-import {RedNode} from './RedNode';
-import {SyntaxKind, Range} from './Pyracantha';
-import {GreenToken} from './GreenToken';
+import {RedNode} from './RedNode.js';
+import {SyntaxKind, Range} from '../Pyracantha.js';
+import {GreenToken} from '../green/GreenToken.js';
 
 /**
  * A leaf node in the red tree. This wraps an underlying {@link GreenToken}.

@@ -1,8 +1,8 @@
 import {GreenElement} from './GreenTree.js';
 import {GreenNode} from './GreenNode.js';
 import {GreenToken} from './GreenToken.js';
-import {SyntaxKind} from './Pyracantha.js';
-import {Djb} from './Djb.js';
+import {SyntaxKind} from '../Pyracantha.js';
+import {Djb} from '../utils/Djb.js';
 
 type Hasher<V> = (value: V) => number;
 type PartialEq<V> = (left: V, right: V) => boolean;
