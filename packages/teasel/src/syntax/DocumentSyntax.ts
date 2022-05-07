@@ -1,4 +1,4 @@
-import {RedNode} from '@iwillspeak/pyracantha/lib/red/RedNode.js';
+import {RedNode} from '@iwillspeak/pyracantha';
 import {SyntaxKinds} from '../parse/Parser.js';
 import {DocumentFragmentSyntax} from './DocumentFragmentSyntax.js';
 import {DoctypeSyntax} from './DoctypeSyntax.js';

@@ -1,6 +1,6 @@
-import {RedNode} from '@iwillspeak/pyracantha/lib/red/RedNode.js';
+import {RedNode} from '@iwillspeak/pyracantha';
 import {SyntaxKinds} from '../parse/Parser.js';
-import {RedToken} from '@iwillspeak/pyracantha/lib/red/RedToken.js';
+import {RedToken} from '@iwillspeak/pyracantha';
 import {SyntaxItem} from './SyntaxItem.js';
 import {nthOfKind} from './Syntax.js';
 

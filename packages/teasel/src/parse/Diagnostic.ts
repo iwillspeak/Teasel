@@ -1,4 +1,4 @@
-import {Range} from '@iwillspeak/pyracantha/lib/Pyracantha.js';
+import {Range} from '@iwillspeak/pyracantha';
 
 /**
  * Diagnostic information from the parse.

@@ -1,5 +1,5 @@
 import {TokenKind} from './TokenKind.js';
-import {Range} from '@iwillspeak/pyracantha/lib/Pyracantha.js';
+import {Range} from '@iwillspeak/pyracantha';
 
 /**
  * A single token in the source text.

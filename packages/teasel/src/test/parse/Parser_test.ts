@@ -2,7 +2,7 @@ import {assert, AssertionError} from 'chai';
 import {readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
 import {Parser, SyntaxKinds} from '../../parse/Parser.js';
-import {debugToString} from '@iwillspeak/pyracantha/lib/Debug.js';
+import {debugToString} from '@iwillspeak/pyracantha';
 import {DocumentSyntax} from '../../syntax/DocumentSyntax.js';
 import {Tokenizer} from '../../tokenize/Tokenizer.js';
 
