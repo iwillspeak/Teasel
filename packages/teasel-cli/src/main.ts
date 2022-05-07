@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
-import {Parser, SyntaxKinds} from './parse/Parser.js';
+import {Parser, SyntaxKinds} from '@iwillspeak/teasel/lib/parse/Parser.js';
 import {readFile} from 'fs/promises';
 import {debugDump} from '@iwillspeak/pyracantha';
 

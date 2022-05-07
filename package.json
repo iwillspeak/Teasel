@@ -1,8 +1,9 @@
 {
   "private": true,
   "workspaces": [
-    "./packages/pyracantha",
-    "./packages/teasel"
+    "packages/pyracantha",
+    "packages/teasel",
+    "packages/teasel-cli"
   ],
   "scripts": {
     "clean": "npm run clean -ws",
