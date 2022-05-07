@@ -3,10 +3,12 @@
   "version": "0.3.0",
   "type": "module",
   "description": "Command Line Interface to Teasel HTML Parser",
-  "bin": "lib/main.js",
+  "bin": "./bin/teasel-cli",
   "main": "lib/main.js",
+  "preferGlobal": true,
   "files": [
-    "lib/!(test)"
+    "lib/!(test)",
+    "bin/*"
   ],
   "types": "lib/main.d.ts",
   "scripts": {
