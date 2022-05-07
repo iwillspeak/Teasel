@@ -72,3 +72,5 @@ yargs(hideBin(process.argv))
     }
   )
   .parse();
+
+  export {}
