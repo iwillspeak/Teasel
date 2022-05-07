@@ -5,12 +5,12 @@ import {TreeWalker, walk} from './Walk.js';
 /**
  * Formatter for syntax kinds
  */
-type KindFormatter = (kind: SyntaxKind) => string;
+export type KindFormatter = (kind: SyntaxKind) => string;
 
 /**
  * Sink for debug output.
  */
-type OutputSink = (s: string) => void;
+export type OutputSink = (s: string) => void;
 
 /**
  * Debug Walker
@@ -18,7 +18,7 @@ type OutputSink = (s: string) => void;
  * This callback prints a tree to the given output sink using debug information
  * from the `kindFormatter`.
  */
-export class DebugWalker implements TreeWalker {
+class DebugWalker implements TreeWalker {
   private indent: number;
 
   /**

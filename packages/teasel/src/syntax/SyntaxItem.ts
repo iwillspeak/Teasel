@@ -1,5 +1,5 @@
-import {RedNode} from '@iwillspeak/pyracantha/lib/red/RedNode.js';
-import {Range} from '@iwillspeak/pyracantha/lib/Pyracantha.js';
+import {RedNode} from '@iwillspeak/pyracantha';
+import {Range} from '@iwillspeak/pyracantha';
 
 /**
  * Base class for all syntax nodes.

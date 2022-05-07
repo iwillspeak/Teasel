@@ -1,5 +1,5 @@
-import {RedElement} from '@iwillspeak/pyracantha/lib/red/RedTree.js';
-import {SyntaxKind} from '@iwillspeak/pyracantha/lib/Pyracantha.js';
+import {RedElement} from '@iwillspeak/pyracantha';
+import {SyntaxKind} from '@iwillspeak/pyracantha';
 
 /**
  * Search a list of syntax elements for the n'th of a given kind.

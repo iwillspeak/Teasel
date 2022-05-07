@@ -3,7 +3,7 @@ import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import {Parser, SyntaxKinds} from './parse/Parser.js';
 import {readFile} from 'fs/promises';
-import {debugDump} from '@iwillspeak/pyracantha/lib/Debug.js';
+import {debugDump} from '@iwillspeak/pyracantha';
 
 interface Options {
   path: string;
