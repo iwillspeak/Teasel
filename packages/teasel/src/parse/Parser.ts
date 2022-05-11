@@ -140,6 +140,13 @@ const elementFacts = {
   ],
 
   /**
+   * Tag names that should be treated as raw text elements. The bodies of these
+   * elements are parsed specially to allow them to contain arbitrary nested
+   * HTML.
+   */
+  RAW_TEXT_ELEMENTS: ['script', 'style'],
+
+  /**
    * Auto close sibilings. For a given element what parent elements can it auto
    * close inside. Used to allow lists and tables to be expressed compactly.
    */
@@ -465,6 +472,9 @@ export class Parser {
           this.builder.finishNode();
         } else {
           openElements.push(tag);
+          if (this.isRawTextElement(tag)) {
+            this.parseRawText();
+          }
         }
       } else if (this.lookingAt(TokenKind.Comment)) {
         this.bump(SyntaxKinds.Comment);
@@ -519,6 +529,16 @@ export class Parser {
    */
   private isVoidElement(tag: string): boolean {
     return elementFacts.VOID_ELEMENTS.includes(tag);
+  }
+
+  /**
+   * Check if the given tag is an HTML raw text element.
+   *
+   * @param {string} tag The tag to check.
+   * @return {boolean} True if the tag is a raw text element, false otherwise.
+   */
+  private isRawTextElement(tag: string): boolean {
+    return elementFacts.RAW_TEXT_ELEMENTS.includes(tag);
   }
 
   /**
@@ -638,6 +658,16 @@ export class Parser {
    */
   private parseText(): void {
     this.parseTextData(tokenSets.TEXT_FOLLOW);
+  }
+
+  /**
+   * Parse raw text data.
+   */
+  private parseRawText(): void {
+    // FIXME: This doesn't work if se see any other kind of closing tag inside
+    //        our raw element's body. We need more lookahead to be able to check
+    //        if we're actually looking at the correct closing tag.
+    this.parseTextData([TokenKind.TagCloseStart, TokenKind.EndOfFile]);
   }
 
   /**
