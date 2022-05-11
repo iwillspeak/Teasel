@@ -1,0 +1,19 @@
+Document: {0..97}
+  Doctype: {0..15}
+    DoctypeStart: {0..2} "<!"
+    Ident: {2..9} "DOCTYPE"
+    Space: {9..10} " "
+    Ident: {10..14} "html"
+    TagEnd: {14..15} ">"
+  Text: {15..16} "\n"
+  Node: {16..97}
+    OpeningTag: {16..24}
+      TagStart: {16..17} "<"
+      Ident: {17..23} "script"
+      TagEnd: {23..24} ">"
+    Text: {24..88} "\n    console.writeLine(\"<p><img src='example.com/foo.jpg' />\");\n"
+    ClosingTag: {88..97}
+      TagStart: {88..90} "</"
+      Ident: {90..96} "script"
+      TagEnd: {96..97} ">"
+  EndOfFile: {97..97} ""
