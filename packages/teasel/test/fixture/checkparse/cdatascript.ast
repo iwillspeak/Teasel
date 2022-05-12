@@ -1,0 +1,38 @@
+Document: {0..170}
+  Doctype: {0..15}
+    DoctypeStart: {0..2} "<!"
+    Ident: {2..9} "DOCTYPE"
+    Space: {9..10} " "
+    Ident: {10..14} "html"
+    TagEnd: {14..15} ">"
+  Text: {15..16} "\n"
+  Node: {16..113}
+    OpeningTag: {16..47}
+      TagStart: {16..17} "<"
+      Ident: {17..23} "script"
+      Space: {23..24} " "
+      Attribute: {24..46}
+        Ident: {24..28} "type"
+        Trivia: {28..29} "="
+        AttributeValue: {29..46}
+          Trivia: {29..30} "\""
+          Text: {30..45} "text/javascript"
+          Trivia: {45..46} "\""
+      TagEnd: {46..47} ">"
+    Text: {47..104} "\n//<![CDATA[\ndocument.write(\"</html>\".slice(2,6));\n//]]>\n"
+    ClosingTag: {104..113}
+      TagStart: {104..106} "</"
+      Ident: {106..112} "script"
+      TagEnd: {112..113} ">"
+  Text: {113..114} "\n"
+  Node: {114..170}
+    OpeningTag: {114..121}
+      TagStart: {114..115} "<"
+      Ident: {115..120} "style"
+      TagEnd: {120..121} ">"
+    Text: {121..162} "\nhtml::before {\n  content: \"</script>\"\n}\n"
+    ClosingTag: {162..170}
+      TagStart: {162..164} "</"
+      Ident: {164..169} "style"
+      TagEnd: {169..170} ">"
+  EndOfFile: {170..170} ""
