@@ -54,6 +54,12 @@ const tokenSets = {
   ],
 
   /**
+   * The follow set for raw text. This is used to find the end of raw text
+   * elements such as `script` and `style` tags.
+   */
+  RAW_TEXT_FOLLOW: [TokenKind.TagCloseStart, TokenKind.EndOfFile],
+
+  /**
    * The follow set for an inner element. This is used to prevent the parser
    * eating into closing tags, or trying to eat past the end of the stream.
    */
@@ -473,7 +479,7 @@ export class Parser {
         } else {
           openElements.push(tag);
           if (this.isRawTextElement(tag)) {
-            this.parseRawText();
+            this.parseRawText(tag);
           }
         }
       } else if (this.lookingAt(TokenKind.Comment)) {
@@ -663,11 +669,27 @@ export class Parser {
   /**
    * Parse raw text data.
    */
-  private parseRawText(): void {
-    // FIXME: This doesn't work if se see any other kind of closing tag inside
-    //        our raw element's body. We need more lookahead to be able to check
-    //        if we're actually looking at the correct closing tag.
-    this.parseTextData([TokenKind.TagCloseStart, TokenKind.EndOfFile]);
+  private parseRawText(closingIdent: string): void {
+    let accum = '';
+    while (true) {
+      while (!this.lookingAtAny(tokenSets.RAW_TEXT_FOLLOW)) {
+        accum += this.tokens.current.lexeme;
+        this.tokens.bump();
+      }
+
+      if (
+        this.lookingAt(TokenKind.TagCloseStart) &&
+        this.tokens.peek(1).kind === TokenKind.Ident &&
+        this.tokens.peek(1).lexeme !== closingIdent
+      ) {
+        accum += this.tokens.current.lexeme;
+        this.tokens.bump();
+      } else {
+        break;
+      }
+    }
+
+    this.builder.token(SyntaxKinds.Text, accum);
   }
 
   /**
