@@ -95,8 +95,8 @@ export class Tokenizer {
   /**
    * Get a token with n-token lookahead.
    *
-   * @param offset The lookahead to return the token for.
-   * @return The token at the given lookahead position.
+   * @param {number} [offset] The lookahead to return the token for.
+   * @return {Token} The token at the given lookahead position.
    */
   public peek(offset: number): Token {
     let token = this.bufferedTokens.at(offset);
