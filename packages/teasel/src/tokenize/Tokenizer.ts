@@ -70,9 +70,9 @@ export class Tokenizer {
   private tokenStart: number;
 
   /**
-   * The current token, if one is buffered.
+   * The current buffered tokens.
    */
-  private bufferedCurrent: Token | null;
+  private bufferedTokens: Array<Token>;
 
   /**
    * Create a tokeniser instance.
@@ -82,28 +82,37 @@ export class Tokenizer {
   public constructor(text: string) {
     this.buffer = text;
     this.tokenStart = 0;
-    this.bufferedCurrent = null;
+    this.bufferedTokens = [];
   }
 
   /**
    * Get the current token, advancing the underlying state machine if required.
    */
   public get current(): Token {
-    if (this.bufferedCurrent === null) {
-      this.bufferedCurrent = this.getNextToken();
+    return this.peek(0);
+  }
+
+  /**
+   * Get a token with n-token lookahead.
+   *
+   * @param offset The lookahead to return the token for.
+   * @return The token at the given lookahead position.
+   */
+  public peek(offset: number): Token {
+    let token = this.bufferedTokens.at(offset);
+    while (token === undefined) {
+      this.bufferedTokens.push(this.getNextToken());
+      token = this.bufferedTokens.at(offset);
     }
 
-    return this.bufferedCurrent;
+    return token;
   }
 
   /**
    * Advance past the current token.
    */
   public bump(): void {
-    if (this.bufferedCurrent !== null) {
-      // If we had a token buffered then clear that.
-      this.bufferedCurrent = null;
-    } else {
+    if (this.bufferedTokens.shift() === undefined) {
       // Advance the state machine, but discard the token.
       this.getNextToken();
     }
@@ -116,14 +125,12 @@ export class Tokenizer {
     if (this.tokenStart < this.buffer.length) {
       // we anre't at the end of the buffer yet.
       return false;
-    } else if (this.bufferedCurrent !== null) {
-      // We have something buffered. It _could_ be the final token.
-      return this.bufferedCurrent.kind === TokenKind.EndOfFile;
+    } else {
+      // We have something buffered. If they are all EOF tokens we are done.
+      return this.bufferedTokens.every((token) => {
+        return token.kind === TokenKind.EndOfFile;
+      });
     }
-
-    // No characters left in the buffer, and no buffered tokens. Sounds like
-    // done to me!
-    return true;
   }
 
   /**

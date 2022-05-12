@@ -23,7 +23,36 @@ suite('Tokeniser', () => {
     tokeniser.bump();
 
     assert.equal(tokeniser.current.kind, TokenKind.EndOfFile);
+    assert.equal(tokeniser.peek(1).kind, TokenKind.EndOfFile);
     assert.equal(tokeniser.isAtEnd, true);
+
+    // check the tokeniser is at the end _even_ when no tokens are buffered.
+    tokeniser.bump();
+    assert.isTrue(tokeniser.isAtEnd);
+    tokeniser.bump();
+    assert.isTrue(tokeniser.isAtEnd);
+  });
+
+  test('peek tokens at lookahead', () => {
+    const tokeniser = new Tokenizer('<html>');
+
+    assert.equal(tokeniser.current.kind, TokenKind.TagStart);
+    assert.equal(tokeniser.peek(0).kind, TokenKind.TagStart);
+    assert.equal(tokeniser.peek(1).kind, TokenKind.Ident);
+    assert.equal(tokeniser.peek(2).kind, TokenKind.TagEnd);
+    assert.equal(tokeniser.peek(3).kind, TokenKind.EndOfFile);
+    assert.isFalse(tokeniser.isAtEnd);
+
+    tokeniser.bump();
+    assert.equal(tokeniser.current.kind, TokenKind.Ident);
+    assert.equal(tokeniser.peek(0).kind, TokenKind.Ident);
+    assert.equal(tokeniser.peek(1).kind, TokenKind.TagEnd);
+    assert.equal(tokeniser.peek(2).kind, TokenKind.EndOfFile);
+    assert.isFalse(tokeniser.isAtEnd);
+
+    tokeniser.bump();
+    tokeniser.bump();
+    assert.isTrue(tokeniser.isAtEnd);
   });
 
   const tokens: [string, TokenKind][] = [
