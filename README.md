@@ -43,8 +43,8 @@ text. Semantic transformation into a DOM is _not_ the intent of this library.
  * [x] Support for esoteric DOCTYPEs e.g. `SYSTEM 'about:legacy-compat'`.
  * [x] Document and fragment parse APIs.
  * [x] Syntax builder / factory API for creating and updating nodes.
+ * [x] Handling of raw text elements. e.g. `script`, and `style`.
  * [ ] Support for character references. e.g. `&amp;`.
- * [ ] Support for raw text.
-  * [ ] Handling of raw text elements. e.g. `script`, and `style`.
+ * [ ] HTML / XML crossover
+  * [ ] Support for *processing instructions*, e.g. `<?xml version="1.0">`.
   * [ ] Support for `CDATA` values / tokens.
- * [ ] Support for *processing instructions*, e.g. `<?xml version="1.0">`.
