@@ -668,15 +668,20 @@ export class Parser {
 
   /**
    * Parse raw text data.
+   *
+   * @param {string} [closingIdent] The tag identifer to close this text.
    */
   private parseRawText(closingIdent: string): void {
     let accum = '';
-    while (true) {
+    let done = false;
+    while (!done) {
       while (!this.lookingAtAny(tokenSets.RAW_TEXT_FOLLOW)) {
         accum += this.tokens.current.lexeme;
         this.tokens.bump();
       }
 
+      // If we are looking at a closing tag, but it isn't the right one then
+      // buffer and continue.
       if (
         this.lookingAt(TokenKind.TagCloseStart) &&
         this.tokens.peek(1).kind === TokenKind.Ident &&
@@ -685,7 +690,7 @@ export class Parser {
         accum += this.tokens.current.lexeme;
         this.tokens.bump();
       } else {
-        break;
+        done = true;
       }
     }
 
