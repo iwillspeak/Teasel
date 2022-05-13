@@ -4,29 +4,48 @@
 
 ![Logo](assets/logo.png)
 
-Parser is be split into three parts:
+Teasel is an HTML syntax tree parser written in TypeScript. Teasel aims to be
+a fast and reliable full-fidelity parser for HTML linters and refactoring tools.
 
- * Tokeniser which produces tokens for each character in the input.
- * Untyped tree. A red-green tree implementation and builder.
- * Typed tree. A structured wrapper around the untyped tree for ergonomics.
- * Parser a parser which builds a syntax tree from the tokens.
+## Key Features
 
-## Tokenisation
+ * **Full-fidelity tree** - Every byte in the input text will be represented
+   somewhere in the output syntax tree, in the order it was in the source text.
+ * **Fault tolerant perser** - All input texts produce an output tree, and a
+   set of errors. The closer the input is to a standards-compliant HTML document
+   the fewer error diagnostics.
+ * **Syntax, not Semantic** - Teasel parses HTML as a _syntax_ tree. The end
+   result is not an HTML DOM. This means that all the warts of the origional
+   document are avilable to dig into; ideal for linters.
 
-We will transform the input text into a series of tokens. All parts of the input
-should be covered by a token, including trivia.
+## Docs and Getting Started
 
-## Parse
+To get started using Teasel it can be [installed from GitHub packages][pkg]:
 
-A hand written top down parser with one token lookahead. This uses a green tree
-builder to produce a syntax tree.
+```
+$ npm install @iwillspeak/teasel@0.3.0
+```
 
-## Tree
+Once installed you can then parse any string containing HTML into a syntax tree:
 
-Red-green syntax tree and typed tree. The typed wrapper will have classes
-specific to each node type. The tree should be capable of representing any kind
-of incomplete or malformed syntax. The tree should be faithful to the source
-text. Semantic transformation into a DOM is _not_ the intent of this library.
+```typescript
+import {Parser} from '@iwillspeak/teasel/lib/parse/Parser.js';
+
+const result = Parser.parseDocument('<html><p>Hello World');
+```
+
+Check out the [`teasel` docs][pkg-teasel] for where to go next.
+
+## Repo Structure
+
+This repository contains three main packages:
+
+  * [`teasel`][pkg-teasel] - The main parser libary. This is the package
+    you want to reference as a consumer.
+  * [`pyracantha`][pkg-pyracantha] - The language agnostic low-level syntax
+    tree library used by `teasel` to represent parsed documents.
+  * [`teasel-cli`][pkg-teasel-cli] - A command line tool to test parsing
+    HTML documents with teasel.
 
 ## 🐲 TODO 🐲:
 
@@ -48,3 +67,9 @@ text. Semantic transformation into a DOM is _not_ the intent of this library.
  * [ ] HTML / XML crossover
   * [ ] Support for *processing instructions*, e.g. `<?xml version="1.0">`.
   * [ ] Support for `CDATA` values / tokens.
+
+
+ [pkg]: https://github.com/iwillspeak/Teasel/packages/1313956
+ [pkg-teasel]: packages/teasel/README.md
+ [pkg-teasel-cli]: packages/teasel-cli/README.md
+ [pkg-pyracantha]: packages/pyracantha/README.md
