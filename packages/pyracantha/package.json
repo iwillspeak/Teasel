@@ -1,6 +1,6 @@
 {
   "name": "@iwillspeak/pyracantha",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "Red/Green syntax trees for Typescript",
   "main": "lib/main.js",
