@@ -3,9 +3,13 @@ import {hideBin} from 'yargs/helpers';
 import {Parser, SyntaxKinds} from '@iwillspeak/teasel/lib/parse/Parser.js';
 import {readFile} from 'fs/promises';
 import {debugDump} from '@iwillspeak/pyracantha';
-import {SyntaxNode} from '@iwillspeak/teasel/lib/syntax/ElementSyntax';
-import {createInterface} from 'readline';
+import {
+  ElementSyntax,
+  SyntaxNode
+} from '@iwillspeak/teasel/lib/syntax/ElementSyntax.js';
+import {start} from 'repl';
 import {once} from 'events';
+import {Context} from 'vm';
 
 interface ReplOptions {
   path: string;
@@ -97,48 +101,89 @@ yargs(hideBin(process.argv))
 
 export {};
 
-async function repl(node: SyntaxNode) {
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdin,
-    prompt: '/ > '
-  });
-  let path: SyntaxNode[] = [];
-  rl.prompt();
-  rl.on('line', (line) => {
-    const split = line.trim().split(' ');
+/**
+ * The callback signature for REPL results
+ */
+type REPLCallback = (err: Error | null, res: undefined) => void;
+
+/**
+ * Run a REPL starting at the given `node`.
+ *
+ * @param {SyntaxNode} node The node to use as the base for the REPL.
+ */
+async function repl(node: SyntaxNode): Promise<void> {
+  let path = '';
+  /**
+   *
+   * @param {string} cmd The command line to process.
+   * @param {Context} context Current repl context.
+   * @param {string} filename The filename for the current REPL.
+   * @param {REPLCallback} callback Callback for repl results.
+   */
+  function replEval(
+    cmd: string,
+    context: Context,
+    filename: string,
+    callback: REPLCallback
+  ): void {
+    const split = cmd.trim().split(' ');
     const command = split.at(0);
     switch (command?.toLowerCase()) {
       case 'quit':
-        rl.close();
+      case 'exit':
+        repl.close();
+        callback(null, undefined);
         return;
       case 'cat':
         console.log(node.toString());
+        callback(null, undefined);
         break;
       case 'ls':
         for (const child of node.childElements()) {
           console.log(`${child.startTag?.name} `);
         }
+        callback(null, undefined);
+        break;
       case 'cd':
         const param = split.at(1);
         if (param == undefined) {
-          console.error('expecting node to change to.');
+          callback(new Error('expecting node to change to.'), undefined);
           break;
         }
+
+        if (param === '..') {
+          if (node instanceof ElementSyntax && node.parent !== null) {
+            node = node.parent;
+            callback(null, undefined);
+          }
+          return;
+        }
+
         const name = param.toLowerCase();
         for (const child of node.childElements()) {
           if (child.startTag?.name === name) {
-            path.push(node);
-            rl.setPrompt(path.join('/') + ' >');
+            path += '/' + child.startTag?.name;
+            repl.setPrompt(path + ' > ');
             node = child;
-            break;
+            callback(null, undefined);
+            return;
           }
         }
-        console.error(`node ${node} not found`);
+
+        callback(new Error(`node '${name}' not found`), undefined);
         break;
     }
-    rl.prompt();
+  }
+  const repl = start({
+    input: process.stdin,
+    output: process.stdin,
+    prompt: '/> ',
+    eval: replEval,
+    ignoreUndefined: true
   });
-  await once(rl, 'close');
-  console.log('done');
+  repl.on('close', () => {
+    // Write a null line to get a blank line for the terminal prompt.
+    console.log('');
+  });
+  await once(repl, 'close');
 }

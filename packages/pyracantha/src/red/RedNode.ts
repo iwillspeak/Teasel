@@ -12,7 +12,6 @@ import {RedToken} from './RedToken.js';
  * lazily produces red elements to wrap the children of its {@link GreenNode}.
  */
 export class RedNode {
-  private parent: RedNode | null;
   private offset: number;
   private green: GreenNode;
 
@@ -27,8 +26,11 @@ export class RedNode {
    *                        text.
    * @param {GreenNode} green The green node that backs this red node.
    */
-  public constructor(parent: RedNode | null, offset: number, green: GreenNode) {
-    this.parent = parent;
+  public constructor(
+    public parent: RedNode | null,
+    offset: number,
+    green: GreenNode
+  ) {
     this.offset = offset;
     this.green = green;
   }
