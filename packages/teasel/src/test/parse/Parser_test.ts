@@ -145,13 +145,13 @@ suite('Parser', () => {
     assert.equal(result.root.doctype?.name, 'html');
     const rootElements = Array.from(result.root.childElements());
     assert.equal(rootElements.length, 1);
-    assert.equal(rootElements[0].startTag()?.name, 'html');
-    assert.isNull(rootElements[0].endTag());
+    assert.equal(rootElements[0].startTag?.name, 'html');
+    assert.isNull(rootElements[0].endTag);
     const htmlElements = Array.from(rootElements[0].childElements());
     assert.equal(htmlElements.length, 1);
-    assert.equal(htmlElements[0].startTag()?.name, 'a');
-    assert.isNull(htmlElements[0].endTag());
-    const attrs = Array.from(htmlElements[0].startTag()!.attributes());
+    assert.equal(htmlElements[0].startTag?.name, 'a');
+    assert.isNull(htmlElements[0].endTag);
+    const attrs = Array.from(htmlElements[0].startTag!.attributes());
     assert.equal(attrs.length, 2);
     assert.equal(attrs[0].name(), 'href');
     assert.isNotNull(attrs[0].value());
@@ -165,12 +165,12 @@ suite('Parser', () => {
     assert.equal(result.diagnostics.length, 0);
     const rootElements = Array.from(result.root.childElements());
     assert.equal(rootElements.length, 1);
-    assert.equal(rootElements[0].startTag()?.name, 'p');
-    assert.isNull(rootElements[0].endTag());
+    assert.equal(rootElements[0].startTag?.name, 'p');
+    assert.isNull(rootElements[0].endTag);
     const paraElements = Array.from(rootElements[0].childElements());
     assert.equal(paraElements.length, 1);
-    assert.equal(paraElements[0].startTag()?.name, 'i');
-    assert.equal(paraElements[0].endTag()?.name, 'i');
+    assert.equal(paraElements[0].startTag?.name, 'i');
+    assert.equal(paraElements[0].endTag?.name, 'i');
   });
 
   test('checkparse example doc', () => {

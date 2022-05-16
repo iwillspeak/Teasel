@@ -50,7 +50,7 @@ export class ElementSyntax extends SyntaxNode {
    *
    * @return {StartTagSyntax | null} The opening tag, if one existed.
    */
-  public startTag(): StartTagSyntax | null {
+  public get startTag(): StartTagSyntax | null {
     const child = nthOfKind(this.syntax.children(), SyntaxKinds.OpeningTag, 1);
     if (child instanceof RedNode) {
       return new StartTagSyntax(child);
@@ -64,7 +64,7 @@ export class ElementSyntax extends SyntaxNode {
    *
    * @return {TagSyntax | null} The closing tag, if one existed.
    */
-  public endTag(): TagSyntax | null {
+  public get endTag(): TagSyntax | null {
     const child = nthOfKind(this.syntax.children(), SyntaxKinds.ClosingTag, 1);
     if (child instanceof RedNode) {
       return new TagSyntax(child);
