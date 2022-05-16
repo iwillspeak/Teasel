@@ -46,6 +46,17 @@ export class ElementSyntax extends SyntaxNode {
   }
 
   /**
+   * Get the parent node of this element.
+   */
+  public get parent(): ElementSyntax | null {
+    if (this.syntax.parent !== null) {
+      return ElementSyntax.cast(this.syntax.parent);
+    }
+
+    return null;
+  }
+
+  /**
    * Get the opening tag of this element.
    *
    * @return {StartTagSyntax | null} The opening tag, if one existed.

@@ -3,6 +3,7 @@ import {SyntaxKinds} from '../parse/Parser.js';
 import {RedToken} from '@iwillspeak/pyracantha';
 import {SyntaxItem} from './SyntaxItem.js';
 import {nthOfKind} from './Syntax.js';
+import {ElementSyntax} from './ElementSyntax.js';
 
 /**
  * Element tag.
@@ -15,6 +16,17 @@ export class TagSyntax extends SyntaxItem {
    */
   public constructor(syntax: RedNode) {
     super(syntax);
+  }
+
+  /**
+   * Get the containing element for this tag.
+   */
+  public get containingElement(): ElementSyntax | null {
+    if (this.syntax.parent !== null) {
+      return ElementSyntax.cast(this.syntax.parent);
+    }
+
+    return null;
   }
 
   /**
