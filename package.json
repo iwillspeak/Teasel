@@ -15,16 +15,19 @@
     "prepublishOnly": "echo 'use workspace publish (npm publish --workspaces)' && exit 1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.5.0",
     "@types/chai": "^4.3.16",
+    "@types/eslint__js": "^8.42.3",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.14.2",
-    "@typescript-eslint/eslint-plugin": "^7.13.0",
     "c8": "^10.1.2",
     "chai": "^5.1.1",
+    "eslint": "^8.57.0",
     "eslint-config-google": "^0.14.0",
     "mocha": "^10.4.0",
     "prettier": "^3.3.2",
     "rimraf": "^5.0.7",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.13.0"
   }
 }

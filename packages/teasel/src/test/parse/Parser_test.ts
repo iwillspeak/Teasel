@@ -1,4 +1,4 @@
-import {assert, AssertionError} from 'chai';
+import {assert} from 'chai';
 import {readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
 import {Parser, SyntaxKinds} from '../../parse/Parser.js';
