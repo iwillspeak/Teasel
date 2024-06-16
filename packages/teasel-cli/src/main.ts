@@ -144,7 +144,7 @@ async function repl(node: SyntaxNode): Promise<void> {
         }
         callback(null, undefined);
         break;
-      case 'cd':
+      case 'cd': {
         const param = split.at(1);
         if (param == undefined) {
           callback(new Error('expecting node to change to.'), undefined);
@@ -172,6 +172,7 @@ async function repl(node: SyntaxNode): Promise<void> {
 
         callback(new Error(`node '${name}' not found`), undefined);
         break;
+      }
     }
   }
   const repl = start({
