@@ -1,8 +1,9 @@
-# Teasel
+<p align=center>
+  <img style="width: 400px" src="assets/logo.png" alt="Logo" />
+</p>
+<h1 align=center>Teasel</h1>
 
 > Teasing HTML elements from plain text
-
-![Logo](assets/logo.png)
 
 Teasel is an HTML syntax tree parser written in TypeScript. Teasel aims to be
 a fast and reliable full-fidelity parser for HTML linters and refactoring tools.
