@@ -17,6 +17,10 @@
   "engines": {
     "node": "^20.19.0 || ^22.13.0 || >=24"
   },
+  "overrides": {
+    "serialize-javascript": "^7.0.3",
+    "js-yaml": "^4.1.1"
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/chai": "^4.3.16",
