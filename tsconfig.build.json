@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2022",
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "sourceMap": true,
+    "types": ["node", "mocha"],
     "paths": {
       "@iwillspeak/*": [
         "./packages/*/src/"
