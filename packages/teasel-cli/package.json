@@ -39,7 +39,7 @@
   "homepage": "https://github.com/iwillspeak/Teasel#readme",
   "dependencies": {
     "@iwillspeak/teasel": "^0.4.0",
-    "@types/yargs": "^17.0.10",
+    "@types/yargs": "^17.0.35",
     "yargs": "^18.0.0"
   }
 }
