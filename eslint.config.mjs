@@ -34,7 +34,6 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/explicit-member-accessibility": "error",
-      "@typescript-eslint/member-delimiter-style": "error",
       "@typescript-eslint/no-array-constructor": "error",
       "@typescript-eslint/no-empty-interface": "error",
       "@typescript-eslint/no-explicit-any": "error"
